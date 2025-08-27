@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     siteName: "KZ Syndicate",
     images: [
       {
-        url: "https://kzsyndicate.com/kz-og.jpg", // absolute URL
+        url: "https://kzsyndicate.com/kz-og.JPG", // absolute URL
         width: 1200,
         height: 630,
         alt: "KZ Syndicate",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "KZ Syndicate",
     description: "Join the underground, wear the code.",
-    images: ["https://kzsyndicate.com/kz-og.jpg"], // absolute URL
+    images: ["https://kzsyndicate.com/kz-og.JPG"], // absolute URL
   },
   icons: {
     icon: "/favicon.ico",
