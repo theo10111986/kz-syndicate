@@ -120,7 +120,7 @@ export default function CustomizerSneakerPage() {
     textOffY: 0,
   });
 
-  // ✨ ΝΕΟ: για pinch-to-zoom & pan
+  // ✨ Pinch-to-zoom & pan
   const pointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
   const pinchRef = useRef<null | {
     startDist: number;
@@ -131,8 +131,13 @@ export default function CustomizerSneakerPage() {
     startPos: { x: number; y: number };
   }>(null);
 
-  // ✨ ΝΕΟ: κρατάμε τελευταίο μέγεθος για σωστή προσαρμογή σε rotate/resize
+  // ✨ Προσαρμογή σε rotate/resize
   const lastSizeRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
+
+  // ✨ **THROTTLE** για Eraser/Restore (πολύ πιο γρήγορο)
+  const touchedMaskIdsRef = useRef<Set<string>>(new Set());
+  const lastUrlUpdateRef = useRef<number>(0);
+  const URL_UPDATE_MS = 90; // ~11 fps για dataURL (αρκετό για ομαλότητα)
 
   /* ================== Effects ================== */
   useEffect(() => {
@@ -140,12 +145,10 @@ export default function CustomizerSneakerPage() {
     rasterizeText();
   }, [model, view]);
 
-  // ΕΜΦΑΝΙΣΗ ΚΕΙΜΕΝΟΥ ΑΜΕΣΑ
   useEffect(() => {
     rasterizeText();
   }, [texts, textFont, textSize, textColor, textBold, textItalic]);
 
-  // Arrow keys για εναλλαγή views
   useEffect(() => {
     const order = VIEW_OPTIONS.map((v) => v.key);
     const onKey = (e: KeyboardEvent) => {
@@ -162,7 +165,7 @@ export default function CustomizerSneakerPage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [view]);
 
-  // ✨ ΝΕΟ: Προσαρμογή σε resize/orientation change (κρατάει θέσεις overlays)
+  // Προσαρμογή σε resize/orientation change (κρατά θέσεις)
   useEffect(() => {
     const onResize = () => {
       if (!frameRef.current) return;
@@ -221,7 +224,7 @@ export default function CustomizerSneakerPage() {
         const cx = host ? host.clientWidth / 2 : 0;
         const cy = host ? host.clientHeight / 2 : 0;
 
-        // ✨ ΝΕΟ: αρχικό πλάτος ~60% του καμβά (χωράει σε κινητό)
+        // αρχικό πλάτος ~60% του καμβά (χωράει σε κινητό)
         const fw = host ? host.clientWidth : 800;
         const baseW = Math.min(Math.max(160, Math.round(fw * 0.6)), img.naturalWidth);
 
@@ -311,21 +314,28 @@ export default function CustomizerSneakerPage() {
     return { ix, iy, S };
   }
 
-  function recompositeLayer(L: OverlayLayer) {
+  // Σπάσαμε το recomposite σε 2 φάσεις για απόδοση:
+  function applyMaskOnly(L: OverlayLayer) {
     const c = L.comp.getContext("2d")!;
     c.clearRect(0, 0, L.comp.width, L.comp.height);
     c.drawImage(L.img, 0, 0);
     c.globalCompositeOperation = "destination-in";
     c.drawImage(L.mask, 0, 0);
     c.globalCompositeOperation = "source-over";
+  }
+  function updateOverlayDataURL(L: OverlayLayer) {
     try {
       L.dataURL = L.comp.toDataURL("image/png");
     } catch {
       L.dataURL = L.src;
     }
   }
+  function recompositeLayer(L: OverlayLayer) {
+    applyMaskOnly(L);
+    updateOverlayDataURL(L);
+  }
 
-  // ✨ ΝΕΟ: απλά κουμπιά scale για ενεργό overlay
+  // απλά κουμπιά scale για ενεργό overlay
   function nudgeScale(step: number) {
     const L = overlays.find((o) => o.id === activeId);
     if (!L) return;
@@ -338,7 +348,7 @@ export default function CustomizerSneakerPage() {
     const c = paintCanvasRef.current!;
     const ctx = c.getContext("2d")!;
     ctx.save();
-    ctx.globalAlpha = 0.7; // λιγότερη καλυπτικότητα
+    ctx.globalAlpha = 0.7;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.lineWidth = brush;
@@ -363,14 +373,18 @@ export default function CustomizerSneakerPage() {
     g.restore();
   }
 
-  // Σβήσε ΜΑΣΚΕΣ για ΟΛΑ τα overlays στο πέρασμα (ώστε να «σβήνει τα πάντα»)
+  // Σβήνει/Επαναφέρει ΜΑΣΚΕΣ σε ΟΛΑ τα overlays στο πέρασμα — throttle για τα dataURLs
   function eraseAllMasksAt(stageX: number, stageY: number, mode: "erase" | "restore") {
+    const now = performance.now();
+    let didTouch = false;
+
     for (const L of overlays) {
       const map = toImageSpace(L, stageX, stageY);
       if (!map) continue;
       const { ix, iy, S } = map;
       const m = L.mask.getContext("2d")!;
       const rImg = Math.max(1, (brush / 2) / S);
+
       m.save();
       m.beginPath();
       m.arc(ix, iy, rImg, 0, Math.PI * 2);
@@ -378,9 +392,29 @@ export default function CustomizerSneakerPage() {
       m.fillStyle = "#fff";
       m.fill();
       m.restore();
-      recompositeLayer(L);
+
+      // ΜΟΝΟ σύνθεση στο comp (γρήγορο)
+      applyMaskOnly(L);
+      touchedMaskIdsRef.current.add(L.id);
+      didTouch = true;
     }
-    setOverlays((prev) => [...prev]);
+
+    // Αν δεν πείραξε τίποτα, φύγαμε
+    if (!didTouch) return;
+
+    // Κάνε ακριβό toDataURL το ΠΟΛΥ κάθε ~90ms (ομαλές «ριπές» ενημέρωσης)
+    if (now - lastUrlUpdateRef.current >= URL_UPDATE_MS) {
+      lastUrlUpdateRef.current = now;
+      const ids = Array.from(touchedMaskIdsRef.current);
+      if (ids.length) {
+        for (const id of ids) {
+          const L = overlays.find((o) => o.id === id);
+          if (L) updateOverlayDataURL(L);
+        }
+        touchedMaskIdsRef.current.clear();
+        setOverlays((prev) => [...prev]);
+      }
+    }
   }
 
   function colorDist(r1: number, g1: number, b1: number, r2: number, g2: number, b2: number) {
@@ -446,8 +480,22 @@ export default function CustomizerSneakerPage() {
     } else {
       mctx.putImageData(mimg, 0, 0);
     }
-    recompositeLayer(L);
-    setOverlays((prev) => [...prev]);
+    // ίδιο throttle για ενημέρωση εικόνας
+    applyMaskOnly(L);
+    touchedMaskIdsRef.current.add(L.id);
+    const now = performance.now();
+    if (now - lastUrlUpdateRef.current >= URL_UPDATE_MS) {
+      lastUrlUpdateRef.current = now;
+      const ids = Array.from(touchedMaskIdsRef.current);
+      if (ids.length) {
+        for (const id of ids) {
+          const OL = overlays.find((o) => o.id === id);
+          if (OL) updateOverlayDataURL(OL);
+        }
+        touchedMaskIdsRef.current.clear();
+        setOverlays((prev) => [...prev]);
+      }
+    }
   }
 
   /* ================== Text ================== */
@@ -513,7 +561,7 @@ export default function CustomizerSneakerPage() {
     const p = { x: e.clientX - rect.left, y: e.clientY - rect.top };
     setMousePos(p);
 
-    // ✨ ΝΕΟ: κρατάμε τους pointers για pinch
+    // pointers για pinch
     pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
     // 1) Text hit → drag text
@@ -531,7 +579,7 @@ export default function CustomizerSneakerPage() {
     setActiveByHit(p.x, p.y);
 
     if (pointersRef.current.size === 2) {
-      // ✨ ΝΕΟ: αρχή pinch (scale + pan) στο ενεργό overlay
+      // αρχή pinch (scale + pan) στο ενεργό overlay
       const pts = [...pointersRef.current.values()];
       const dx = pts[0].x - pts[1].x;
       const dy = pts[0].y - pts[1].y;
@@ -556,9 +604,7 @@ export default function CustomizerSneakerPage() {
 
     if (tool === "erase" || tool === "restore") {
       pointer.current.paintingMask = true;
-      // σβήνει πάντα το brush layer
       erasePaintAtCircle(p.x, p.y);
-      // και «τρυπάει» όλα τα overlays στο πέρασμα
       eraseAllMasksAt(p.x, p.y, tool === "erase" ? "erase" : "restore");
       return;
     }
@@ -583,12 +629,11 @@ export default function CustomizerSneakerPage() {
     const p = { x: e.clientX - rect.left, y: e.clientY - rect.top };
     setMousePos(p);
 
-    // ✨ ΝΕΟ: ενημέρωσε pointer θέση
     if (pointersRef.current.has(e.pointerId)) {
       pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     }
 
-    // ✨ ΝΕΟ: 2 δάχτυλα → pinch (scale) + pan. Απενεργοποιούμε ζωγραφική.
+    // 2 δάχτυλα → pinch (scale) + pan (χωρίς ζωγραφική)
     if (pointersRef.current.size === 2 && pinchRef.current) {
       const pts = [...pointersRef.current.values()];
       const dx = pts[0].x - pts[1].x;
@@ -602,7 +647,6 @@ export default function CustomizerSneakerPage() {
       if (L) {
         const factor = Math.max(0.1, Math.min(3, pin.startScale * (dist / pin.startDist)));
         L.scale = factor;
-        // pan με βάση μετατόπιση κέντρου pinch
         L.pos = { x: pin.startPos.x + (cx - pin.startCx), y: pin.startPos.y + (cy - pin.startCy) };
         setOverlays((prev) => [...prev]);
       }
@@ -657,10 +701,24 @@ export default function CustomizerSneakerPage() {
     lastPoint.current = null;
     (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
 
-    // ✨ ΝΕΟ: καθάρισε pointers
+    // καθάρισε pointers pinch
     pointersRef.current.delete(e.pointerId);
     if (pointersRef.current.size < 2) {
       pinchRef.current = null;
+    }
+
+    // ΤΕΛΙΚΟ update των overlays που πειράξαμε (ώστε να μην μείνει πίσω κανένα)
+    if (touchedMaskIdsRef.current.size) {
+      const ids = Array.from(touchedMaskIdsRef.current);
+      for (const id of ids) {
+        const L = overlays.find((o) => o.id === id);
+        if (L) {
+          applyMaskOnly(L);
+          updateOverlayDataURL(L);
+        }
+      }
+      touchedMaskIdsRef.current.clear();
+      setOverlays((prev) => [...prev]);
     }
   }
 
@@ -788,8 +846,8 @@ export default function CustomizerSneakerPage() {
       const payload = {
         subject: "Request Price – Sneaker Custom",
         text: buildRequestText(),
-        toEmail: "info@kzsyndicate.com",          // παραλήπτης
-        fromEmail: session.user.email,            // από το login
+        toEmail: "info@kzsyndicate.com",
+        fromEmail: session.user.email,
         attachmentDataURL: png || undefined,
         filename: `mockup-sneaker-${model}-${view}.png`,
       };
@@ -856,12 +914,12 @@ export default function CustomizerSneakerPage() {
       borderRadius: 12,
       border: "1px solid #0c2",
       overflow: "hidden",
-      touchAction: "none" as const, // ✨ Απαραίτητο για pinch/gestures
+      touchAction: "none" as const,
     },
 
     actions: { maxWidth: 1120, margin: "10px auto 14px", display: "flex", gap: 10, justifyContent: "center" as const, flexWrap: "wrap" as const },
     fillBtn: { padding: "10px 14px", borderRadius: 12, border: "none", background: "#00ffff", color: "#001214", fontWeight: 900, cursor: "pointer" },
-    ghostBtn: { padding: "10px 14px", borderRadius: 12, border: "1px solid rgba(0,255,255,.35)", background: "transparent", color: "#89ffff", cursor: "pointer" },
+    ghostBtn: { padding: "10px 8px", borderRadius: 12, border: "1px solid rgba(0,255,255,.35)", background: "transparent", color: "#89ffff", cursor: "pointer", minWidth: 36 },
 
     advBar: { maxWidth: 1120, margin: "0 auto 8px", display: "flex", gap: 8, justifyContent: "center" as const, alignItems: "center" as const, flexWrap: "wrap" as const },
     pill: (active: boolean) => ({
@@ -890,7 +948,6 @@ export default function CustomizerSneakerPage() {
     },
     footnote: { marginTop: "8px", textAlign: "center" as const, fontSize: "0.95rem", color: "#c8d0d0" },
 
-    // Request Price blocκ (απλό στο ύφος της σελίδας)
     reqWrap: { maxWidth: 1120, margin: "16px auto 0", padding: "0 8px" },
     textarea: {
       width: "100%",
@@ -932,7 +989,7 @@ export default function CustomizerSneakerPage() {
 
       <h1 style={C.h1}>Customizer – Sneakers</h1>
 
-      {/* Επιλογές μοντέλου/όψης + Upload/Save */}
+      {/* Επιλογές μοντέλου/όψης + Upload */}
       <div style={C.topBar}>
         <span style={{ color: "#89ffff" }}>Μοντέλο</span>
         <select value={model} onChange={(e) => setModel(e.target.value as ModelKey)} style={C.select as any}>
@@ -955,14 +1012,14 @@ export default function CustomizerSneakerPage() {
           Add a Photo (JPG/PNG/WEBP)
           <input type="file" accept="image/*" onChange={onUpload} style={{ display: "none" }} />
         </label>
-        <button onClick={centerOverlay} style={C.ghostBtn as any}>Κεντράρισμα</button>
-        <button onClick={removeOverlay} style={C.ghostBtn as any}>Αφαίρεση εικόνας</button>
+        <button onClick={centerOverlay} style={C.ghostBtn as any} title="Κεντράρισμα">⤢</button>
+        <button onClick={removeOverlay} style={C.ghostBtn as any} title="Αφαίρεση">🗑</button>
 
-        {/* ✨ ΝΕΑ κουμπιά zoom για ενεργό overlay */}
-        <button onClick={() => nudgeScale(-0.1)} style={C.ghostBtn as any}>Μικρότερη</button>
-        <button onClick={() => nudgeScale(+0.1)} style={C.ghostBtn as any}>Μεγαλύτερη</button>
+        {/* Μικρά κουμπιά zoom + ένδειξη % */}
+        <button onClick={() => nudgeScale(-0.1)} style={C.ghostBtn as any} aria-label="Zoom out">−</button>
+        <button onClick={() => nudgeScale(+0.1)} style={C.ghostBtn as any} aria-label="Zoom in">+</button>
         <span style={{ color: "#89ffff" }}>
-          Μέγεθος: {Math.round(((overlays.find(o => o.id === activeId)?.scale) || 1) * 100)}%
+          {Math.round(((overlays.find(o => o.id === activeId)?.scale) || 1) * 100)}%
         </span>
       </div>
 
@@ -983,12 +1040,10 @@ export default function CustomizerSneakerPage() {
             pointer.current.paintingMask = false;
             pointer.current.paintingBrush = false;
             lastPoint.current = null;
-            // ✨ καθάρισε και pinch pointers
             pointersRef.current.clear();
             pinchRef.current = null;
           }}
           onWheel={(e) => {
-            // zoom στο active overlay
             const L = overlays.find((o) => o.id === activeId);
             if (!L) return;
             e.preventDefault();
@@ -1011,7 +1066,7 @@ export default function CustomizerSneakerPage() {
             style={{
               position: "absolute",
               inset: 0,
-              zIndex: paintAboveOverlay ? 5 : 1, // κάτω (1) ή πάνω (5) από τις εικόνες
+              zIndex: paintAboveOverlay ? 5 : 1,
             }}
           />
 
@@ -1145,21 +1200,16 @@ export default function CustomizerSneakerPage() {
 
       {/* ——— Simple Request Price ——— */}
       <div style={C.reqWrap as any}>
-        {/* Σχόλια */}
         <textarea
           placeholder="Γράψε σχόλια για το σχέδιό σου…"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           style={C.textarea as any}
         />
-
-        {/* Info line */}
         <div style={C.helper as any}>
           Δεν βρίσκεις το sneaker σου; Δεν πειράζει — επίλεξε αυτό που μοιάζει περισσότερο
           ή κάνε το mockup σε άλλο και γράψε μας στο mail ποιο είναι το δικό σου μοντέλο/χρώμα.
         </div>
-
-        {/* Κουμπιά */}
         <div style={C.reqRow as any}>
           <button onClick={requestByEmail} title="Θα σταλεί mail με συνημμένο PNG του mockup" style={C.bigBtn as any}>
             Request Price (Email)
@@ -1170,7 +1220,6 @@ export default function CustomizerSneakerPage() {
         </div>
       </div>
 
-      {/* BIG footer banner */}
       <p style={C.footerBanner}>
         Αν θέλεις, στείλε μας το μοντέλο του παπουτσιού σου και το σχεδιό σου στο email μας και αναλαμβανουμε εμεις!
       </p>
