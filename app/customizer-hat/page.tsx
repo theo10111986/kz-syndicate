@@ -34,6 +34,7 @@ type TextItem = {
 };
 
 const uid = () => Math.random().toString(36).slice(2, 9);
+const clamp = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
 
 /* ================== Assets ================== */
 const MODEL_IMAGES: Record<ModelKey, string> = {
@@ -48,7 +49,7 @@ export default function CustomizerHatPage() {
   // Base
   const [model, setModel] = useState<ModelKey>("hat1");
 
-  // Overlays (πολλαπλές φωτογραφίες)
+  // Overlays
   const [overlays, setOverlays] = useState<OverlayLayer[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -74,7 +75,7 @@ export default function CustomizerHatPage() {
 
   // Stage
   const frameRef = useRef<HTMLDivElement | null>(null);
-  const paintCanvasRef = useRef<HTMLCanvasElement | null>(null); // ΈΝΑΣ καμβάς (brush layer)
+  const paintCanvasRef = useRef<HTMLCanvasElement | null>(null); // ΕΝΑΣ καμβάς (brush layer)
   const [mouseInStage, setMouseInStage] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const lastPoint = useRef<{ x: number; y: number } | null>(null);
@@ -89,16 +90,80 @@ export default function CustomizerHatPage() {
     textOffY: 0,
   });
 
+  // —— (4) Pinch-to-zoom για κινητό & σωστό orientation/resize ——
+  const pointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+  const pinchRef = useRef<null | {
+    startDist: number;
+    startCx: number;
+    startCy: number;
+    overlayId: string | null;
+    startScale: number;
+    startPos: { x: number; y: number };
+  }>(null);
+
+  const lastStageSize = useRef<{ w: number; h: number } | null>(null);
+
   /* ================== Effects ================== */
   useEffect(() => {
     ensureCanvasSizes();
     rasterizeText();
   }, [model]);
 
-  // ΕΜΦΑΝΙΣΗ ΚΕΙΜΕΝΟΥ ΑΜΕΣΑ
   useEffect(() => {
     rasterizeText();
   }, [texts, textFont, textSize, textColor, textBold, textItalic]);
+
+  // Προσαρμογή θέσεων/μεγεθών σε resize/orientation
+  useEffect(() => {
+    function handleResize() {
+      const host = frameRef.current;
+      if (!host) return;
+      const w = host.clientWidth;
+      const h = host.clientHeight;
+
+      if (!lastStageSize.current) {
+        lastStageSize.current = { w, h };
+        ensureCanvasSizes();
+        return;
+      }
+      const { w: pw, h: ph } = lastStageSize.current;
+      if (pw === 0 || ph === 0) {
+        lastStageSize.current = { w, h };
+        ensureCanvasSizes();
+        return;
+      }
+
+      const sx = w / pw;
+      const sy = h / ph;
+
+      // μετατόπιση θέσεων overlays αναλογικά
+      setOverlays(prev =>
+        prev.map(L => ({
+          ...L,
+          pos: { x: L.pos.x * sx, y: L.pos.y * sy },
+        }))
+      );
+
+      // κείμενα
+      setTexts(prev =>
+        prev.map(t => ({
+          ...t,
+          x: t.x * sx,
+          y: t.y * sy,
+        }))
+      );
+
+      ensureCanvasSizes();
+      lastStageSize.current = { w, h };
+    }
+
+    window.addEventListener("resize", handleResize);
+    // 1ο mount: αποθήκευσε αρχικό μέγεθος
+    const host = frameRef.current;
+    if (host) lastStageSize.current = { w: host.clientWidth, h: host.clientHeight };
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   /* ================== Upload (ΠΡΟΣΘΗΚΗ overlay) ================== */
   function onUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -126,14 +191,19 @@ export default function CustomizerHatPage() {
         comp.height = img.naturalHeight;
 
         const host = frameRef.current;
-        const cx = host ? host.clientWidth / 2 : 0;
-        const cy = host ? host.clientHeight / 2 : 0;
+        const cw = host ? host.clientWidth : 800;
+        const ch = host ? host.clientHeight : 450;
+        const cx = cw / 2;
+        const cy = ch / 2;
+
+        // —— (2) αρχικό μέγεθος μικρότερο για κινητό ——
+        const baseW = clamp(Math.round(cw * 0.35), 160, 340);
 
         const newLayer: OverlayLayer = {
           id,
           src: dataUrl,
           img,
-          baseW: 420,
+          baseW,
           pos: { x: cx, y: cy },
           scale: 1,
           rot: 0,
@@ -231,7 +301,63 @@ export default function CustomizerHatPage() {
     }
   }
 
-  /* ================== Brush / Eraser ================== */
+  /* ================== (1) Brush / Eraser — γρηγορότερα ================== */
+  // throttle για μάσκες (περιορισμός recomposite)
+  const MASK_RECOMP_MS = 60;
+  const lastMaskRecomp = useRef(0);
+  const pendingMaskPoint = useRef<null | { x: number; y: number; mode: "erase" | "restore" }>(null);
+  const rafMask = useRef<number | null>(null);
+
+  function processMaskPoint(p: { x: number; y: number; mode: "erase" | "restore" }) {
+    // 1) paint layer (πάντα σβήνουμε/επανφέρουμε τον κύκλο στο paint)
+    if (p.mode === "erase") erasePaintAtCircle(p.x, p.y);
+    // 2) μάσκες overlays (χωρίς recomposite σε ΚΑΘΕ overlay αμέσως)
+    for (const L of overlays) {
+      const map = toImageSpace(L, p.x, p.y);
+      if (!map) continue;
+      const { ix, iy, S } = map;
+      const m = L.mask.getContext("2d")!;
+      const rImg = Math.max(1, brush / 2 / S);
+      m.save();
+      m.beginPath();
+      m.arc(ix, iy, rImg, 0, Math.PI * 2);
+      m.globalCompositeOperation = p.mode === "erase" ? "destination-out" : "source-over";
+      m.fillStyle = "#fff";
+      m.fill();
+      m.restore();
+    }
+    // σημείωσε ότι έγιναν αλλαγές — θα κάνουμε recomposite αραιότερα
+    setOverlays((prev) => [...prev]);
+  }
+
+  function scheduleMaskRecomposite() {
+    const now = performance.now();
+    const delta = now - lastMaskRecomp.current;
+    if (delta >= MASK_RECOMP_MS) {
+      // recomposite τώρα
+      overlays.forEach((L) => recompositeLayer(L));
+      setOverlays((prev) => [...prev]);
+      lastMaskRecomp.current = now;
+    } else {
+      // προγραμμάτισε στο επόμενο animation frame
+      if (rafMask.current == null) {
+        rafMask.current = requestAnimationFrame(() => {
+          overlays.forEach((L) => recompositeLayer(L));
+          setOverlays((prev) => [...prev]);
+          lastMaskRecomp.current = performance.now();
+          rafMask.current = null;
+        });
+      }
+    }
+  }
+
+  function throttledMaskDraw(x: number, y: number, mode: "erase" | "restore") {
+    // εκτέλεση αμέσως του stroke στη μάσκα (γρήγορο)
+    processMaskPoint({ x, y, mode });
+    // recomposite αραιά
+    scheduleMaskRecomposite();
+  }
+
   function brushStroke(from: { x: number; y: number }, to: { x: number; y: number }) {
     const c = paintCanvasRef.current!;
     const ctx = c.getContext("2d")!;
@@ -261,56 +387,28 @@ export default function CustomizerHatPage() {
     g.restore();
   }
 
-  // Σβήσε/Επαναφορά ΜΑΣΚΩΝ για ΟΛΑ τα overlays στο πέρασμα
-  function eraseAllMasksAt(stageX: number, stageY: number, mode: "erase" | "restore") {
-    for (const L of overlays) {
-      const map = toImageSpace(L, stageX, stageY);
-      if (!map) continue;
-      const { ix, iy, S } = map;
-      const m = L.mask.getContext("2d")!;
-      const rImg = Math.max(1, brush / 2 / S);
-      m.save();
-      m.beginPath();
-      m.arc(ix, iy, rImg, 0, Math.PI * 2);
-      m.globalCompositeOperation = mode === "erase" ? "destination-out" : "source-over";
-      m.fillStyle = "#fff";
-      m.fill();
-      m.restore();
-      recompositeLayer(L);
-    }
-    setOverlays((prev) => [...prev]);
-  }
-
   function colorDist(r1: number, g1: number, b1: number, r2: number, g2: number, b2: number) {
-    const dr = r1 - r2,
-      dg = g1 - g2,
-      db = b1 - b2;
+    const dr = r1 - r2, dg = g1 - g2, db = b1 - b2;
     return Math.sqrt(dr * dr + dg * dg + db * db);
   }
 
   function magicCleanAtPointer(L: OverlayLayer, stageX: number, stageY: number) {
-    const tol = 45;
-    const feather = 1;
+    const tol = 45; const feather = 1;
     const map = toImageSpace(L, stageX, stageY);
     if (!map) return;
     const { ix, iy } = map;
 
     const tmp = document.createElement("canvas");
-    tmp.width = L.img.naturalWidth;
-    tmp.height = L.img.naturalHeight;
+    tmp.width = L.img.naturalWidth; tmp.height = L.img.naturalHeight;
     const t = tmp.getContext("2d")!;
     t.drawImage(L.img, 0, 0);
     const src = t.getImageData(0, 0, tmp.width, tmp.height);
-    const data = src.data,
-      W = src.width,
-      H = src.height;
+    const data = src.data, W = src.width, H = src.height;
 
     const x0 = Math.max(0, Math.min(W - 1, Math.round(ix)));
     const y0 = Math.max(0, Math.min(H - 1, Math.round(iy)));
     const i0 = 4 * (y0 * W + x0);
-    const r0 = data[i0],
-      g0 = data[i0 + 1],
-      b0 = data[i0 + 2];
+    const r0 = data[i0], g0 = data[i0 + 1], b0 = data[i0 + 2];
 
     const mctx = L.mask.getContext("2d")!;
     const mimg = mctx.getImageData(0, 0, W, H);
@@ -324,15 +422,9 @@ export default function CustomizerHatPage() {
     while (q.length) {
       const idx = q.pop()!;
       const ii = 4 * idx;
-      const r = data[ii],
-        g = data[ii + 1],
-        b = data[ii + 2],
-        a = data[ii + 3];
+      const r = data[ii], g = data[ii + 1], b = data[ii + 2], a = data[ii + 3];
       if (a < 10 || colorDist(r, g, b, r0, g0, b0) <= tol) {
-        md[ii] = 255;
-        md[ii + 1] = 255;
-        md[ii + 2] = 255;
-        md[ii + 3] = 0;
+        md[ii] = 255; md[ii + 1] = 255; md[ii + 2] = 255; md[ii + 3] = 0;
         const nb = [idx + 1, idx - 1, idx + W, idx - W];
         for (const n of nb) {
           if (n < 0 || n >= W * H) continue;
@@ -345,13 +437,11 @@ export default function CustomizerHatPage() {
 
     if (feather > 0) {
       const tmp2 = document.createElement("canvas");
-      tmp2.width = W;
-      tmp2.height = H;
+      tmp2.width = W; tmp2.height = H;
       const c2 = tmp2.getContext("2d")!;
       c2.putImageData(new ImageData(md, W, H), 0, 0);
       const blurred = document.createElement("canvas");
-      blurred.width = W;
-      blurred.height = H;
+      blurred.width = W; blurred.height = H;
       const bctx = blurred.getContext("2d")!;
       bctx.filter = `blur(${feather}px)`;
       bctx.drawImage(tmp2, 0, 0);
@@ -366,11 +456,9 @@ export default function CustomizerHatPage() {
 
   /* ================== Text ================== */
   function rasterizeText() {
-    const host = frameRef.current,
-      canvas = textCanvasRef.current;
+    const host = frameRef.current, canvas = textCanvasRef.current;
     if (!host || !canvas) return;
-    const w = host.clientWidth,
-      h = host.clientHeight;
+    const w = host.clientWidth, h = host.clientHeight;
     const g = canvas.getContext("2d")!;
     g.clearRect(0, 0, w, h);
     for (const t of texts) {
@@ -422,12 +510,39 @@ export default function CustomizerHatPage() {
     return null;
   }
 
-  /* ================== Pointer ================== */
+  /* ================== Pointer & Gestures ================== */
   function onPointerDown(e: React.PointerEvent) {
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
     const rect = frameRef.current!.getBoundingClientRect();
     const p = { x: e.clientX - rect.left, y: e.clientY - rect.top };
     setMousePos(p);
+
+    // pointers map (pinch)
+    pointersRef.current.set(e.pointerId, { x: p.x, y: p.y });
+
+    if (pointersRef.current.size === 2) {
+      // αρχή pinch
+      const pts = Array.from(pointersRef.current.values());
+      const dx = pts[1].x - pts[0].x;
+      const dy = pts[1].y - pts[0].y;
+      const dist = Math.hypot(dx, dy);
+      const cx = (pts[0].x + pts[1].x) / 2;
+      const cy = (pts[0].y + pts[1].y) / 2;
+
+      // ενεργό overlay στο κέντρο
+      const target = setActiveByHit(cx, cy);
+      const L = target || (activeId ? overlays.find(o => o.id === activeId) || null : null);
+
+      pinchRef.current = {
+        startDist: Math.max(1, dist),
+        startCx: cx,
+        startCy: cy,
+        overlayId: L ? L.id : null,
+        startScale: L ? L.scale : 1,
+        startPos: L ? { x: L.pos.x, y: L.pos.y } : { x: cx, y: cy },
+      };
+      return; // μην μπαίνεις σε άλλα modes όταν έχουμε pinch
+    }
 
     // 1) Text hit → drag text
     const tHit = hitTextAt(p.x, p.y);
@@ -450,8 +565,7 @@ export default function CustomizerHatPage() {
 
     if (tool === "erase" || tool === "restore") {
       pointer.current.paintingMask = true;
-      erasePaintAtCircle(p.x, p.y); // σβήνει ΠΑΝΤΑ το paint layer
-      eraseAllMasksAt(p.x, p.y, tool === "erase" ? "erase" : "restore"); // και μάσκες overlays
+      throttledMaskDraw(p.x, p.y, tool === "erase" ? "erase" : "restore");
       return;
     }
 
@@ -475,11 +589,41 @@ export default function CustomizerHatPage() {
     const p = { x: e.clientX - rect.left, y: e.clientY - rect.top };
     setMousePos(p);
 
+    // ενημέρωση pointers για pinch
+    if (pointersRef.current.has(e.pointerId)) {
+      pointersRef.current.set(e.pointerId, { x: p.x, y: p.y });
+    }
+
+    // pinch ενεργό;
+    if (pointersRef.current.size === 2 && pinchRef.current) {
+      const pts = Array.from(pointersRef.current.values());
+      const dx = pts[1].x - pts[0].x;
+      const dy = pts[1].y - pts[0].y;
+      const dist = Math.max(1, Math.hypot(dx, dy));
+      const cx = (pts[0].x + pts[1].x) / 2;
+      const cy = (pts[0].y + pts[1].y) / 2;
+
+      const pr = pinchRef.current;
+      const L = pr.overlayId ? overlays.find(o => o.id === pr.overlayId) : null;
+      if (L) {
+        const factor = dist / pr.startDist;
+        L.scale = clamp(pr.startScale * factor, 0.1, 3);
+        // μετατόπιση έτσι ώστε το κέντρο pinch να μένει «σταθερό»
+        const dxC = cx - pr.startCx;
+        const dyC = cy - pr.startCy;
+        L.pos = { x: pr.startPos.x + dxC, y: pr.startPos.y + dyC };
+        setOverlays(prev => [...prev]);
+      }
+      return;
+    }
+
     // drag text
     if (pointer.current.draggingText && selectedTextId) {
       setTexts((arr) =>
         arr.map((t) =>
-          t.id === selectedTextId ? { ...t, x: p.x - pointer.current.textOffX, y: p.y - pointer.current.textOffY } : t
+          t.id === selectedTextId
+            ? { ...t, x: p.x - pointer.current.textOffX, y: p.y - pointer.current.textOffY }
+            : t
         )
       );
       return;
@@ -491,16 +635,15 @@ export default function CustomizerHatPage() {
       if (A) {
         const dx = e.movementX;
         const dy = e.movementY;
-        A.pos.x = Math.max(0, Math.min(rect.width, A.pos.x + dx));
-        A.pos.y = Math.max(0, Math.min(rect.height, A.pos.y + dy));
+        A.pos.x = clamp(A.pos.x + dx, 0, rect.width);
+        A.pos.y = clamp(A.pos.y + dy, 0, rect.height);
         setOverlays((prev) => [...prev]);
       }
       return;
     }
 
     if ((tool === "erase" || tool === "restore") && pointer.current.paintingMask) {
-      erasePaintAtCircle(p.x, p.y);
-      eraseAllMasksAt(p.x, p.y, tool === "erase" ? "erase" : "restore");
+      throttledMaskDraw(p.x, p.y, tool === "erase" ? "erase" : "restore");
       return;
     }
 
@@ -513,21 +656,29 @@ export default function CustomizerHatPage() {
   }
 
   function onPointerUp(e: React.PointerEvent) {
+    pointersRef.current.delete(e.pointerId);
+    if (pointersRef.current.size < 2) {
+      pinchRef.current = null;
+    }
+
     pointer.current.dragging = false;
     pointer.current.draggingText = false;
     pointer.current.paintingMask = false;
     pointer.current.paintingBrush = false;
     lastPoint.current = null;
     (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
+
+    // τελικό recomposite για καθαρή προεπισκόπηση
+    overlays.forEach((L) => recompositeLayer(L));
+    setOverlays((prev) => [...prev]);
   }
 
   function onWheel(e: React.WheelEvent) {
-    // zoom στο active overlay
+    // zoom στο active overlay (desktop)
     const L = overlays.find((o) => o.id === activeId);
     if (!L) return;
     e.preventDefault();
-    const ns = Math.max(0.1, Math.min(3, L.scale + -Math.sign(e.deltaY) * 0.05));
-    L.scale = ns;
+    L.scale = clamp(L.scale + -Math.sign(e.deltaY) * 0.05, 0.1, 3);
     setOverlays((prev) => [...prev]);
   }
 
@@ -844,6 +995,42 @@ export default function CustomizerHatPage() {
       color: "#89ffff",
     },
     helper: { color: "#bff", marginTop: 10, marginBottom: 12, fontSize: 14, textAlign: "center" as const },
+
+    // —— μικρό control zoom (3) ——
+    zoomWrap: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: 6,
+      border: "1px solid rgba(0,255,255,.35)",
+      borderRadius: 10,
+      padding: "6px 8px",
+      background: "#0b0f12",
+      color: "#9ff",
+      marginLeft: 6,
+    },
+    zoomBtn: {
+      width: 28,
+      height: 28,
+      borderRadius: 8,
+      border: "1px solid rgba(0,255,255,.35)",
+      background: "transparent",
+      color: "#89ffff",
+      fontWeight: 800 as const,
+      cursor: "pointer",
+      lineHeight: "26px",
+      textAlign: "center" as const,
+    },
+    zoomPct: { minWidth: 46, textAlign: "center" as const, fontVariantNumeric: "tabular-nums" as const },
+  };
+
+  // helpers για zoom UI
+  const activeOverlay = activeId ? overlays.find(o => o.id === activeId) || null : null;
+  const activePct = activeOverlay ? Math.round(activeOverlay.scale * 100) : 100;
+  const changeScale = (dir: -1 | 1) => {
+    const L = activeOverlay;
+    if (!L) return;
+    L.scale = clamp(L.scale + dir * 0.05, 0.1, 3);
+    setOverlays(prev => [...prev]);
   };
 
   /* ================== UI ================== */
@@ -865,6 +1052,14 @@ export default function CustomizerHatPage() {
         </label>
         <button onClick={centerOverlay} style={C.ghostBtn as any}>Κεντράρισμα</button>
         <button onClick={removeOverlay} style={C.ghostBtn as any}>Αφαίρεση εικόνας</button>
+
+        {/* —— (3) μικρά − / + και % —— */}
+        <span style={{ color: "#9ff", marginLeft: 6 }}>Zoom</span>
+        <div style={C.zoomWrap as any}>
+          <button style={C.zoomBtn as any} onClick={() => changeScale(-1)} title="Zoom out">−</button>
+          <span style={C.zoomPct as any}>{activePct}%</span>
+          <button style={C.zoomBtn as any} onClick={() => changeScale(1)} title="Zoom in">+</button>
+        </div>
       </div>
 
       {/* Stage */}
@@ -884,15 +1079,10 @@ export default function CustomizerHatPage() {
             pointer.current.paintingMask = false;
             pointer.current.paintingBrush = false;
             lastPoint.current = null;
+            pointersRef.current.clear();
+            pinchRef.current = null;
           }}
-          onWheel={(e) => {
-            const L = overlays.find((o) => o.id === activeId);
-            if (!L) return;
-            e.preventDefault();
-            const ns = Math.max(0.1, Math.min(3, L.scale + -Math.sign(e.deltaY) * 0.05));
-            L.scale = ns;
-            setOverlays((prev) => [...prev]);
-          }}
+          onWheel={onWheel}
         >
           {/* Βάση: hat */}
           <img
