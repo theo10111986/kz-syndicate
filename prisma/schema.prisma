@@ -96,7 +96,7 @@ model PriceRequest {
   userId      String
   description String
   imageUrl    String?  @db.LongText // χωράει data URLs
-  emailSent   Boolean  @default(false) // ✅ status αποστολής email
+  emailSent   Boolean  @default(false) // status αποστολής email
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -141,10 +141,11 @@ model GalleryItem {
   id        String   @id @default(cuid())
   title     String
   imageUrl  String   @db.Text
-  tags Json @default("[]")  // MySQL: λίστα tags ως JSON
+  tags      Json?              // MySQL: μην βάζεις @default σε JSON
   published Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([createdAt])
 }
+
