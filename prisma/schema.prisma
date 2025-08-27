@@ -141,7 +141,7 @@ model GalleryItem {
   id        String   @id @default(cuid())
   title     String
   imageUrl  String   @db.Text
-  tags      Json     @default(json("[]")) // MySQL: λίστα tags ως JSON
+  tags Json @default("[]")  // MySQL: λίστα tags ως JSON
   published Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
