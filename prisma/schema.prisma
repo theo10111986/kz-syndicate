@@ -96,7 +96,7 @@ model PriceRequest {
   userId      String
   description String
   imageUrl    String?  @db.LongText // χωράει data URLs
-  emailSent   Boolean  @default(false) // ✅ ΝΕΟ: status αποστολής email
+  emailSent   Boolean  @default(false) // ✅ status αποστολής email
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -117,5 +117,34 @@ model Order {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([createdAt])
+}
+
+/* ----------------------- ΝΕΑ ΜΟΝΤΕΛΑ ----------------------- */
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  priceCents  Int
+  description String?  @db.Text
+  imageUrl    String   @db.Text
+  category    String?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  title     String
+  imageUrl  String   @db.Text
+  tags      Json     @default(json("[]")) // MySQL: λίστα tags ως JSON
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([createdAt])
 }
