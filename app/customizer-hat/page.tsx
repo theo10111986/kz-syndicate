@@ -1239,10 +1239,6 @@ export default function CustomizerHatPage() {
           style={C.textarea as any}
         />
 
-        <div style={C.helper as any}>
-          Αν δεν βρίσκεις το μοντέλο, επίλεξε αυτό που μοιάζει περισσότερο και γράψε μας λεπτομέρειες στο mail.
-        </div>
-
         <div style={C.reqRow as any}>
           <button onClick={requestByEmail} title="Θα σταλεί mail με συνημμένο PNG του mockup" style={C.bigBtn as any}>
             Request Price (Email)
