@@ -120,7 +120,9 @@ model Order {
   @@index([createdAt])
 }
 
-/* ----------------------- ΝΕΑ ΜΟΝΤΕΛΑ ----------------------- */
+/**
+ * ----------------------- ΝΕΑ ΜΟΝΤΕΛΑ -----------------------
+ */
 
 model Product {
   id          String   @id @default(cuid())
@@ -141,11 +143,10 @@ model GalleryItem {
   id        String   @id @default(cuid())
   title     String
   imageUrl  String   @db.Text
-  tags      Json?              // MySQL: μην βάζεις @default σε JSON
+  tags      Json? // MySQL: μην βάζεις @default σε JSON
   published Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([createdAt])
 }
-
