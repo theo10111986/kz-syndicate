@@ -4,7 +4,7 @@
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma"; // ✅ fix: default import
 import Link from "next/link";
 
 type SearchParams = {
@@ -56,7 +56,7 @@ export default async function AdminRequests({ searchParams }: { searchParams?: S
               OR: [
                 { id: { contains: q } },
                 { description: { contains: q } },
-                { user: { email: { contains: q } } },
+                { user: { email: { contains: q } } }, // αφήνουμε ως έχει
               ],
             }
           : {},
@@ -82,6 +82,15 @@ export default async function AdminRequests({ searchParams }: { searchParams?: S
     <main className="kz-wrap">
       <KZStyles />
       <h1 className="kz-title">Admin · Price Requests</h1>
+
+      {/* ✅ Μικρή admin πλοήγηση */}
+      <nav className="kz-nav">
+        <Link href="/admin/orders" className="kz-linkbtn">Orders</Link>
+        <Link href="/admin/users" className="kz-linkbtn">Users</Link>
+        <Link href="/admin" className="kz-linkbtn kz-active">Price Requests</Link>
+        <Link href="/admin/gallery" className="kz-linkbtn">Gallery</Link>
+        <Link href="/admin/products" className="kz-linkbtn">Products</Link>
+      </nav>
 
       {/* Φίλτρα */}
       <form className="kz-filters" action="/admin" method="GET">
@@ -153,6 +162,12 @@ function KZStyles() {
       .kz-title { color:#0ff; text-align:center; font-size:2rem; margin-bottom:1.25rem; text-shadow:0 0 10px #0ff; }
       .kz-link { color:#0ff; text-decoration:underline; text-shadow:0 0 8px #0ff; }
 
+      /* ✅ admin nav */
+      .kz-nav { display:flex; gap:.5rem; justify-content:center; margin:0 auto 1rem; flex-wrap:wrap; }
+      .kz-linkbtn { display:inline-block; padding:.5rem .8rem; border:2px solid #044; color:#bffeff; background:#000; border-radius:.75rem; text-decoration:none; font-weight:800; }
+      .kz-linkbtn:hover { border-color:#0ff; color:#0ff; box-shadow:0 0 10px #0ff4; }
+      .kz-active { border-color:#0ff !important; color:#002224 !important; background:#0ff !important; text-shadow:none; }
+
       .kz-filters { display:flex; gap:.5rem; justify-content:center; margin: 0 auto 1.25rem; flex-wrap:wrap; }
       .kz-filters input { background:#000; color:#bffeff; border:2px solid #044; border-radius:.75rem; padding:.45rem .65rem; }
       .kz-btn { border:2px solid #0ff; background:#000; color:#0ff; border-radius:.75rem; padding:.45rem .8rem; font-weight:700; text-shadow:0 0 6px #0ff; }
@@ -171,3 +186,4 @@ function KZStyles() {
     `}</style>
   );
 }
+
