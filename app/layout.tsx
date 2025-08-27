@@ -11,11 +11,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "KZ Syndicate",
     description: "Join the underground, wear the code.",
-    url: "/",
+    url: "https://kzsyndicate.com",
     siteName: "KZ Syndicate",
     images: [
       {
-        url: "/kz-og.png", // <— βάλε στο /public
+        url: "https://kzsyndicate.com/kz-og.png", // absolute URL
         width: 1200,
         height: 630,
         alt: "KZ Syndicate",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "KZ Syndicate",
     description: "Join the underground, wear the code.",
-    images: ["/kzsyndicate_qr.png"],
+    images: ["https://kzsyndicate.com/kz-og.png"], // absolute URL
   },
   icons: {
     icon: "/favicon.ico",
@@ -45,13 +45,9 @@ export default function RootLayout({
     <html lang="el">
       <body className="bg-black text-white">
         <Providers>
-          {/* Navbar */}
           <Navbar />
-          {/* Spacer για navbar */}
           <div aria-hidden style={{ height: 96 }} />
-          {/* Κύριο περιεχόμενο */}
           <main className="min-h-screen">{children}</main>
-          {/* Footer */}
           <Footer />
         </Providers>
       </body>
