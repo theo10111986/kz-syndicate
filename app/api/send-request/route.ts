@@ -137,65 +137,55 @@ export async function POST(req: Request) {
       storedImageUrl = legacyImageUrlRaw;
     }
 
-    // 8) ΕΠΙΣΤΡΟΦΗ ΑΜΕΣΑ στον client (χωρίς να περιμένουμε DB/email)
-    const instant = NextResponse.json({
+    // 8) Δημιουργία εγγραφής
+    const data: Prisma.PriceRequestCreateInput = {
+      user: { connect: { email: session.user.email } },
+      description: desc || "(no text, attachment only)",
+      imageUrl: storedImageUrl,
+    };
+
+    const created = await prisma.priceRequest.create({
+      data,
+      select: { id: true, createdAt: true },
+    });
+
+    // 9) Αποστολή email (ΠΡΙΝ επιστρέψουμε response)
+    const subject = subjectIn || `New Price Request — ${session.user.email}`;
+    const extraFromInfo = fromEmailIn ? `\nFrom (client): ${fromEmailIn}` : "";
+    const htmlBody = `
+      <div style="font-family:system-ui,Segoe UI,Roboto,Arial;line-height:1.5">
+        <h2>New Price Request</h2>
+        <p><strong>User:</strong> ${session.user.email}</p>
+        ${fromEmailIn ? `<p><strong>From (client):</strong> ${fromEmailIn}</p>` : ""}
+        ${desc ? `<p><strong>Description:</strong><br/>${desc.replace(/\n/g, "<br/>")}</p>` : ""}
+        ${storedImageUrl ? `<p><img src="${storedImageUrl}" alt="attachment" style="max-width:420px;border-radius:12px;margin-top:8px"/></p>` : ""}
+        <p style="color:#888">ID: ${created.id}</p>
+      </div>
+    `.trim();
+    const textBody =
+      `User: ${session.user.email}${extraFromInfo}\n\n` +
+      (desc ? `Description:\n${desc}\n\n` : "");
+
+    await transporter.sendMail({
+      to: MAIL_TO,
+      from: EMAIL_FROM,
+      subject,
+      html: htmlBody,
+      text: textBody,
+      attachments,
+    });
+
+    // 10) Update status
+    await prisma.priceRequest.update({
+      where: { id: created.id },
+      data: { emailSent: true },
+    });
+
+    // 11) Τελική απάντηση
+    return NextResponse.json({
       ok: true,
       message: "Το αίτημα τιμής στάλθηκε επιτυχώς με email",
     });
-
-    // 9) BACKGROUND TASK: save στο Prisma -> στείλε email -> update emailSent
-    (async () => {
-      try {
-        // 9a) Δημιουργία εγγραφής (emailSent: default(false) στο schema)
-        const data: Prisma.PriceRequestCreateInput = {
-          user: { connect: { email: session.user.email } },
-          description: desc || "(no text, attachment only)",
-          imageUrl: storedImageUrl,
-        };
-
-        const created = await prisma.priceRequest.create({
-          data,
-          select: { id: true, createdAt: true },
-        });
-
-        // 9b) Περιεχόμενο email (τώρα έχουμε και ID)
-        const subject = subjectIn || `New Price Request — ${session.user.email}`;
-        const extraFromInfo = fromEmailIn ? `\nFrom (client): ${fromEmailIn}` : "";
-        const htmlBody = `
-          <div style="font-family:system-ui,Segoe UI,Roboto,Arial;line-height:1.5">
-            <h2>New Price Request</h2>
-            <p><strong>User:</strong> ${session.user.email}</p>
-            ${fromEmailIn ? `<p><strong>From (client):</strong> ${fromEmailIn}</p>` : ""}
-            ${desc ? `<p><strong>Description:</strong><br/>${desc.replace(/\n/g, "<br/>")}</p>` : ""}
-            ${storedImageUrl ? `<p><img src="${storedImageUrl}" alt="attachment" style="max-width:420px;border-radius:12px;margin-top:8px"/></p>` : ""}
-            <p style="color:#888">ID: ${created.id}</p>
-          </div>
-        `.trim();
-        const textBody =
-          `User: ${session.user.email}${extraFromInfo}\n\n` +
-          (desc ? `Description:\n${desc}\n\n` : "");
-
-        // 9c) Αποστολή email
-        await transporter.sendMail({
-          to: MAIL_TO,
-          from: EMAIL_FROM,
-          subject,
-          html: htmlBody,
-          text: textBody,
-          attachments,
-        });
-
-        // 9d) Update status
-        await prisma.priceRequest.update({
-          where: { id: created.id },
-          data: { emailSent: true },
-        });
-      } catch (err) {
-        console.error("Background task (create/send/update) failed:", err);
-      }
-    })();
-
-    return instant;
   } catch (err: any) {
     console.error("send-request error:", err);
     return NextResponse.json(
@@ -208,3 +198,4 @@ export async function POST(req: Request) {
 export async function GET() {
   return NextResponse.json({ ok: true });
 }
+
