@@ -7,15 +7,15 @@ import { Providers } from "./Providers";
 export const metadata: Metadata = {
   title: "KZ Syndicate",
   description: "Join the underground, wear the code.",
-  metadataBase: new URL("https://kzsyndicate.com"),
+  metadataBase: new URL("https://www.kzsyndicate.com"),
   openGraph: {
     title: "KZ Syndicate",
     description: "Join the underground, wear the code.",
-    url: "https://kzsyndicate.com",
+    url: "https://www.kzsyndicate.com/",
     siteName: "KZ Syndicate",
     images: [
       {
-        url: "https://kzsyndicate.com/kz-og.JPG", // absolute URL
+        url: "https://www.kzsyndicate.com/kz-og-1200x630.jpg",
         width: 1200,
         height: 630,
         alt: "KZ Syndicate",
@@ -28,12 +28,21 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "KZ Syndicate",
     description: "Join the underground, wear the code.",
-    images: ["https://kzsyndicate.com/kz-og.JPG"], // absolute URL
+    images: ["https://www.kzsyndicate.com/kz-og-1200x630.jpg"],
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+    ],
     apple: "/apple-touch-icon.png",
+    other: [
+      { rel: "icon", url: "/android-chrome-192x192.png", sizes: "192x192" },
+      { rel: "icon", url: "/android-chrome-512x512.png", sizes: "512x512" },
+    ],
   },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
@@ -45,13 +54,18 @@ export default function RootLayout({
     <html lang="el">
       <body className="bg-black text-white">
         <Providers>
+          {/* Navbar */}
           <Navbar />
+          {/* Spacer για navbar */}
           <div aria-hidden style={{ height: 96 }} />
+          {/* Κύριο περιεχόμενο */}
           <main className="min-h-screen">{children}</main>
+          {/* Footer */}
           <Footer />
         </Providers>
       </body>
     </html>
   );
 }
+
 
