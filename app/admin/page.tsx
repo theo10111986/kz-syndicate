@@ -1,10 +1,12 @@
+
+
 // app/admin/page.tsx
 // @ts-nocheck
 /* eslint-disable */
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import prisma from "@/lib/prisma"; // ✅ fix: default import
+import prisma from "@/lib/prisma"; // ✅ default import
 import Link from "next/link";
 
 type SearchParams = {
@@ -56,7 +58,8 @@ export default async function AdminRequests({ searchParams }: { searchParams?: S
               OR: [
                 { id: { contains: q } },
                 { description: { contains: q } },
-                { user: { email: { contains: q } } }, // αφήνουμε ως έχει
+                // ✅ σωστό relation filter
+                { user: { is: { email: { contains: q } } } },
               ],
             }
           : {},
@@ -112,7 +115,7 @@ export default async function AdminRequests({ searchParams }: { searchParams?: S
               <th>Κατάσταση Email</th>
             </tr>
           </thead>
-          <tbody>
+        <tbody>
             {pageRows.map((r:any) => (
               <tr key={r.id}>
                 <td className="mono">#{r.id}</td>
@@ -136,10 +139,20 @@ export default async function AdminRequests({ searchParams }: { searchParams?: S
       {/* Σελιδοποίηση */}
       <div className="kz-pager">
         {page > 1 && (
-          <Link className="kz-link" href={`/admin?page=${page-1}${q?`&q=${encodeURIComponent(q)}`:""}${searchParams?.from?`&from=${searchParams.from}`:""}${searchParams?.to?`&to=${searchParams.to}`:""}`}>← Προηγούμενα</Link>
+          <Link
+            className="kz-link"
+            href={`/admin?page=${page-1}${q?`&q=${encodeURIComponent(q)}`:""}${searchParams?.from?`&from=${searchParams.from}`:""}${searchParams?.to?`&to=${searchParams.to}`:""}`}
+          >
+            ← Προηγούμενα
+          </Link>
         )}
         {hasNext && (
-          <Link className="kz-link" href={`/admin?page=${page+1}${q?`&q=${encodeURIComponent(q)}`:""}${searchParams?.from?`&from=${searchParams.from}`:""}${searchParams?.to?`&to=${searchParams.to}`:""}`}>Επόμενα →</Link>
+          <Link
+            className="kz-link"
+            href={`/admin?page=${page+1}${q?`&q=${encodeURIComponent(q)}`:""}${searchParams?.from?`&from=${searchParams.from}`:""}${searchParams?.to?`&to=${searchParams.to}`:""}`}
+          >
+            Επόμενα →
+          </Link>
         )}
       </div>
     </main>
@@ -186,4 +199,3 @@ function KZStyles() {
     `}</style>
   );
 }
-
