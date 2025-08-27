@@ -1251,7 +1251,7 @@ export default function CustomizerHatPage() {
 
       {/* BIG footer banner */}
       <p style={C.footerBanner}>
-        Στείλε μας το καπέλο και το σχέδιό σου στο email — το αναλαμβάνουμε εμείς!
+        Στείλε μας το καπέλο και το σχέδιό σου στο email και το αναλαμβάνουμε εμείς!
       </p>
     </main>
   );
