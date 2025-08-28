@@ -5,13 +5,29 @@ import Image from "next/image";
 import Link from "next/link";
 
 const categories = [
-  { title: "Sneakers",    img: "/shop-categories/sneakers.png",    link: "/shop/sneakers" },
-  { title: "Clothes",     img: "/shop-categories/clothes.png",     link: "/shop/clothes" },
-  { title: "Accessories", img: "/shop-categories/accessories.png", link: "/shop/accessories" },
-  { title: "Custom Yourself", img: "/shop-categories/art.png",     link: "/shop/custom" },
+  {
+    title: "Sneakers",
+    img: "/shop-categories/sneakers.png",
+    link: "/shop/sneakers",
+  },
+  {
+    title: "Clothes",
+    img: "/shop-categories/clothes.png",
+    link: "/shop/clothes",
+  },
+  {
+    title: "Accessories",
+    img: "/shop-categories/accessories.png",
+    link: "/shop/accessories",
+  },
+  {
+    title: "Custom Yourself",
+    img: "/shop-categories/art.png",
+    link: "/shop/custom",
+  },
 ];
 
-export default function ShopClient() {
+export default function ShopPage() {
   return (
     <main
       style={{
@@ -21,7 +37,6 @@ export default function ShopClient() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        color: "#fff",
       }}
     >
       <h1
@@ -37,7 +52,6 @@ export default function ShopClient() {
       </h1>
 
       <div
-        className="cards"
         style={{
           display: "flex",
           flexWrap: "wrap",
@@ -45,16 +59,16 @@ export default function ShopClient() {
           gap: "2rem",
         }}
       >
-        {categories.map((cat, i) => (
-          <Link key={i} href={cat.link} className="card">
+        {categories.map((cat, index) => (
+          <Link key={index} href={cat.link}>
             <div
               style={{
                 backgroundColor: "#000",
                 border: "2px solid #00ffff",
                 borderRadius: "2rem",
                 padding: "2rem",
-                width: 200,
-                height: 180,
+                width: "200px",
+                height: "180px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -62,15 +76,21 @@ export default function ShopClient() {
                 boxShadow: "0 0 15px #0ff",
                 transition: "transform 0.3s, box-shadow 0.3s",
               }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.08)";
+                e.currentTarget.style.boxShadow = "0 0 30px #0ff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = "0 0 15px #0ff";
+              }}
             >
               <Image
                 src={cat.img}
                 alt={cat.title}
                 width={170}
                 height={170}
-                sizes="(max-width: 480px) 45vw, (max-width: 768px) 30vw, 200px"
-                style={{ marginBottom: "1rem", height: "auto" }}
-                priority={i < 2} // προφόρτωση για τις 2 πρώτες κάρτες
+                style={{ marginBottom: "1rem" }}
               />
               <p
                 style={{
@@ -86,14 +106,6 @@ export default function ShopClient() {
           </Link>
         ))}
       </div>
-
-      <style jsx>{`
-        .card:hover div {
-          transform: scale(1.08);
-          box-shadow: 0 0 30px #0ff;
-        }
-      `}</style>
     </main>
   );
 }
-
