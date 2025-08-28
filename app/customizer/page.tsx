@@ -65,8 +65,8 @@ const MODEL_VIEWS: Record<ModelKey, Record<ViewKey, string>> = {
 };
 
 const VIEW_OPTIONS: { key: ViewKey; label: string }[] = [
-  { key: "right", label: "Δεξιά" },
-  { key: "left", label: "Αριστερά" },
+  { key: "right", label: "Έξω μεριά" },
+  { key: "left", label: "Μέσα μεριά" },
   { key: "front", label: "Μπροστά" },
   { key: "back", label: "Πίσω" },
 ];
