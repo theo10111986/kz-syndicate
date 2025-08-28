@@ -8,7 +8,7 @@ import Contact from "@/components/Contact";
 export default function HomeClient() {
   return (
     <main style={{ backgroundColor: "#000", color: "#fff", position: "relative" }}>
-      {/* ✅ Hero Section με next/image */}
+      {/* Hero Section */}
       <section
         className="hero"
         style={{
@@ -22,27 +22,39 @@ export default function HomeClient() {
           overflow: "hidden",
         }}
       >
-        {/* Hero background */}
-        <Image
-          src="/IMG_0198.jpeg"
-          alt="Neymar Custom Sneakers"
-          fill
-          priority
-          quality={85}
+        {/* ✅ Background wrapper (πάνω από το body, κάτω από το κείμενο) */}
+        <div
+          aria-hidden
           style={{
-            objectFit: "contain", // ίδιο με before
-            objectPosition: "center",
-            zIndex: -1,
+            position: "absolute",
+            inset: 0,
+            zIndex: 0,
+            pointerEvents: "none",
           }}
-        />
+        >
+          <Image
+            src="/IMG_0198.jpeg"          // βεβαιώσου ότι υπάρχει ακριβώς αυτό το όνομα στο /public
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            quality={85}
+            style={{
+              objectFit: "contain",       // ίδιο οπτικά με πριν
+              objectPosition: "center",
+            }}
+          />
+        </div>
 
+        {/* Τίτλος επάνω από την εικόνα */}
         <h1
           style={{
             fontSize: "2rem",
             color: "#010101ff",
             textShadow: "0 0 8px #0ff, 0 0 16px #0ff",
             textAlign: "center",
-            position: "relative", // για να κάθεται πάνω από την εικόνα
+            position: "relative",
+            zIndex: 1,
           }}
         >
           Join the underground, wear the code.
