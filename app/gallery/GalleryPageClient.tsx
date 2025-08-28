@@ -195,25 +195,26 @@ export default function GalleryPage() {
           }}
         >
           {/* Κλείσιμο ❌ */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setLightboxIndex(null);
-            }}
-            style={{
-              position: "absolute",
-              top: "5%",
-              right: "5%",
-              fontSize: "2rem",
-              color: "#0ff",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-            }}
-            aria-label="Close"
-          >
-            ❌
-          </button>
+<button
+  onClick={(e) => {
+    e.stopPropagation();
+    setLightboxIndex(null);
+  }}
+  style={{
+    position: "absolute",
+    top: window.innerWidth < 768 ? "60px" : "5%", // mobile vs desktop
+    right: "5%",
+    fontSize: "2rem",
+    color: "#0ff",
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+  }}
+  aria-label="Close"
+>
+  ❌
+</button>
+
 
           {/* Previous */}
           <button
