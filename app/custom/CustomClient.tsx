@@ -2,7 +2,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import Script from "next/script"; // ✅ για JSON-LD μόνο (αόρατο)
+import Script from "next/script"; // για JSON-LD μόνο (αόρατο)
 
 const options = [
   {
@@ -53,7 +53,7 @@ export default function CustomStartPage() {
           fontSize: "2rem",
           textAlign: "center",
           marginBottom: "2rem",
-          textShadow: "0 0 10px "#0ff",
+          textShadow: "0 0 10px #0ff", // ✅ FIX
         }}
       >
         Ξεκίνα το δικό σου Custom Project
@@ -83,7 +83,7 @@ export default function CustomStartPage() {
               justifyContent: "center",
               textAlign: "center",
               boxShadow: "0 0 20px #0ff",
-              transition: "transform 0.3s, boxShadow 0.3s",
+              transition: "transform 0.3s, box-shadow 0.3s", // ✅ μικρό fix
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "scale(1.08)";
@@ -112,7 +112,7 @@ export default function CustomStartPage() {
         })}
       </Script>
 
-      {/* ✅ JSON-LD: WebPage με keywords (αόρατο για χρήστη, χρήσιμο για Google) */}
+      {/* ✅ JSON-LD: WebPage με keywords */}
       <Script id="schema-webpage-custom" type="application/ld+json" strategy="afterInteractive">
         {JSON.stringify({
           "@context": "https://schema.org",
@@ -131,7 +131,7 @@ export default function CustomStartPage() {
         })}
       </Script>
 
-      {/* ✅ JSON-LD: FAQ (χωρίς να φαίνεται στο UI) */}
+      {/* ✅ JSON-LD: FAQ */}
       <Script id="schema-faq-custom" type="application/ld+json" strategy="afterInteractive">
         {JSON.stringify({
           "@context": "https://schema.org",
@@ -167,3 +167,4 @@ export default function CustomStartPage() {
     </main>
   );
 }
+
