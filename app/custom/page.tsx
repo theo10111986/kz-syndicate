@@ -1,4 +1,7 @@
-"use client";
+export const metadata = {
+  title: "Contact the Syndicate",
+  description: "Επικοινώνησε με την ομάδα του KZ Syndicate.",
+};
 import Image from "next/image";
 import Link from "next/link";
 
