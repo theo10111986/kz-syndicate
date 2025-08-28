@@ -15,7 +15,14 @@ export const metadata: Metadata = {
     description: "Join the underground, wear the code.",
     url: "https://www.kzsyndicate.com/",
     siteName: "KZ Syndicate",
-    images: [{ url: "https://www.kzsyndicate.com/kz-og-1200x630.jpg", width: 1200, height: 630, alt: "KZ Syndicate" }],
+    images: [
+      {
+        url: "https://www.kzsyndicate.com/kz-og-1200x630.jpg",
+        width: 1200,
+        height: 630,
+        alt: "KZ Syndicate",
+      },
+    ],
     locale: "el_GR",
     type: "website",
   },
@@ -96,3 +103,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+
