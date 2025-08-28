@@ -1,9 +1,11 @@
 "use client";
 import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
+import { useEffect } from "react";          // ✅ ΝΕΟ
+import { track } from "@/lib/analytics";    // ✅ ΝΕΟ
 
 const products = [
-{ name: "Bronze 29,5ml", img: "/products/Bronze.jpg", price: 7.99 },
+  { name: "Bronze 29,5ml", img: "/products/Bronze.jpg", price: 7.99 },
   { name: "Play in the Sand 29,5ml", img: "/products/Play-in-the-Sand.jpg", price: 7.99 },
   { name: "Luggage Brown 29,5ml", img: "/products/Luggage-Brown.jpg", price: 7.99 },
   { name: "Bronze 29,5ml", img: "/products/Bronze.jpg", price: 7.99 },
@@ -81,7 +83,13 @@ const products = [
   { name: "White 29,5ml", img: "/products/White.jpg", price: 7.99 },
   { name: "Black 29,5ml", img: "/products/Black.jpg", price: 7.99 },
 ];
+
 export default function AngelusPage() {
+  // ✅ Στέλνουμε ένα event όταν ανοίγει η κατηγορία
+  useEffect(() => {
+    track("View Category", { name: "Custom Yourself – Angelus Leather Paints" });
+  }, []);
+
   return (
     <main
       style={{
@@ -114,7 +122,7 @@ export default function AngelusPage() {
             key={i}
             style={{
               backgroundColor: "#000",
-              border: "2px solid #00ffff",
+              border: "2px solid "#00ffff",
               borderRadius: "1rem",
               padding: "1rem",
               textAlign: "center",
@@ -136,6 +144,8 @@ export default function AngelusPage() {
               width={100}
               height={100}
               style={{ marginBottom: "1rem" }}
+              // ✅ όταν ο χρήστης κάνει κλικ στην εικόνα, καταγράφουμε "Click Product"
+              onClick={() => track("Click Product", { name: product.name, price: product.price })}
             />
             <h3 style={{ color: "#00ffff", marginBottom: "0.5rem" }}>
               {product.name}
