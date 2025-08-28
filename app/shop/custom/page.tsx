@@ -1,11 +1,11 @@
-// app/shop/custom/page.tsx
+// app/custom/page.tsx
 export const metadata = {
-  title: "Custom Yourself | KZ Syndicate",
-  description: "Διάλεξε υποκατηγορία (Angelus, Πρόσθετα/Προεργασία) και ξεκίνα το customization σου.",
+  title: "Custom Options | KZ Syndicate",
+  description: "Διάλεξε πώς θέλεις να ξεκινήσεις το customization σου.",
 };
 
 import CustomClient from "./CustomClient";
 
-export default function CustomLandingPage() {
+export default function CustomPage() {
   return <CustomClient />;
 }
