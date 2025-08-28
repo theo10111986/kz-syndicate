@@ -105,8 +105,7 @@ function ProductCard({
         image={img}
       />
       <p style={{ marginTop: 8, fontSize: 12, opacity: 0.8, textAlign: "center" }}>
-        AF1 συνήθως “φοράει λίγο μεγάλο” → σκέψου μισό νούμερο κάτω αν είσαι μεταξύ μεγεθών.
-      </p>
+     </p>
     </div>
   );
 }
