@@ -49,7 +49,7 @@ export default function CustomClient() {
             <div
               style={{
                 backgroundColor: "#000",
-                border: "2px solid "#00ffff",
+                border: "2px solid #00ffff", // <-- fixed
                 borderRadius: "2rem",
                 padding: "2rem",
                 width: "200px",
