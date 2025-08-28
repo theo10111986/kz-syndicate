@@ -1,4 +1,3 @@
-// app/shop/custom/CustomClient.tsx
 "use client";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,7 +15,7 @@ const customCategories = [
   },
 ];
 
-export default function CustomLandingPage() {
+export default function CustomClient() {
   return (
     <main
       style={{
@@ -52,31 +51,8 @@ export default function CustomLandingPage() {
         }}
       >
         {customCategories.map((cat, index) => (
-          <Link key={index} href={cat.link}>
-            <div
-              style={{
-                backgroundColor: "#000",
-                border: "2px solid #00ffff",
-                borderRadius: "2rem",
-                padding: "2rem",
-                width: "200px",
-                height: "180px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 0 15px #0ff",
-                transition: "transform 0.3s, box-shadow 0.3s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.08)";
-                e.currentTarget.style.boxShadow = "0 0 30px #0ff";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow = "0 0 15px #0ff";
-              }}
-            >
+          <Link key={index} href={cat.link} className="card-link">
+            <div className="card">
               <Image
                 src={cat.img}
                 alt={cat.title}
@@ -98,6 +74,28 @@ export default function CustomLandingPage() {
           </Link>
         ))}
       </div>
+
+      <style jsx>{`
+        .card {
+          background-color: #000;
+          border: 2px solid #00ffff;
+          border-radius: 2rem;
+          padding: 2rem;
+          width: 200px;
+          height: 180px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 0 15px #0ff;
+          transition: transform 0.3s, box-shadow 0.3s;
+          text-align: center;
+        }
+        .card:hover {
+          transform: scale(1.08);
+          box-shadow: 0 0 30px #0ff;
+        }
+      `}</style>
     </main>
   );
 }
