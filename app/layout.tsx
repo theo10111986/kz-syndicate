@@ -50,10 +50,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <main className="min-h-screen">{children}</main>
           <Footer />
 
-          {/* Plausible Analytics (κάλυψη root + www) */}
+          {/* Umami Analytics */}
           <Script
-            src="https://plausible.io/js/script.js"
-            data-domain="kzsyndicate.com,www.kzsyndicate.com"
+            src="https://umami-tau-tan.vercel.app/script.js"
+            data-website-id="f37bba3a-96f1-4360-b3ea-50468e0dfee0"
             strategy="afterInteractive"
           />
 
@@ -96,5 +96,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-
-
