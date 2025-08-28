@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Providers } from "./Providers";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "KZ Syndicate",
@@ -54,18 +55,55 @@ export default function RootLayout({
     <html lang="el">
       <body className="bg-black text-white">
         <Providers>
-          {/* Navbar */}
           <Navbar />
-          {/* Spacer για navbar */}
           <div aria-hidden style={{ height: 96 }} />
-          {/* Κύριο περιεχόμενο */}
           <main className="min-h-screen">{children}</main>
-          {/* Footer */}
           <Footer />
+
+          {/* SEO Schema.org structured data */}
+          <Script
+            id="schema-org"
+            type="application/ld+json"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "KZ Syndicate",
+                "url": "https://www.kzsyndicate.com/",
+                "logo":
+                  "https://www.kzsyndicate.com/android-chrome-192x192.png",
+                "image": "https://www.kzsyndicate.com/kz-og-1200x630.jpg",
+                "sameAs": [
+                  "https://www.instagram.com/kzsyndicate",
+                  // πρόσθεσε TikTok, Facebook, YouTube links αν έχεις
+                ],
+              }),
+            }}
+          />
+          <Script
+            id="schema-website"
+            type="application/ld+json"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "KZ Syndicate",
+                "url": "https://www.kzsyndicate.com/",
+                "inLanguage": "el-GR",
+                "publisher": {
+                  "@type": "Organization",
+                  "name": "KZ Syndicate",
+                },
+              }),
+            }}
+          />
         </Providers>
       </body>
     </html>
   );
 }
+
 
 
