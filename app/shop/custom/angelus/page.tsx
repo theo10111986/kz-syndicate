@@ -176,7 +176,7 @@ export default function AngelusPage() {
         })}
       </Script>
 
-      {/* ✅ JSON-LD: ItemList για τη λίστα προϊόντων (χωρίς URLs σε κάθε item) */}
+      {/* ✅ JSON-LD: ItemList χωρίς Product (για να μην ζητά Offers, price κ.λπ.) */}
       <Script id="schema-itemlist" type="application/ld+json" strategy="afterInteractive">
         {JSON.stringify({
           "@context": "https://schema.org",
@@ -185,7 +185,7 @@ export default function AngelusPage() {
           "itemListElement": products.map((p, idx) => ({
             "@type": "ListItem",
             "position": idx + 1,
-            "item": { "@type": "Product", "name": p.name }
+            "item": { "@type": "Thing", "name": p.name } // 👈 αλλαγή από Product → Thing
           }))
         })}
       </Script>
