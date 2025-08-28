@@ -1,15 +1,21 @@
+// app/shop/custom/page.tsx
 import Script from "next/script";
+import CustomClient from "./CustomClient";
 
 export const metadata = {
   title: "Custom Yourself | KZ Syndicate",
-  description: "Διάλεξε υποκατηγορία (Angelus, Πρόσθετα/Προεργασία) και ξεκίνα το customization σου.",
+  description:
+    "Διάλεξε υποκατηγορία (Angelus, Πρόσθετα/Προεργασία) και ξεκίνα το customization σου.",
 };
+
+export const revalidate = 3600;
 
 export default function CustomLandingPage() {
   return (
     <>
-      {/* ...το UI σου (ή <CustomClient />) ... */}
+      <CustomClient />
 
+      {/* (προαιρετικό) breadcrumbs schema */}
       <Script
         id="breadcrumbs-shop-custom"
         type="application/ld+json"
@@ -19,24 +25,9 @@ export default function CustomLandingPage() {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://www.kzsyndicate.com/"
-              },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Shop",
-                "item": "https://www.kzsyndicate.com/shop"
-              },
-              {
-                "@type": "ListItem",
-                "position": 3,
-                "name": "Custom",
-                "item": "https://www.kzsyndicate.com/shop/custom"
-              }
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.kzsyndicate.com/" },
+              { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://www.kzsyndicate.com/shop" },
+              { "@type": "ListItem", "position": 3, "name": "Custom", "item": "https://www.kzsyndicate.com/shop/custom" }
             ]
           }),
         }}
@@ -44,4 +35,5 @@ export default function CustomLandingPage() {
     </>
   );
 }
+
 
