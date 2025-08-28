@@ -1,5 +1,6 @@
 "use client";
 import { useCart } from "@/context/CartContext";
+import { track } from "@/lib/analytics"; // 👈 νέο import
 
 export default function AddToCartButton({ id, name, price, image }: {
   id: string;
@@ -11,18 +12,19 @@ export default function AddToCartButton({ id, name, price, image }: {
 
   return (
     <button
-    onClick={() => {
-  addToCart({
-    id,
-    name,
-    price,
-    image,
-    quantity: 1,
-  });
+      onClick={() => {
+        addToCart({
+          id,
+          name,
+          price,
+          image,
+          quantity: 1,
+        });
 
-  alert(`${name} added to cart!`);
-}}
+        track("Add to Cart", { name, price }); // 👈 νέο event
 
+        alert(`${name} added to cart!`);
+      }}
       style={{
         padding: "0.5rem 1rem",
         backgroundColor: "#00ffff",
@@ -38,3 +40,4 @@ export default function AddToCartButton({ id, name, price, image }: {
     </button>
   );
 }
+
