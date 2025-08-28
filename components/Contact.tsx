@@ -17,19 +17,21 @@ export default function Contact() {
       <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Contact Us</h2>
 
       <p style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>
-        📧 Email:{' '}
+        📧 Email{' '}
         <a href="mailto:info@kzsyndicate.com" style={{ color: '#0ff' }}>
           info@kzsyndicate.com
         </a>
       </p>
 
       <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
-        📱 Instagram:{' '}
+        📱 Instagram{' '}
         <a
           href="https://instagram.com/kzsyndicate"
           target="_blank"
           rel="noopener noreferrer"
           style={{ color: '#0ff' }}
+          data-umami-event="Click Social"
+          data-umami-event-platform="Instagram"
         >
           @kzsyndicate
         </a>
@@ -46,6 +48,9 @@ export default function Contact() {
         onMouseOut={(e) => {
           e.currentTarget.style.transform = 'scale(1)';
         }}
+        data-umami-event="Click Social"
+        data-umami-event-platform="Instagram"
+        data-umami-event-source="QR"
       >
         <Image
           src={qr}
