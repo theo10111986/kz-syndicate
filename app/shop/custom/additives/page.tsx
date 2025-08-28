@@ -1,6 +1,8 @@
 "use client";
 import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
+import { useEffect } from "react";              // ✅ ΝΕΟ
+import { track } from "@/lib/analytics";        // ✅ ΝΕΟ
 
 const additives = [
   {
@@ -61,6 +63,11 @@ const additives = [
 ];
 
 export default function AdditivesPage() {
+  // ✅ Στέλνουμε ένα event όταν ανοίγει η κατηγορία
+  useEffect(() => {
+    track("View Category", { name: "Angelus – Πρόσθετα & Προεργασία" });
+  }, []);
+
   return (
     <main
       style={{
@@ -116,6 +123,8 @@ export default function AdditivesPage() {
               width={200}
               height={200}
               style={{ marginBottom: "1rem" }}
+              // ✅ όταν ο χρήστης κάνει κλικ στην εικόνα, καταγράφουμε "Click Product"
+              onClick={() => track("Click Product", { name: item.name, price: item.price })}
             />
             <h2 style={{ color: "#00ffff", marginBottom: "0.5rem" }}>{item.name}</h2>
             <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>{item.description}</p>
