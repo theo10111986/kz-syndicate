@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { track } from '@/lib/analytics'; // 👈 ΝΕΟ
 
 export default function Newsletter() {
   const [email, setEmail] = useState('');
@@ -34,6 +35,10 @@ export default function Newsletter() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || 'SEND_FAILED');
       }
+
+      // 👇 Track successful subscribe στο Umami
+      const domain = email.includes('@') ? email.split('@')[1] : 'unknown';
+      track('Newsletter Subscribe', { domain });
 
       setMsg('Ευχαριστούμε για την εγγραφή! ✅');
       setEmail('');
