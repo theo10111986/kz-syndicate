@@ -5,11 +5,19 @@ import Image from "next/image";
 import Link from "next/link";
 
 const customCategories = [
-  { title: "Angelus – Χρώμα για λείο δέρμα", img: "/shop-categories/angelus.png", link: "/shop/custom/angelus" },
-  { title: "Πρόσθετα & Προεργασία",          img: "/shop-categories/additives.png", link: "/shop/custom/additives" },
+  {
+    title: "Angelus – Χρώμα για λείο δέρμα",
+    img: "/shop-categories/angelus.png",
+    link: "/shop/custom/angelus",
+  },
+  {
+    title: "Πρόσθετα & Προεργασία",
+    img: "/shop-categories/additives.png",
+    link: "/shop/custom/additives",
+  },
 ];
 
-export default function CustomClient() {
+export default function CustomLandingPage() {
   return (
     <main
       style={{
@@ -49,7 +57,7 @@ export default function CustomClient() {
             <div
               style={{
                 backgroundColor: "#000",
-                border: "2px solid #00ffff", // <-- fixed
+                border: "2px solid #00ffff",
                 borderRadius: "2rem",
                 padding: "2rem",
                 width: "200px",
@@ -94,3 +102,5 @@ export default function CustomClient() {
     </main>
   );
 }
+
+
