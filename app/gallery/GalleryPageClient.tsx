@@ -1,14 +1,12 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import Image from "next/image";
 
-export default function GalleryPageClient() {
+export default function GalleryPage() {
   const categories = [
     { name: "Sneakers", image: "/sneakers.png", color: "#0ff" },
-    { name: "Caps",     image: "/caps.png",     color: "#00f" },
-    { name: "Clothes",  image: "/clothes.png",  color: "#f0f" },
-    { name: "Art",      image: "/art.png",      color: "#f90" },
+    { name: "Caps", image: "/caps.png", color: "#00f" },
+    { name: "Clothes", image: "/clothes.png", color: "#f0f" },
+    { name: "Art", image: "/art.png", color: "#f90" },
   ];
 
   const images: Record<string, string[]> = {
@@ -43,17 +41,22 @@ export default function GalleryPageClient() {
   const [hovered, setHovered] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
+  // Esc / Arrow navigation
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setLightboxIndex(null);
       if (e.key === "ArrowRight" && lightboxIndex !== null) {
         setLightboxIndex((prev) =>
-          prev! + 1 < (images[selectedCategory ?? ""]?.length ?? 0) ? prev! + 1 : 0
+          prev! + 1 < (images[selectedCategory ?? ""]?.length ?? 0)
+            ? prev! + 1
+            : 0
         );
       }
       if (e.key === "ArrowLeft" && lightboxIndex !== null) {
         setLightboxIndex((prev) =>
-          prev! - 1 >= 0 ? prev! - 1 : (images[selectedCategory ?? ""]?.length ?? 1) - 1
+          prev! - 1 >= 0
+            ? prev! - 1
+            : (images[selectedCategory ?? ""]?.length ?? 1) - 1
         );
       }
     };
@@ -84,6 +87,7 @@ export default function GalleryPageClient() {
         Gallery Categories
       </h1>
 
+      {/* Κατηγορίες */}
       <div
         style={{
           display: "flex",
@@ -96,7 +100,7 @@ export default function GalleryPageClient() {
           const isHovered = hovered === cat.name;
 
           return (
-            <button
+            <div
               key={cat.name}
               onClick={() => setSelectedCategory(cat.name)}
               onMouseEnter={() => setHovered(cat.name)}
@@ -112,23 +116,18 @@ export default function GalleryPageClient() {
                   : "0 0 15px #0ff4",
                 transition: "all 0.3s ease-in-out",
                 width: "250px",
-                border: "none",
               }}
             >
-              <Image
+              <img
                 src={cat.image}
                 alt={cat.name}
-                width={180}
-                height={180}
                 style={{
-                  width: isHovered ? 180 : 170,
-                  height: isHovered ? 180 : 170,
+                  width: isHovered ? "180px" : "170px",
+                  height: isHovered ? "180px" : "170px",
                   objectFit: "contain",
                   marginBottom: "1rem",
                   transition: "0.3s",
                 }}
-                sizes="(max-width: 480px) 45vw, (max-width: 768px) 30vw, 250px"
-                priority={true}
               />
               <p
                 style={{
@@ -142,12 +141,12 @@ export default function GalleryPageClient() {
               >
                 {cat.name}
               </p>
-            </button>
+            </div>
           );
         })}
       </div>
 
-      {/* Grid εικόνων */}
+      {/* Εμφάνιση φωτογραφιών */}
       {selectedCategory && (
         <div
           style={{
@@ -160,29 +159,20 @@ export default function GalleryPageClient() {
           }}
         >
           {images[selectedCategory]?.map((src, index) => (
-            <button
+            <img
               key={index}
-              onClick={() => setLightboxIndex(index)}
+              src={src}
+              alt={`${selectedCategory} ${index + 1}`}
               style={{
-                border: "none",
-                padding: 0,
-                background: "transparent",
+                width: "100%",
+                height: "auto",
                 borderRadius: "1rem",
-                overflow: "hidden",
                 cursor: "pointer",
                 boxShadow: "0 0 15px #0ff",
               }}
-            >
-              <div style={{ position: "relative", width: "100%", aspectRatio: "1/1" }}>
-                <Image
-                  src={src}
-                  alt={`${selectedCategory} ${index + 1}`}
-                  fill
-                  sizes="(max-width: 600px) 100vw, (max-width: 1200px) 33vw, 25vw"
-                  style={{ objectFit: "cover" }}
-                />
-              </div>
-            </button>
+              loading="lazy"
+              onClick={() => setLightboxIndex(index)}
+            />
           ))}
         </div>
       )}
@@ -193,7 +183,10 @@ export default function GalleryPageClient() {
           onClick={() => setLightboxIndex(null)}
           style={{
             position: "fixed",
-            inset: 0,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             backgroundColor: "rgba(0,0,0,0.9)",
             display: "flex",
             justifyContent: "center",
@@ -201,6 +194,28 @@ export default function GalleryPageClient() {
             zIndex: 1000,
           }}
         >
+          {/* Κλείσιμο ❌ */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxIndex(null);
+            }}
+            style={{
+              position: "absolute",
+              top: "5%",
+              right: "5%",
+              fontSize: "2rem",
+              color: "#0ff",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+            aria-label="Close"
+          >
+            ❌
+          </button>
+
+          {/* Previous */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -219,31 +234,24 @@ export default function GalleryPageClient() {
               border: "none",
               cursor: "pointer",
             }}
-            aria-label="Previous image"
           >
             ⬅
           </button>
 
-          <div
+          {/* Εικόνα */}
+          <img
+            src={images[selectedCategory][lightboxIndex]}
+            alt="Full view"
             style={{
-              position: "relative",
               maxWidth: "90%",
               maxHeight: "90%",
-              width: "90vw",
-              height: "90vh",
+              borderRadius: "1rem",
+              boxShadow: "0 0 30px #0ff",
             }}
             onClick={(e) => e.stopPropagation()}
-          >
-            <Image
-              src={images[selectedCategory][lightboxIndex]}
-              alt="Full view"
-              fill
-              sizes="90vw"
-              style={{ objectFit: "contain" }}
-              priority
-            />
-          </div>
+          />
 
+          {/* Next */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -262,7 +270,6 @@ export default function GalleryPageClient() {
               border: "none",
               cursor: "pointer",
             }}
-            aria-label="Next image"
           >
             ➡
           </button>
