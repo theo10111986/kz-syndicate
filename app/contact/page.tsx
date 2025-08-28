@@ -1,3 +1,8 @@
+export const metadata = {
+  title: "Επικοινωνία | KZ Syndicate",
+  description: "Επικοινώνησε με το KZ Syndicate για custom παραγγελίες σε sneakers, ρούχα και αξεσουάρ.",
+};
+
 'use client';
 
 import Contact from '@/components/Contact';
