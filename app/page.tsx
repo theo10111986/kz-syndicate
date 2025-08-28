@@ -1,9 +1,9 @@
-// app/page.tsx
+"use client";
+
 export const metadata = {
   title: "KZ Syndicate | Custom Sneakers & Streetwear",
   description: "Join the underground, wear the code. Custom sneakers, ρούχα και αξεσουάρ.",
 };
-"use client";
 
 import Partners from "@/components/Partners";
 import Newsletter from "@/components/Newsletter";
