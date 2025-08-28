@@ -3,6 +3,7 @@ import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
 import { useEffect } from "react";
 import { track } from "@/lib/analytics";
+import Script from "next/script"; // ✅ για JSON-LD
 
 const products = [
   { name: "Bronze 29,5ml", img: "/products/Bronze.jpg", price: 7.99 },
@@ -122,12 +123,12 @@ export default function AngelusPage() {
             key={i}
             style={{
               backgroundColor: "#000",
-              border: '2px solid #00ffff',     // ✅ FIX: σωστά τα quotes
+              border: "2px solid #00ffff",
               borderRadius: "1rem",
               padding: "1rem",
               textAlign: "center",
               boxShadow: "0 0 20px #0ff",
-              transition: "transform 0.3s, box-shadow 0.3s", // ✅ FIX: valid CSS property
+              transition: "transform 0.3s, box-shadow 0.3s",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "scale(1.05)";
@@ -161,7 +162,36 @@ export default function AngelusPage() {
           </div>
         ))}
       </div>
+
+      {/* ✅ JSON-LD: Breadcrumbs */}
+      <Script id="schema-breadcrumbs" type="application/ld+json" strategy="afterInteractive">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Shop", "item": "https://www.kzsyndicate.com/shop" },
+            { "@type": "ListItem", "position": 2, "name": "Custom Yourself", "item": "https://www.kzsyndicate.com/shop/custom" },
+            { "@type": "ListItem", "position": 3, "name": "Angelus Leather Paints", "item": "https://www.kzsyndicate.com/shop/custom/angelus" }
+          ]
+        })}
+      </Script>
+
+      {/* ✅ JSON-LD: ItemList για τη λίστα προϊόντων (χωρίς URLs σε κάθε item) */}
+      <Script id="schema-itemlist" type="application/ld+json" strategy="afterInteractive">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "Angelus Leather Paints",
+          "itemListElement": products.map((p, idx) => ({
+            "@type": "ListItem",
+            "position": idx + 1,
+            "item": { "@type": "Product", "name": p.name }
+          }))
+        })}
+      </Script>
     </main>
   );
 }
+
+
 
