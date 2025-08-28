@@ -1,3 +1,4 @@
+// app/layout.tsx
 import "./globals.css";
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
@@ -60,6 +61,13 @@ export default function RootLayout({
           <main className="min-h-screen">{children}</main>
           <Footer />
 
+          {/* Plausible Analytics */}
+          <Script
+            src="https://plausible.io/js/script.js"
+            data-domain="kzsyndicate.com"
+            strategy="afterInteractive"
+          />
+
           {/* SEO Schema.org structured data */}
           <Script
             id="schema-org"
@@ -69,12 +77,11 @@ export default function RootLayout({
               __html: JSON.stringify({
                 "@context": "https://schema.org",
                 "@type": "Organization",
-                "name": "KZ Syndicate",
-                "url": "https://www.kzsyndicate.com/",
-                "logo":
-                  "https://www.kzsyndicate.com/android-chrome-192x192.png",
-                "image": "https://www.kzsyndicate.com/kz-og-1200x630.jpg",
-                "sameAs": [
+                name: "KZ Syndicate",
+                url: "https://www.kzsyndicate.com/",
+                logo: "https://www.kzsyndicate.com/android-chrome-192x192.png",
+                image: "https://www.kzsyndicate.com/kz-og-1200x630.jpg",
+                sameAs: [
                   "https://www.instagram.com/kzsyndicate",
                   // πρόσθεσε TikTok, Facebook, YouTube links αν έχεις
                 ],
@@ -89,12 +96,12 @@ export default function RootLayout({
               __html: JSON.stringify({
                 "@context": "https://schema.org",
                 "@type": "WebSite",
-                "name": "KZ Syndicate",
-                "url": "https://www.kzsyndicate.com/",
-                "inLanguage": "el-GR",
-                "publisher": {
+                name: "KZ Syndicate",
+                url: "https://www.kzsyndicate.com/",
+                inLanguage: "el-GR",
+                publisher: {
                   "@type": "Organization",
-                  "name": "KZ Syndicate",
+                  name: "KZ Syndicate",
                 },
               }),
             }}
@@ -104,6 +111,7 @@ export default function RootLayout({
     </html>
   );
 }
+
 
 
 
