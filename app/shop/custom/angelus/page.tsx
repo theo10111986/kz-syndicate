@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
-import { useEffect } from "react";          // ✅ ΝΕΟ
-import { track } from "@/lib/analytics";    // ✅ ΝΕΟ
+import { useEffect } from "react";
+import { track } from "@/lib/analytics";
 
 const products = [
   { name: "Bronze 29,5ml", img: "/products/Bronze.jpg", price: 7.99 },
@@ -85,7 +85,7 @@ const products = [
 ];
 
 export default function AngelusPage() {
-  // ✅ Στέλνουμε ένα event όταν ανοίγει η κατηγορία
+  // View Category όταν ανοίγει
   useEffect(() => {
     track("View Category", { name: "Custom Yourself – Angelus Leather Paints" });
   }, []);
@@ -122,12 +122,12 @@ export default function AngelusPage() {
             key={i}
             style={{
               backgroundColor: "#000",
-              border: "2px solid "#00ffff",
+              border: '2px solid #00ffff',     // ✅ FIX: σωστά τα quotes
               borderRadius: "1rem",
               padding: "1rem",
               textAlign: "center",
               boxShadow: "0 0 20px #0ff",
-              transition: "transform 0.3s, boxShadow 0.3s",
+              transition: "transform 0.3s, box-shadow 0.3s", // ✅ FIX: valid CSS property
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "scale(1.05)";
@@ -144,7 +144,6 @@ export default function AngelusPage() {
               width={100}
               height={100}
               style={{ marginBottom: "1rem" }}
-              // ✅ όταν ο χρήστης κάνει κλικ στην εικόνα, καταγράφουμε "Click Product"
               onClick={() => track("Click Product", { name: product.name, price: product.price })}
             />
             <h3 style={{ color: "#00ffff", marginBottom: "0.5rem" }}>
