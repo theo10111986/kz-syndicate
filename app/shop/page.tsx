@@ -1,3 +1,4 @@
+// app/shop/page.tsx
 import Script from "next/script";
 
 export const metadata = {
@@ -5,11 +6,16 @@ export const metadata = {
   description: "Ανακάλυψε custom sneakers, clothes, accessories & custom tools.",
 };
 
+export const revalidate = 3600; // cache 1 ώρα
+
+import ShopClient from "./ShopClient";
+
 export default function ShopPage() {
   return (
     <>
-      {/* ...το UI σου (ή <ShopClient />) ... */}
+      <ShopClient />
 
+      {/* Breadcrumbs (αν τα έχεις ήδη, άστα όπως ήταν) */}
       <Script
         id="breadcrumbs-shop"
         type="application/ld+json"
@@ -19,18 +25,8 @@ export default function ShopPage() {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "https://www.kzsyndicate.com/"
-              },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Shop",
-                "item": "https://www.kzsyndicate.com/shop"
-              }
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.kzsyndicate.com/" },
+              { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://www.kzsyndicate.com/shop" }
             ]
           }),
         }}
