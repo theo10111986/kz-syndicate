@@ -15,14 +15,7 @@ export const metadata: Metadata = {
     description: "Join the underground, wear the code.",
     url: "https://www.kzsyndicate.com/",
     siteName: "KZ Syndicate",
-    images: [
-      {
-        url: "https://www.kzsyndicate.com/kz-og-1200x630.jpg",
-        width: 1200,
-        height: 630,
-        alt: "KZ Syndicate",
-      },
-    ],
+    images: [{ url: "https://www.kzsyndicate.com/kz-og-1200x630.jpg", width: 1200, height: 630, alt: "KZ Syndicate" }],
     locale: "el_GR",
     type: "website",
   },
@@ -47,11 +40,7 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="el">
       <body className="bg-black text-white">
@@ -61,14 +50,14 @@ export default function RootLayout({
           <main className="min-h-screen">{children}</main>
           <Footer />
 
-          {/* Plausible Analytics */}
+          {/* Plausible Analytics (κάλυψη root + www) */}
           <Script
             src="https://plausible.io/js/script.js"
-            data-domain="kzsyndicate.com"
+            data-domain="kzsyndicate.com,www.kzsyndicate.com"
             strategy="afterInteractive"
           />
 
-          {/* SEO Schema.org structured data */}
+          {/* Organization JSON-LD */}
           <Script
             id="schema-org"
             type="application/ld+json"
@@ -81,13 +70,12 @@ export default function RootLayout({
                 url: "https://www.kzsyndicate.com/",
                 logo: "https://www.kzsyndicate.com/android-chrome-192x192.png",
                 image: "https://www.kzsyndicate.com/kz-og-1200x630.jpg",
-                sameAs: [
-                  "https://www.instagram.com/kzsyndicate",
-                  // πρόσθεσε TikTok, Facebook, YouTube links αν έχεις
-                ],
+                sameAs: ["https://www.instagram.com/kzsyndicate"],
               }),
             }}
           />
+
+          {/* WebSite JSON-LD */}
           <Script
             id="schema-website"
             type="application/ld+json"
@@ -99,10 +87,7 @@ export default function RootLayout({
                 name: "KZ Syndicate",
                 url: "https://www.kzsyndicate.com/",
                 inLanguage: "el-GR",
-                publisher: {
-                  "@type": "Organization",
-                  name: "KZ Syndicate",
-                },
+                publisher: { "@type": "Organization", name: "KZ Syndicate" },
               }),
             }}
           />
@@ -111,7 +96,5 @@ export default function RootLayout({
     </html>
   );
 }
-
-
 
 
