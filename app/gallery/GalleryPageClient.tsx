@@ -1,4 +1,3 @@
-// app/gallery/GalleryPageClient.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -113,7 +112,6 @@ export default function GalleryPageClient() {
                 transition: "all 0.3s ease-in-out",
                 width: "250px",
               }}
-            ***
             >
               <img
                 src={cat.image}
@@ -247,3 +245,4 @@ export default function GalleryPageClient() {
     </div>
   );
 }
+
