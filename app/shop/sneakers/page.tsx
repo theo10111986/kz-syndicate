@@ -1,4 +1,4 @@
-// app/shop/sneaker/page.tsx
+// app/shop/sneakers/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -136,7 +136,7 @@ function ProductCardBasic({
       <div
         style={{
           backgroundColor: "#000",
-          border: "2px solid "#00ffff",
+          border: "2px solid #00ffff",
           borderRadius: "1rem",
           padding: "1.25rem",
           boxShadow: "0 0 20px #0ff",
@@ -351,7 +351,7 @@ function ProductCardRope() {
               onChange={(e) => setRope(e.target.value as RopeColor)}
               style={{ padding: 10, borderRadius: 8, background: "#000", color: "#fff", border: "1px solid #00ffff" }}
             >
-              {["white", "black", "beige"].map((rc) => (
+              {ROPE_COLORS_ALL.map((rc) => (
                 <option key={rc} value={rc}>
                   {rc === "white" ? "White" : rc === "black" ? "Black" : "Beige"}
                 </option>
@@ -425,7 +425,7 @@ export default function SneakersPage() {
           color: "#00e5ff",
           fontSize: "2rem",
           fontWeight: "bold",
-          textShadow: "0 0 10px "#00e5ff",
+          textShadow: "0 0 10px #00e5ff", // ✅ fix
           marginBottom: "2rem",
         }}
       >
@@ -450,3 +450,4 @@ export default function SneakersPage() {
     </main>
   );
 }
+
