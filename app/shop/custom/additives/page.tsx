@@ -3,6 +3,49 @@ import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
 import { useEffect } from "react";              // ✅ ΝΕΟ
 import { track } from "@/lib/analytics";        // ✅ ΝΕΟ
+import { useSession, signIn } from "next-auth/react"; // ✅ Έλεγχος σύνδεσης
+
+// Μικρό neon κουμπί για login
+function NeonButton({
+  children,
+  onClick,
+  disabled,
+  ariaLabel,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  ariaLabel?: string;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={ariaLabel}
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        width: "100%",
+        padding: "0.75rem 1rem",
+        borderRadius: 12,
+        border: "2px solid #00ffff",
+        background: disabled ? "#001418" : "#000",
+        color: disabled ? "#66f7ff" : "#00ffff",
+        fontWeight: 700,
+        cursor: disabled ? "not-allowed" : "pointer",
+        boxShadow: "0 0 16px #0ff",
+        transition: "transform .15s ease",
+      }}
+      onMouseDown={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.98)";
+      }}
+      onMouseUp={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
+      }}
+    >
+      {children}
+    </button>
+  );
+}
 
 const additives = [
   {
@@ -63,6 +106,8 @@ const additives = [
 ];
 
 export default function AdditivesPage() {
+  const { status } = useSession(); // ✅ κατάσταση σύνδεσης
+
   // ✅ Στέλνουμε ένα event όταν ανοίγει η κατηγορία
   useEffect(() => {
     track("View Category", { name: "Angelus – Πρόσθετα & Προεργασία" });
@@ -129,15 +174,34 @@ export default function AdditivesPage() {
             <h2 style={{ color: "#00ffff", marginBottom: "0.5rem" }}>{item.name}</h2>
             <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>{item.description}</p>
             <p style={{ fontWeight: "bold" }}>Τιμή: €{item.price.toFixed(2)}</p>
-            <AddToCartButton
-              id={item.name.toLowerCase().replace(/\s+/g, "-")}
-              name={item.name}
-              price={item.price}
-              image={item.img}
-            />
+
+            {/* ✅ Gating: μόνο συνδεδεμένοι βλέπουν AddToCart */}
+            {status === "loading" ? (
+              <NeonButton disabled ariaLabel="Έλεγχος σύνδεσης">
+                Έλεγχος σύνδεσης…
+              </NeonButton>
+            ) : status !== "authenticated" ? (
+              <NeonButton
+                onClick={() => {
+                  track("Click Sign In CTA", { source: "Additives AddToCart Gate" });
+                  signIn(); // ανοίγει NextAuth sign-in
+                }}
+                ariaLabel="Σύνδεση για αγορά"
+              >
+                Σύνδεση για αγορά
+              </NeonButton>
+            ) : (
+              <AddToCartButton
+                id={item.name.toLowerCase().replace(/\s+/g, "-")}
+                name={item.name}
+                price={item.price}
+                image={item.img}
+              />
+            )}
           </div>
         ))}
       </div>
     </main>
   );
 }
+
