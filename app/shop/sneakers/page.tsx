@@ -1,7 +1,7 @@
 // app/shop/sneaker/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
 
@@ -10,7 +10,7 @@ const PRICE = 119.99;
 
 // Nike Air Force 1 — EU sizes
 const AF1_MEN_EU = [
-  38.5, 39, 40, 40.5, 41, 42, 42.5, 43, 44, 44.5, 45, 45.5, 46, 47,
+  38.5, 39, 40, 40.5, 41, 42, 42.5, 43, 44, 44.5, 45, 45.5, 46, 47, 48,
 ] as const;
 
 const AF1_WOMEN_EU = [
@@ -30,6 +30,7 @@ function ProductCard({
 }) {
   const [gender, setGender] = useState<Gender>("men");
   const [size, setSize] = useState<number | "">("");
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const sizes = gender === "men" ? AF1_MEN_EU : AF1_WOMEN_EU;
   const genderLabel = gender === "men" ? "Men" : "Women";
@@ -40,73 +41,190 @@ function ProductCard({
     minimumFractionDigits: 2,
   });
 
+  // Κλείσιμο με ESC
+  useEffect(() => {
+    if (!previewOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPreviewOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [previewOpen]);
+
   return (
-    <div
-      style={{
-        backgroundColor: "#000",
-        border: "2px solid #00ffff",
-        borderRadius: "1rem",
-        padding: "1.25rem",
-        boxShadow: "0 0 20px #0ff",
-        width: 320,
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: "1rem" }}>
-        <Image
-          src={img}
-          alt={name}
-          width={220}
-          height={160}
-          style={{ objectFit: "contain", borderRadius: 12 }}
-        />
-      </div>
-
-      <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>{name}</h3>
-      <p style={{ textAlign: "center", marginBottom: 12, fontWeight: 700 }}>{priceLabel}</p>
-
-      <div style={{ display: "grid", gap: 10, marginBottom: 14 }}>
-        <label style={{ display: "grid", gap: 6 }}>
-          <span style={{ fontSize: 12, opacity: 0.9 }}>Φύλο</span>
-          <select
-            value={gender}
-            onChange={(e) => {
-              const g = e.target.value as Gender;
-              setGender(g);
-              setSize(""); // reset size όταν αλλάζει φύλο
+    <>
+      <div
+        style={{
+          backgroundColor: "#000",
+          border: "2px solid #00ffff",
+          borderRadius: "1rem",
+          padding: "1.25rem",
+          boxShadow: "0 0 20px #0ff",
+          width: 320,
+        }}
+      >
+        {/* Εικόνα: πάντα λίγο “ζουμ” + rounded γωνίες + zoom-in cursor */}
+        <div
+          onClick={() => setPreviewOpen(true)}
+          title="Μεγέθυνση"
+          style={{
+            position: "relative",
+            width: "100%",
+            height: 200,
+            marginBottom: "1rem",
+            overflow: "hidden",
+            borderRadius: "1rem",
+            cursor: "zoom-in",
+          }}
+        >
+          {/* Χρησιμοποιούμε fill για καλύτερο crop μέσα στο container */}
+          <Image
+            src={img}
+            alt={name}
+            fill
+            // αρχικό μικρό ζουμ + λίγο παραπάνω στο hover
+            style={{
+              objectFit: "contain",
+              transform: "scale(1.08)",
+              transition: "transform 0.3s ease",
             }}
-            style={{ padding: 10, borderRadius: 8, background: "#000", color: "#fff", border: "1px solid #00ffff" }}
-          >
-            <option value="men">Men</option>
-            <option value="women">Women</option>
-          </select>
-        </label>
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLImageElement).style.transform = "scale(1.14)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLImageElement).style.transform = "scale(1.08)";
+            }}
+            sizes="(max-width: 768px) 90vw, 320px"
+            priority={false}
+          />
+        </div>
 
-        <label style={{ display: "grid", gap: 6 }}>
-          <span style={{ fontSize: 12, opacity: 0.9 }}>Μέγεθος (EU)</span>
-          <select
-            value={size === "" ? "" : String(size)}
-            onChange={(e) => setSize(e.target.value ? Number(e.target.value) : "")}
-            style={{ padding: 10, borderRadius: 8, background: "#000", color: "#fff", border: "1px solid #00ffff" }}
-          >
-            <option value="">Επίλεξε μέγεθος</option>
-            {sizes.map((eu) => (
-              <option key={`${gender}-${eu}`} value={eu}>
-                {eu}
-              </option>
-            ))}
-          </select>
-        </label>
+        <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>{name}</h3>
+        <p style={{ textAlign: "center", marginBottom: 12, fontWeight: 700 }}>{priceLabel}</p>
+
+        <div style={{ display: "grid", gap: 10, marginBottom: 14 }}>
+          <label style={{ display: "grid", gap: 6 }}>
+            <span style={{ fontSize: 12, opacity: 0.9 }}>Φύλο</span>
+            <select
+              value={gender}
+              onChange={(e) => {
+                const g = e.target.value as Gender;
+                setGender(g);
+                setSize(""); // reset size όταν αλλάζει φύλο
+              }}
+              style={{
+                padding: 10,
+                borderRadius: 8,
+                background: "#000",
+                color: "#fff",
+                border: "1px solid #00ffff",
+              }}
+            >
+              <option value="men">Men</option>
+              <option value="women">Women</option>
+            </select>
+          </label>
+
+          <label style={{ display: "grid", gap: 6 }}>
+            <span style={{ fontSize: 12, opacity: 0.9 }}>Μέγεθος (EU)</span>
+            <select
+              value={size === "" ? "" : String(size)}
+              onChange={(e) => setSize(e.target.value ? Number(e.target.value) : "")}
+              style={{
+                padding: 10,
+                borderRadius: 8,
+                background: "#000",
+                color: "#fff",
+                border: "1px solid #00ffff",
+              }}
+            >
+              <option value="">Επίλεξε μέγεθος</option>
+              {sizes.map((eu) => (
+                <option key={`${gender}-${eu}`} value={eu}>
+                  {eu}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <AddToCartButton
+          id={`${id}-${gender}-${size || "nosize"}`}
+          name={`${name} (${genderLabel}${size ? ` EU ${size}` : ""})`}
+          price={PRICE}
+          image={img}
+        />
+        <p style={{ marginTop: 8, fontSize: 12, opacity: 0.8, textAlign: "center" }}>
+          AF1 συνήθως “φοράει λίγο μεγάλο” → σκέψου μισό νούμερο κάτω αν είσαι μεταξύ μεγεθών.
+        </p>
       </div>
 
-      <AddToCartButton
-        id={`${id}-${gender}-${size || "nosize"}`}
-        name={`${name} (${genderLabel}${size ? ` EU ${size}` : ""})`}
-        price={PRICE}
-        image={img}
-      />
-      <p style={{ marginTop: 8, fontSize: 12, opacity: 0.8, textAlign: "center" }}>
-     </p>
-    </div>
+      {/* Lightbox / Preview */}
+      {previewOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setPreviewOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.85)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "2rem",
+            zIndex: 9999,
+          }}
+        >
+          {/* Stop close when clicking on content */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: "relative",
+              maxWidth: "90vw",
+              maxHeight: "85vh",
+              borderRadius: "1rem",
+              boxShadow: "0 0 30px #0ff",
+              overflow: "hidden",
+            }}
+          >
+            {/* Close (X) */}
+            <button
+              onClick={() => setPreviewOpen(false)}
+              aria-label="Κλείσιμο προεπισκόπησης"
+              style={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+                width: 36,
+                height: 36,
+                borderRadius: 999,
+                border: "2px solid #00ffff",
+                background: "#000",
+                color: "#00ffff",
+                fontSize: 20,
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 0 12px #0ff",
+              }}
+            >
+              ×
+            </button>
+
+            <div style={{ position: "relative", width: "80vw", height: "70vh" }}>
+              <Image
+                src={img}
+                alt={name}
+                fill
+                style={{ objectFit: "contain", background: "#000" }}
+                sizes="80vw"
+                priority
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -151,7 +269,6 @@ export default function SneakersPage() {
           name="Nike Air Force 1 '07 Black"
           img="/products/af1-black.avif"
         />
-        Sneakers – Προϊόντα έρχονται συνεχεια...
       </div>
     </main>
   );
