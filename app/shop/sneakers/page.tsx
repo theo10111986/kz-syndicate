@@ -50,9 +50,9 @@ function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: ()
           position: "relative",
           maxWidth: "90vw",
           maxHeight: "85vh",
-          borderRadius: "1rem",           // rounded στο frame
+          borderRadius: "1rem",
           boxShadow: "0 0 30px #0ff",
-          overflow: "hidden",              // clip στις γωνίες
+          overflow: "hidden",
         }}
       >
         <button
@@ -85,14 +85,13 @@ function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: ()
             height: "70vh",
             borderRadius: "1rem",
             overflow: "hidden",
-            clipPath: "inset(0 round 1rem)",   // ✅ σταθερό στρογγύλεμα
           }}
         >
           <Image
             src={img}
             alt={alt}
             fill
-            style={{ objectFit: "contain", background: "#000", borderRadius: "1rem" }} // ✅
+            style={{ objectFit: "contain", background: "#000", borderRadius: "1rem" }}
             sizes="80vw"
             priority
           />
@@ -137,7 +136,7 @@ function ProductCardBasic({
       <div
         style={{
           backgroundColor: "#000",
-          border: "2px solid #00ffff",
+          border: "2px solid "#00ffff",
           borderRadius: "1rem",
           padding: "1.25rem",
           boxShadow: "0 0 20px #0ff",
@@ -155,7 +154,6 @@ function ProductCardBasic({
             marginBottom: "1rem",
             overflow: "hidden",
             borderRadius: "1rem",
-            clipPath: "inset(0 round 1rem)",   // ✅ κρατάει τις γωνίες στρογγυλές
             cursor: "zoom-in",
           }}
         >
@@ -167,7 +165,7 @@ function ProductCardBasic({
               objectFit: "contain",
               transform: "scale(1.08)",
               transition: "transform 0.3s ease",
-              borderRadius: "1rem", // ✅
+              borderRadius: "1rem",
             }}
             onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.14)")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.08)")}
@@ -235,7 +233,6 @@ const ROPE_IMAGE: Record<AF1Color, Partial<Record<RopeColor, string>>> = {
   white: {
     white: "/products/Nike_Air_Force_1_White_Rope_Laces_White_-_frontal.webp",
     beige: "/products/Nike_Air_Force_1_White_Rope_Laces_Creme_-_frontal_1080x.webp",
-    // δεν έχουμε white AF1 με black rope → θα γίνει fallback (βλ. παρακάτω)
   },
   black: {
     black: "/products/Nike_Air_Force_1_Black_Rope_Laces_Black_frontal_1080x.webp",
@@ -255,14 +252,9 @@ function ProductCardRope() {
   const { img, isFallback } = useMemo(() => {
     const exact = ROPE_IMAGE[af1Color][rope];
     if (exact) return { img: exact, isFallback: false };
-    // Fallback: αν δεν έχουμε white AF1 με black rope, δείξε την black/black για προεπισκόπηση
     if (af1Color === "white" && rope === "black") {
-      return {
-        img: ROPE_IMAGE.black.black!,
-        isFallback: true,
-      };
+      return { img: ROPE_IMAGE.black.black!, isFallback: true };
     }
-    // default ασφαλείας
     return {
       img:
         ROPE_IMAGE[af1Color].white ||
@@ -304,7 +296,6 @@ function ProductCardRope() {
             marginBottom: "1rem",
             overflow: "hidden",
             borderRadius: "1rem",
-            clipPath: "inset(0 round 1rem)",   // ✅ κρατάει τις γωνίες στρογγυλές
             cursor: "zoom-in",
           }}
         >
@@ -316,7 +307,7 @@ function ProductCardRope() {
               objectFit: "contain",
               transform: "scale(1.08)",
               transition: "transform 0.3s ease",
-              borderRadius: "1rem", // ✅
+              borderRadius: "1rem",
             }}
             onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.14)")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.08)")}
@@ -360,7 +351,7 @@ function ProductCardRope() {
               onChange={(e) => setRope(e.target.value as RopeColor)}
               style={{ padding: 10, borderRadius: 8, background: "#000", color: "#fff", border: "1px solid #00ffff" }}
             >
-              {ROPE_COLORS_ALL.map((rc) => (
+              {["white", "black", "beige"].map((rc) => (
                 <option key={rc} value={rc}>
                   {rc === "white" ? "White" : rc === "black" ? "Black" : "Beige"}
                 </option>
@@ -434,7 +425,7 @@ export default function SneakersPage() {
           color: "#00e5ff",
           fontSize: "2rem",
           fontWeight: "bold",
-          textShadow: "0 0 10px #00e5ff",
+          textShadow: "0 0 10px "#00e5ff",
           marginBottom: "2rem",
         }}
       >
@@ -459,4 +450,3 @@ export default function SneakersPage() {
     </main>
   );
 }
-
