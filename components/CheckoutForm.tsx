@@ -131,6 +131,34 @@ export default function CheckoutForm() {
               </div>
             ))}
             <div style={{ borderTop: "1px dashed #0ff6", marginTop: 8, paddingTop: 8 }}>
+            {/* Shipping selectors in checkout */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+              <label style={{ display: "grid", gap: 4 }}>
+                <span style={{ fontSize: 12, color: "#9ef" }}>Ζώνη αποστολής</span>
+                <select
+                  value={shippingZone}
+                  onChange={(e) => (window?.localStorage?.setItem?.("kz_ship_zone", e.target.value), location?.reload?.())}
+                  style={{ padding: 8, borderRadius: 10, background: "#000", color: "#fff", border: "1px solid #0ff6" }}
+                >
+                  <option value="GR">Ελλάδα</option>
+                  <option value="EU">Ευρωπαϊκή Ένωση</option>
+                  <option value="INT">Διεθνώς</option>
+                </select>
+              </label>
+              <label style={{ display: "grid", gap: 4 }}>
+                <span style={{ fontSize: 12, color: "#9ef" }}>Τρόπος αποστολής</span>
+                <select
+                  value={shippingMethod}
+                  onChange={(e) => (window?.localStorage?.setItem?.("kz_ship_method", e.target.value), location?.reload?.())}
+                  style={{ padding: 8, borderRadius: 10, background: "#000", color: "#fff", border: "1px solid #0ff6" }}
+                >
+                  <option value="standard">Standard</option>
+                  <option value="express">Express</option>
+                  <option value="pickup">Παραλαβή από κατάστημα</option>
+                </select>
+              </label>
+            </div>
+    
               <div
                 style={{
                   display: "flex",
@@ -151,7 +179,7 @@ export default function CheckoutForm() {
                 }}
               >
                 <span>Μεταφορικά</span>
-                <span>{formatCurrency(shippingCost)}</span>
+                <span>{typeof shippingCost === "number" ? formatCurrency(shippingCost) : "—"}</span>
               </div>
               <div
                 style={{
@@ -277,3 +305,4 @@ export default function CheckoutForm() {
     </div>
   );
 }
+
