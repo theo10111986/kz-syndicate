@@ -4,6 +4,49 @@ import AddToCartButton from "@/components/AddToCartButton";
 import { useEffect } from "react";
 import { track } from "@/lib/analytics";
 import Script from "next/script"; // ✅ για JSON-LD
+import { useSession, signIn } from "next-auth/react"; // ✅ έλεγχος σύνδεσης
+
+// Μικρό τοπικό neon κουμπί για σύνδεση
+function NeonButton({
+  children,
+  onClick,
+  disabled,
+  ariaLabel,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  ariaLabel?: string;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={ariaLabel}
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        width: "100%",
+        padding: "0.6rem 0.9rem",
+        borderRadius: 12,
+        border: "2px solid #00ffff",
+        background: disabled ? "#001418" : "#000",
+        color: disabled ? "#66f7ff" : "#00ffff",
+        fontWeight: 700,
+        cursor: disabled ? "not-allowed" : "pointer",
+        boxShadow: "0 0 16px #0ff",
+        transition: "transform .15s ease",
+      }}
+      onMouseDown={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.98)";
+      }}
+      onMouseUp={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
+      }}
+    >
+      {children}
+    </button>
+  );
+}
 
 const products = [
   { name: "Bronze 29,5ml", img: "/products/Bronze.jpg", price: 7.99 },
@@ -86,6 +129,8 @@ const products = [
 ];
 
 export default function AngelusPage() {
+  const { status } = useSession(); // ✅ κατάσταση σύνδεσης
+
   // View Category όταν ανοίγει
   useEffect(() => {
     track("View Category", { name: "Custom Yourself – Angelus Leather Paints" });
@@ -153,12 +198,30 @@ export default function AngelusPage() {
             <p style={{ color: "#fff", marginBottom: "1rem" }}>
               {product.price.toFixed(2)}€
             </p>
-            <AddToCartButton
-              id={`product-${i}`}
-              name={product.name}
-              price={product.price}
-              image={product.img}
-            />
+
+            {/* ✅ ΜΟΝΟ αν είναι συνδεδεμένος δείχνουμε Add to Cart */}
+            {status === "loading" ? (
+              <NeonButton disabled ariaLabel="Έλεγχος σύνδεσης">
+                Έλεγχος σύνδεσης…
+              </NeonButton>
+            ) : status !== "authenticated" ? (
+              <NeonButton
+                onClick={() => {
+                  track("Click Sign In CTA", { source: "Angelus AddToCart Gate" });
+                  signIn(); // ανοίγει το NextAuth sign-in
+                }}
+                ariaLabel="Σύνδεση για αγορά"
+              >
+                Σύνδεση για αγορά
+              </NeonButton>
+            ) : (
+              <AddToCartButton
+                id={`product-${i}`}
+                name={product.name}
+                price={product.price}
+                image={product.img}
+              />
+            )}
           </div>
         ))}
       </div>
