@@ -50,9 +50,9 @@ function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: ()
           position: "relative",
           maxWidth: "90vw",
           maxHeight: "85vh",
-          borderRadius: "1rem",           // ✅ rounded
+          borderRadius: "1rem",           // rounded στο frame
           boxShadow: "0 0 30px #0ff",
-          overflow: "hidden",              // ✅ clip στις γωνίες
+          overflow: "hidden",              // clip στις γωνίες
         }}
       >
         <button
@@ -78,7 +78,16 @@ function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: ()
           ×
         </button>
 
-        <div style={{ position: "relative", width: "80vw", height: "70vh" }}>
+        <div
+          style={{
+            position: "relative",
+            width: "80vw",
+            height: "70vh",
+            borderRadius: "1rem",
+            overflow: "hidden",
+            clipPath: "inset(0 round 1rem)",   // ✅ σταθερό στρογγύλεμα
+          }}
+        >
           <Image
             src={img}
             alt={alt}
@@ -145,7 +154,8 @@ function ProductCardBasic({
             height: 200,
             marginBottom: "1rem",
             overflow: "hidden",
-            borderRadius: "1rem", // ✅ rounded
+            borderRadius: "1rem",
+            clipPath: "inset(0 round 1rem)",   // ✅ κρατάει τις γωνίες στρογγυλές
             cursor: "zoom-in",
           }}
         >
@@ -293,7 +303,8 @@ function ProductCardRope() {
             height: 200,
             marginBottom: "1rem",
             overflow: "hidden",
-            borderRadius: "1rem", // ✅ rounded
+            borderRadius: "1rem",
+            clipPath: "inset(0 round 1rem)",   // ✅ κρατάει τις γωνίες στρογγυλές
             cursor: "zoom-in",
           }}
         >
