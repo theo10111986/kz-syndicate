@@ -11,11 +11,11 @@ const PRICE_ROPE = 169.99;
 
 // Nike Air Force 1 — EU sizes
 const AF1_MEN_EU = [
-  38.5, 39, 40, 40.5, 41, 42, 42.5, 43, 44, 44.5, 45, 45.5, 46, 47, 47.5, 48, 48.5, 49,
+  38.5, 39, 40, 40.5, 41, 42, 42.5, 43, 44, 44.5, 45, 45.5, 46, 47, 48,
 ] as const;
 
 const AF1_WOMEN_EU = [
-  35.5, 36, 36.5, 37.5, 38, 38.5, 39, 40, 40.5, 41, 42, 42.5, 43, 44, 44.5,
+  35.5, 36, 36.5, 37.5, 38, 38.5, 39, 40, 40.5,
 ] as const;
 
 type Gender = "men" | "women";
@@ -196,7 +196,6 @@ function ProductCardBasic({
           image={img}
         />
         <p style={{ marginTop: 8, fontSize: 12, opacity: 0.8, textAlign: "center" }}>
-          AF1 συνήθως “φοράει λίγο μεγάλο” → σκέψου μισό νούμερο κάτω αν είσαι μεταξύ μεγεθών.
         </p>
       </div>
 
@@ -212,12 +211,12 @@ type RopeColor = "white" | "black" | "beige";
 // Διαθέσιμες εικόνες (ό,τι μου έδωσες)
 const ROPE_IMAGE: Record<AF1Color, Partial<Record<RopeColor, string>>> = {
   white: {
-    white: "/products/rope/Nike_Air_Force_1_White_Rope_Laces_White_-_frontal.webp",
-    beige: "/products/rope/Nike_Air_Force_1_White_Rope_Laces_Creme_-_frontal_1080x.webp",
+    white: "/products/Nike_Air_Force_1_White_Rope_Laces_White_-_frontal.webp",
+    beige: "/products/Nike_Air_Force_1_White_Rope_Laces_Creme_-_frontal_1080x.webp",
     // δεν έχουμε white AF1 με black rope → θα γίνει fallback (βλ. παρακάτω)
   },
   black: {
-    black: "/products/rope/Nike_Air_Force_1_Black_Rope_Laces_Black_frontal_1080x.webp",
+    black: "/products/Nike_Air_Force_1_Black_Rope_Laces_Black_frontal_1080x.webp",
   },
 };
 
