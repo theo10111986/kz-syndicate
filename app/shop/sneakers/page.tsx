@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
+import { useSession, signIn } from "next-auth/react";
 
 // Τιμές
 const PRICE_BASIC = 119.99;
@@ -19,6 +20,48 @@ const AF1_WOMEN_EU = [
 ] as const;
 
 type Gender = "men" | "women";
+
+/* ---------- Μικρό neon button για τοπική χρήση ---------- */
+function NeonButton({
+  onClick,
+  children,
+  disabled,
+  ariaLabel,
+}: {
+  onClick?: () => void;
+  children: React.ReactNode;
+  disabled?: boolean;
+  ariaLabel?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      disabled={disabled}
+      style={{
+        width: "100%",
+        padding: "0.75rem 1rem",
+        borderRadius: 12,
+        border: "2px solid #00ffff",
+        background: disabled ? "#001418" : "#000",
+        color: disabled ? "#66f7ff" : "#00ffff",
+        fontWeight: 700,
+        cursor: disabled ? "not-allowed" : "pointer",
+        boxShadow: "0 0 16px #0ff",
+        transition: "transform .15s ease",
+      }}
+      onMouseDown={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.transform = "scale(0.98)";
+      }}
+      onMouseUp={(e) => {
+        (e.currentTarget as HTMLButtonElement).style.transform = "scale(1)";
+      }}
+    >
+      {children}
+    </button>
+  );
+}
 
 /* ---------- Κοινό Lightbox ---------- */
 function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: () => void }) {
@@ -111,9 +154,11 @@ function ProductCardBasic({
   name: string;
   img: string;
 }) {
+  const { status } = useSession();
   const [gender, setGender] = useState<Gender>("men");
   const [size, setSize] = useState<number | "">("");
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [error, setError] = useState<string>("");
 
   const sizes = gender === "men" ? AF1_MEN_EU : AF1_WOMEN_EU;
   const genderLabel = gender === "men" ? "Men" : "Women";
@@ -130,6 +175,8 @@ function ProductCardBasic({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [previewOpen]);
+
+  const isValid = size !== "";
 
   return (
     <>
@@ -184,6 +231,7 @@ function ProductCardBasic({
               onChange={(e) => {
                 setGender(e.target.value as Gender);
                 setSize("");
+                setError("");
               }}
               style={{ padding: 10, borderRadius: 8, background: "#000", color: "#fff", border: "1px solid #00ffff" }}
             >
@@ -196,8 +244,18 @@ function ProductCardBasic({
             <span style={{ fontSize: 12, opacity: 0.9 }}>Μέγεθος (EU)</span>
             <select
               value={size === "" ? "" : String(size)}
-              onChange={(e) => setSize(e.target.value ? Number(e.target.value) : "")}
-              style={{ padding: 10, borderRadius: 8, background: "#000", color: "#fff", border: "1px solid #00ffff" }}
+              onChange={(e) => {
+                setSize(e.target.value ? Number(e.target.value) : "");
+                setError("");
+              }}
+              style={{
+                padding: 10,
+                borderRadius: 8,
+                background: "#000",
+                color: "#fff",
+                border: "1px solid #00ffff",
+                outline: isValid ? "none" : "2px solid #ff2e2e",
+              }}
             >
               <option value="">Επίλεξε μέγεθος</option>
               {sizes.map((eu) => (
@@ -209,14 +267,34 @@ function ProductCardBasic({
           </label>
         </div>
 
-        <AddToCartButton
-          id={`${id}-${gender}-${size || "nosize"}`}
-          name={`${name} (${genderLabel}${size ? ` EU ${size}` : ""})`}
-          price={PRICE_BASIC}
-          image={img}
-        />
-        <p style={{ marginTop: 8, fontSize: 12, opacity: 0.8, textAlign: "center" }}>
-        </p>
+        {/* CTA ζώνη */}
+        {status !== "authenticated" ? (
+          <NeonButton onClick={() => signIn()} ariaLabel="Σύνδεση">
+            Σύνδεση για αγορά
+          </NeonButton>
+        ) : !isValid ? (
+          <>
+            <NeonButton
+              onClick={() => setError("Συμπλήρωσε όλα τα πεδία")}
+              ariaLabel="Συμπλήρωσε όλα τα πεδία"
+            >
+              Συμπλήρωσε όλα τα πεδία
+            </NeonButton>
+            {error && (
+              <p style={{ marginTop: 8, fontSize: 12, color: "#ff6b6b", textAlign: "center" }}>
+                {error} (Απαιτείται μέγεθος)
+              </p>
+            )}
+          </>
+        ) : (
+          <AddToCartButton
+            id={`${id}-${gender}-${size || "nosize"}`}
+            name={`${name} (${genderLabel}${size ? ` EU ${size}` : ""})`}
+            price={PRICE_BASIC}
+            image={img}
+          />
+        )}
+        <p style={{ marginTop: 8, fontSize: 12, opacity: 0.8, textAlign: "center" }}></p>
       </div>
 
       {previewOpen && <Lightbox img={img} alt={name} onClose={() => setPreviewOpen(false)} />}
@@ -242,11 +320,13 @@ const ROPE_IMAGE: Record<AF1Color, Partial<Record<RopeColor, string>>> = {
 const ROPE_COLORS_ALL: RopeColor[] = ["white", "black", "beige"];
 
 function ProductCardRope() {
+  const { status } = useSession();
   const [af1Color, setAf1Color] = useState<AF1Color>("white");
   const [rope, setRope] = useState<RopeColor>("white");
   const [gender, setGender] = useState<Gender>("men");
   const [size, setSize] = useState<number | "">("");
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [error, setError] = useState<string>("");
 
   // Υπολογισμός εικόνας + αν είναι fallback
   const { img, isFallback } = useMemo(() => {
@@ -272,6 +352,8 @@ function ProductCardRope() {
     currency: "EUR",
     minimumFractionDigits: 2,
   });
+
+  const isValid = Boolean(af1Color) && Boolean(rope) && size !== "";
 
   return (
     <>
@@ -335,7 +417,10 @@ function ProductCardRope() {
             <span style={{ fontSize: 12, opacity: 0.9 }}>AF1 Χρώμα</span>
             <select
               value={af1Color}
-              onChange={(e) => setAf1Color(e.target.value as AF1Color)}
+              onChange={(e) => {
+                setAf1Color(e.target.value as AF1Color);
+                setError("");
+              }}
               style={{ padding: 10, borderRadius: 8, background: "#000", color: "#fff", border: "1px solid #00ffff" }}
             >
               <option value="white">White</option>
@@ -348,10 +433,13 @@ function ProductCardRope() {
             <span style={{ fontSize: 12, opacity: 0.9 }}>Χρώμα σχοινιού</span>
             <select
               value={rope}
-              onChange={(e) => setRope(e.target.value as RopeColor)}
+              onChange={(e) => {
+                setRope(e.target.value as RopeColor);
+                setError("");
+              }}
               style={{ padding: 10, borderRadius: 8, background: "#000", color: "#fff", border: "1px solid #00ffff" }}
             >
-              {ROPE_COLORS_ALL.map((rc) => (
+              {["white", "black", "beige"].map((rc) => (
                 <option key={rc} value={rc}>
                   {rc === "white" ? "White" : rc === "black" ? "Black" : "Beige"}
                 </option>
@@ -367,6 +455,7 @@ function ProductCardRope() {
               onChange={(e) => {
                 setGender(e.target.value as Gender);
                 setSize("");
+                setError("");
               }}
               style={{ padding: 10, borderRadius: 8, background: "#000", color: "#fff", border: "1px solid #00ffff" }}
             >
@@ -380,8 +469,18 @@ function ProductCardRope() {
             <span style={{ fontSize: 12, opacity: 0.9 }}>Μέγεθος (EU)</span>
             <select
               value={size === "" ? "" : String(size)}
-              onChange={(e) => setSize(e.target.value ? Number(e.target.value) : "")}
-              style={{ padding: 10, borderRadius: 8, background: "#000", color: "#fff", border: "1px solid #00ffff" }}
+              onChange={(e) => {
+                setSize(e.target.value ? Number(e.target.value) : "");
+                setError("");
+              }}
+              style={{
+                padding: 10,
+                borderRadius: 8,
+                background: "#000",
+                color: "#fff",
+                border: "1px solid #00ffff",
+                outline: isValid ? "none" : size === "" ? "2px solid #ff2e2e" : "none",
+              }}
             >
               <option value="">Επίλεξε μέγεθος</option>
               {(gender === "men" ? AF1_MEN_EU : AF1_WOMEN_EU).map((eu) => (
@@ -393,12 +492,33 @@ function ProductCardRope() {
           </label>
         </div>
 
-        <AddToCartButton
-          id={`af1-rope-${af1Color}-${rope}-${gender}-${size || "nosize"}`}
-          name={`AF1 ${af1Color} • Rope ${rope} (${genderLabel}${size ? ` EU ${size}` : ""})`}
-          price={PRICE_ROPE}
-          image={img}
-        />
+        {/* CTA ζώνη */}
+        {status !== "authenticated" ? (
+          <NeonButton onClick={() => signIn()} ariaLabel="Σύνδεση">
+            Σύνδεση για αγορά
+          </NeonButton>
+        ) : !isValid ? (
+          <>
+            <NeonButton
+              onClick={() => setError("Συμπλήρωσε όλα τα πεδία")}
+              ariaLabel="Συμπλήρωσε όλα τα πεδία"
+            >
+              Συμπλήρωσε όλα τα πεδία
+            </NeonButton>
+            {error && (
+              <p style={{ marginTop: 8, fontSize: 12, color: "#ff6b6b", textAlign: "center" }}>
+                {error}
+              </p>
+            )}
+          </>
+        ) : (
+          <AddToCartButton
+            id={`af1-rope-${af1Color}-${rope}-${gender}-${size || "nosize"}`}
+            name={`AF1 ${af1Color} • Rope ${rope} (${genderLabel}${size ? ` EU ${size}` : ""})`}
+            price={PRICE_ROPE}
+            image={img}
+          />
+        )}
       </div>
 
       {previewOpen && (
@@ -450,4 +570,5 @@ export default function SneakersPage() {
     </main>
   );
 }
+
 
