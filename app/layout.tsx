@@ -98,6 +98,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               }),
             }}
           />
+
+          {/* PWA: Service Worker registration */}
+          <Script
+            id="pwa-register"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                if ('serviceWorker' in navigator) {
+                  window.addEventListener('load', function () {
+                    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                      .catch(function (err) { console.log('SW registration failed:', err); });
+                  });
+                }
+              `,
+            }}
+          />
         </Providers>
       </body>
     </html>
