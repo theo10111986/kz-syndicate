@@ -1,17 +1,22 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 
 export default function CheckoutForm() {
   const router = useRouter();
-  const { cart, clearCart } = useCart();
-
-  const total = useMemo(
-    () => cart.reduce((sum, it) => sum + it.price * it.quantity, 0),
-    [cart]
-  );
+  const {
+    cart,
+    clearCart,
+    // ✅ νέα από το CartContext
+    subtotal,
+    shipping: shippingCost,
+    total,
+    shippingZone,
+    shippingMethod,
+    formatCurrency,
+  } = useCart();
 
   // Μικρή φόρμα αποστολής (μπορούμε να την επεκτείνουμε)
   const [shipping, setShipping] = useState({
@@ -39,9 +44,13 @@ export default function CheckoutForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items: cart,
+          subtotal,
+          shippingCost,
           total,
           currency: "EUR",
-          shipping,
+          shippingAddress: shipping,
+          shippingZone,
+          shippingMethod,
         }),
       });
 
@@ -113,25 +122,51 @@ export default function CheckoutForm() {
                 <div style={{ flex: 1 }}>
                   <div style={{ color: "#fff" }}>{it.name}</div>
                   <div style={{ color: "#9ef", fontSize: 13 }}>
-                    {it.price}€ × {it.quantity}
+                    {formatCurrency(it.price)} × {it.quantity}
                   </div>
                 </div>
                 <div style={{ fontWeight: 700, color: "#aef" }}>
-                  {(it.price * it.quantity).toFixed(2)}€
+                  {formatCurrency(it.price * it.quantity)}
                 </div>
               </div>
             ))}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                paddingTop: 10,
-                fontWeight: 900,
-                color: "#aef",
-              }}
-            >
-              <span>Σύνολο</span>
-              <span>{total.toFixed(2)}€</span>
+            <div style={{ borderTop: "1px dashed #0ff6", marginTop: 8, paddingTop: 8 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  color: "#aef",
+                  marginBottom: 4,
+                }}
+              >
+                <span>Υποσύνολο</span>
+                <span>{formatCurrency(subtotal)}</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  color: "#aef",
+                  marginBottom: 4,
+                }}
+              >
+                <span>Μεταφορικά</span>
+                <span>{formatCurrency(shippingCost)}</span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontWeight: 900,
+                  color: "#aef",
+                }}
+              >
+                <span>Σύνολο</span>
+                <span>{formatCurrency(total)}</span>
+              </div>
+              <div style={{ marginTop: 6, fontSize: 12, color: "#9ef" }}>
+                Ζώνη: <b>{shippingZone}</b> • Τρόπος: <b>{shippingMethod}</b>
+              </div>
             </div>
           </>
         )}
@@ -222,17 +257,19 @@ export default function CheckoutForm() {
 
         <button
           type="submit"
-          style={{
-            marginTop: 6,
-            background: "#00ffff",
-            color: "#000",
-            padding: "0.9rem 1rem",
-            borderRadius: 12,
-            border: "none",
-            fontWeight: 800,
-            cursor: "pointer",
-            boxShadow: "0 0 14px rgba(0,255,255,.35)",
-          }}
+          style{
+            {
+              marginTop: 6,
+              background: "#00ffff",
+              color: "#000",
+              padding: "0.9rem 1rem",
+              borderRadius: 12,
+              border: "none",
+              fontWeight: 800,
+              cursor: "pointer",
+              boxShadow: "0 0 14px rgba(0,255,255,.35)",
+            } as React.CSSProperties
+          }
           disabled={cart.length === 0}
         >
           Place Order →
