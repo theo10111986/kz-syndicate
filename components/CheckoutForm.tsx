@@ -257,8 +257,7 @@ export default function CheckoutForm() {
 
         <button
           type="submit"
-          style{
-            {
+          style={{
               marginTop: 6,
               background: "#00ffff",
               color: "#000",
