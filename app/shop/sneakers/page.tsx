@@ -79,7 +79,14 @@ function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: ()
         </button>
 
         <div style={{ position: "relative", width: "80vw", height: "70vh" }}>
-          <Image src={img} alt={alt} fill style={{ objectFit: "contain", background: "#000" }} sizes="80vw" priority />
+          <Image
+            src={img}
+            alt={alt}
+            fill
+            style={{ objectFit: "contain", background: "#000", borderRadius: "1rem" }} // ✅
+            sizes="80vw"
+            priority
+          />
         </div>
       </div>
     </div>
@@ -146,7 +153,12 @@ function ProductCardBasic({
             src={img}
             alt={name}
             fill
-            style={{ objectFit: "contain", transform: "scale(1.08)", transition: "transform 0.3s ease" }}
+            style={{
+              objectFit: "contain",
+              transform: "scale(1.08)",
+              transition: "transform 0.3s ease",
+              borderRadius: "1rem", // ✅
+            }}
             onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.14)")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.08)")}
             sizes="(max-width: 768px) 90vw, 320px"
@@ -289,7 +301,12 @@ function ProductCardRope() {
             src={img}
             alt={`AF1 ${af1Color} με Rope ${rope}`}
             fill
-            style={{ objectFit: "contain", transform: "scale(1.08)", transition: "transform 0.3s ease" }}
+            style={{
+              objectFit: "contain",
+              transform: "scale(1.08)",
+              transition: "transform 0.3s ease",
+              borderRadius: "1rem", // ✅
+            }}
             onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.14)")}
             onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.08)")}
             sizes="(max-width: 768px) 90vw, 320px"
