@@ -549,7 +549,7 @@ export default function SneakersPage() {
           marginBottom: "2rem",
         }}
       >
-        Nike Air Force 1 — White & Black + Rope Laces
+        Sneakers
       </h1>
 
       <div
