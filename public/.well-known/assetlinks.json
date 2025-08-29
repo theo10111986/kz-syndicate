@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.kzsyndicate.app",
+      "sha256_cert_fingerprints": [
+        "4D:15:E9:E0:9E:77:D2:10:0C:FE:C1:07:54:39:5D:CA:11:4A:4A:1A:3F:A7:60:FF:CF:3C:9E:95:FC:A8:F6:06"
+      ]
+    }
+  }
+]
