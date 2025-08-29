@@ -74,6 +74,38 @@ export default function HomeClient() {
         <Partners />
       </section>
 
+      {/* App */}
+      <section className="section" style={{ padding: "4rem 0", textAlign: "center" }}>
+        <h2
+          style={{
+            fontSize: "1.8rem",
+            color: "#161818ff",
+            textShadow: "0 0 8px #0ff",
+            marginBottom: "1rem",
+          }}
+        >
+          KZ Syndicate App
+        </h2>
+        <p style={{ opacity: 0.85, marginBottom: "1.25rem" }}>
+          Κατέβασε την εφαρμογή μας για Android ή δες οδηγίες εγκατάστασης.
+        </p>
+        <a
+          href="/app"
+          style={{
+            display: "inline-block",
+            padding: "12px 18px",
+            background: "#00ffff",
+            color: "#000",
+            fontWeight: 800,
+            borderRadius: 12,
+            boxShadow: "0 0 14px #0ff",
+            textDecoration: "none",
+          }}
+        >
+          ⬇️ Download / Οδηγίες
+        </a>
+      </section>
+
       {/* Newsletter */}
       <Newsletter />
 
@@ -101,4 +133,3 @@ export default function HomeClient() {
     </main>
   );
 }
-
