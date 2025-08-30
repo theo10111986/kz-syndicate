@@ -2,8 +2,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import nodemailer from "nodemailer";
 
-// --- Δημιουργία παραγγελίας ---
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { items, total, currency = "EUR", shipping } = body || {};
 
-    // Έλεγχοι δεδομένων
+    // --- Validation ---
     if (!Array.isArray(items) || items.length === 0) {
       return Response.json({ ok: false, error: "Το καλάθι είναι άδειο." }, { status: 400 });
     }
@@ -24,22 +24,47 @@ export async function POST(req: Request) {
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email! },
-      select: { id: true },
+      select: { id: true, email: true, name: true },
     });
 
     if (!user) {
       return Response.json({ ok: false, error: "User not found" }, { status: 404 });
     }
 
+    // --- Save order to DB ---
     const order = await prisma.order.create({
       data: {
         userId: user.id,
-        items, // Json
+        items,
         total: new Prisma.Decimal(total),
         currency,
-        // shipping: shipping ? JSON.stringify(shipping) : null // Αν θες να το κρατάς
+        // shipping: shipping ? JSON.stringify(shipping) : null,
       },
       select: { id: true, createdAt: true },
+    });
+
+    // --- Send confirmation email ---
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_SERVER_HOST,
+      port: Number(process.env.EMAIL_SERVER_PORT),
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_SERVER_USER,
+        pass: process.env.EMAIL_SERVER_PASSWORD,
+      },
+    });
+
+    await transporter.sendMail({
+      from: process.env.MAIL_FROM,
+      to: user.email,
+      subject: "Η παραγγελία σου στο KZ Syndicate",
+      text: `Λάβαμε την παραγγελία σου #${order.id}. Είναι σε διαδικασία επεξεργασίας.`,
+      html: `
+        <h2>Ευχαριστούμε για την παραγγελία σου!</h2>
+        <p>Αριθμός παραγγελίας: <strong>${order.id}</strong></p>
+        <p>Το ποσό: <strong>${total} ${currency}</strong></p>
+        <p>Θα ενημερωθείς με email όταν σταλεί.</p>
+      `,
     });
 
     return Response.json(
@@ -52,7 +77,6 @@ export async function POST(req: Request) {
   }
 }
 
-// --- Λήψη παραγγελιών για το /account ---
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -71,3 +95,4 @@ export async function GET() {
     return Response.json({ ok: false, error: "Server error" }, { status: 500 });
   }
 }
+
