@@ -164,16 +164,16 @@ function ProductCardRapper() {
             fill
             style={{
               objectFit: "contain",
-              transform: "scale(2.40)",
+              transform: "scale(1.8)",
               transition: "transform 0.3s ease",
               borderRadius: "1rem",
               display: "block",
             }}
             onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.2)")
+              ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.4)")
             }
             onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.14)")
+              ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.8)")
             }
             sizes="(max-width: 768px) 90vw, 340px"
             priority
