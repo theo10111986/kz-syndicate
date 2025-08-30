@@ -140,7 +140,10 @@ export default function HomeClient() {
           }
           .partners {
             padding-top: 0 !important;
-            margin-top: -2.5rem; /* ✅ ανεβάζει το Our Partners προς το Hero */
+            margin-top: -1.5rem; /* ανεβάζει το Our Partners */
+          }
+          .partners h2 {
+            margin: 0 !important; /* ✅ αφαιρεί τελείως το κενό που δημιουργούσε το h2 */
           }
 
           .section h2:empty {
@@ -148,11 +151,12 @@ export default function HomeClient() {
             margin: 0;
           }
           p {
-            margin-bottom: 0rem;
+            margin-bottom: 0.5rem;
           }
         }
       `}</style>
     </main>
   );
 }
+
 
