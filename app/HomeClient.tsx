@@ -40,10 +40,6 @@ export default function HomeClient() {
             sizes="100vw"
             quality={85}
             className="heroBg"
-            style={{
-              objectFit: "contain",       // ίδιο οπτικά με πριν (desktop/tablet)
-              objectPosition: "center",
-            }}
           />
         </div>
 
@@ -121,13 +117,18 @@ export default function HomeClient() {
         .section {
           padding: 4rem 0;
         }
+        /* default (desktop/tablet) */
+        .heroBg {
+          object-fit: contain;
+          object-position: center;
+        }
 
         @media (max-width: 767px) {
           .hero {
             height: 100svh; /* mobile-safe viewport height */
           }
           .heroBg {
-            object-fit: cover; /* αποφυγή κενών/μπαρών στο κινητό */
+            object-fit: cover; /* γεμίζει όλη την ενότητα στο κινητό */
           }
           .section {
             padding: 1.5rem 0;
