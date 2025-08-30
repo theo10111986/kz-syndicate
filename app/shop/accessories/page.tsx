@@ -13,10 +13,10 @@ type Variant = { label: string; file: string; id: string };
 const VARIANTS: Variant[] = [
   { label: "Fluo Pink / White",        file: "rapperfluopinkwhite.jpg",      id: "fluopinkwhite" },
   { label: "Fluo Green / White",       file: "rapperfluogreenwhite.jpg",     id: "fluogreenwhite" },
-  { label: "Bordeaux / White / Black", file: "rapperbordeauxwhiteblack.jpg", id: "bordeauxwhiteblack" },
+  { label: "Bordeaux / White / Black", file: "rapperbordeuxwhiteblack.jpg", id: "bordeauxwhiteblack" },
   { label: "Pink / Black",             file: "rapperpinkblack.jpg",          id: "pinkblack" },
   { label: "White / Red / Black",      file: "rapperwhiteredblack.jpg",      id: "whiteredblack" },
-  { label: "Grey / Red",               file: "rapergreyred.jpg",             id: "greyred" },
+  { label: "Grey / Red",               file: "rappergreyred.jpg",             id: "greyred" },
   { label: "Orange / Black",           file: "rapperorangeblack.jpg",        id: "orangeblack" },
   { label: "Black / White / Green",    file: "rapperblackwhitegreen.jpg",    id: "blackwhitegreen" },
   { label: "Red / White / Royal",      file: "rapperredwhiteroyal.jpg",      id: "redwhiteroyal" },
