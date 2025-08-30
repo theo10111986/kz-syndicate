@@ -76,14 +76,16 @@ export default function HomeClient() {
       <Contact />
 
       <style jsx>{`
-        /* ---------- Desktop/Tablet ---------- */
+        /* ---------- Desktop/Tablet (ίδιο με αρχικό) ---------- */
         .hero {
-          height: 110vh; /* full screen */
+          height: 110vh;
           position: relative;
           display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
+          margin: 0;
+          padding: 0;
         }
 
         .heroBgWrapper {
@@ -103,43 +105,33 @@ export default function HomeClient() {
           color: #010101ff;
           text-shadow: 0 0 8px #0ff, 0 0 16px #0ff;
           text-align: center;
+          position: relative;
           z-index: 1;
           margin: 0;
           padding: 0 1rem;
-          position: relative; /* ✅ στο PC κάθεται με flexbox */
         }
 
         .section {
           padding: 4rem 0;
         }
 
-        /* ---------- Mobile ---------- */
+        /* ---------- Mobile tweaks ---------- */
         @media (max-width: 767px) {
           .hero {
-            height: auto; /* όχι vh στο κινητό */
-            display: block; /* βγάζουμε το flex για να δουλέψει το absolute */
-          }
-          .heroBgWrapper {
-            position: relative;
-            aspect-ratio: 2746 / 1987;
-            width: 100%;
-            max-height: 100svh;
+            height: calc(100vh - 60px); /* πιο μικρό αλλά κρατά full-screen αίσθηση */
           }
           .heroTitle {
-            position: absolute; /* ✅ στο κινητό απόλυτη τοποθέτηση */
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             font-size: 1.3rem;
             line-height: 1.1;
+            padding: 0 0.5rem;
           }
 
           .section {
-            padding: 0.5rem 0;
+            padding: 0.75rem 0; /* πιο σφιχτά */
           }
           .partners {
-            padding-top: 0 !important;
-            margin-top: 0 !important;
+            padding-top: 0;
+            margin-top: 0;
           }
           .partners h2 {
             margin: 0 !important;
