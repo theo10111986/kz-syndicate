@@ -82,7 +82,7 @@ export default function CustomClient() {
           border-radius: 2rem;
           padding: 2rem;
           width: 200px;
-          height: 180px;
+          height: 240px;
           display: flex;
           flex-direction: column;
           align-items: center;
