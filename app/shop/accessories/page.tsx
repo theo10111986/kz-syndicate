@@ -164,7 +164,7 @@ function ProductCardRapper() {
             fill
             style={{
               objectFit: "contain",
-              transform: "scale(1.14)",
+              transform: "scale(1.40)",
               transition: "transform 0.3s ease",
               borderRadius: "1rem",
               display: "block",
