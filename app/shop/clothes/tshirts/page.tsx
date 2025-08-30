@@ -103,9 +103,8 @@ function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: ()
 }
 
 /* ---------- Κάρτα προϊόντος ---------- */
-function ProductCardTshirt() {
+function ProductCardTshirt({ variant }: { variant: Variant }) {
   const { status } = useSession();
-  const [variant, setVariant] = useState<Variant>(VARIANTS[0]);
   const [size, setSize] = useState<Size | "">("");
   const [previewOpen, setPreviewOpen] = useState(false);
 
@@ -171,36 +170,11 @@ function ProductCardTshirt() {
         </div>
 
         <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>
-          creait_wear — T-Shirt
+          creait_wear — {variant.label}
         </h3>
         <p style={{ textAlign: "center", marginBottom: 12, fontWeight: 700 }}>{priceLabel}</p>
 
         <div style={{ display: "grid", gap: 10, marginBottom: 14 }}>
-          {/* Σχέδιο */}
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={{ fontSize: 12, opacity: 0.9 }}>Σχέδιο</span>
-            <select
-              value={variant.id}
-              onChange={(e) => {
-                const v = VARIANTS.find((x) => x.id === e.target.value);
-                if (v) setVariant(v);
-              }}
-              style={{
-                padding: 10,
-                borderRadius: 8,
-                background: "#000",
-                color: "#fff",
-                border: "1px solid #00ffff",
-              }}
-            >
-              {VARIANTS.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
           {/* Μέγεθος */}
           <label style={{ display: "grid", gap: 6 }}>
             <span style={{ fontSize: 12, opacity: 0.9 }}>Μέγεθος</span>
@@ -298,7 +272,9 @@ export default function TshirtsPage() {
           justifyItems: "center",
         }}
       >
-        <ProductCardTshirt />
+        {VARIANTS.map((v) => (
+          <ProductCardTshirt key={v.id} variant={v} />
+        ))}
       </div>
     </main>
   );
