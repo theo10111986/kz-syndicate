@@ -22,7 +22,7 @@ export default function HomeClient() {
           overflow: "hidden",
         }}
       >
-        {/* ✅ Background wrapper (πάνω από το body, κάτω από το κείμενο) */}
+        {/* ✅ Background wrapper */}
         <div
           aria-hidden
           style={{
@@ -33,20 +33,20 @@ export default function HomeClient() {
           }}
         >
           <Image
-            src="/IMG_0198.jpeg"          // βεβαιώσου ότι υπάρχει ακριβώς αυτό το όνομα στο /public
+            src="/IMG_0198.jpeg"
             alt=""
             fill
             priority
             sizes="100vw"
             quality={85}
             style={{
-              objectFit: "contain",       // κρατάει την αναλογία (χωρίς crop)
+              objectFit: "contain",
               objectPosition: "center",
             }}
           />
         </div>
 
-        {/* Τίτλος επάνω από την εικόνα */}
+        {/* Τίτλος */}
         <h1
           style={{
             fontSize: "2rem",
@@ -62,7 +62,7 @@ export default function HomeClient() {
       </section>
 
       {/* Our Partners */}
-      <section className="section" style={{ padding: "4rem 0", textAlign: "center" }}>
+      <section className="section partners" style={{ textAlign: "center" }}>
         <h2
           style={{
             fontSize: "1.8rem",
@@ -75,7 +75,7 @@ export default function HomeClient() {
       </section>
 
       {/* App */}
-      <section className="section" style={{ padding: "4rem 0", textAlign: "center" }}>
+      <section className="section" style={{ textAlign: "center" }}>
         <h2
           style={{
             fontSize: "1.8rem",
@@ -106,13 +106,9 @@ export default function HomeClient() {
         </a>
       </section>
 
-      {/* Newsletter */}
       <Newsletter />
-
-      {/* Contact */}
       <Contact />
 
-      {/* Responsive tweaks */}
       <style jsx>{`
         .hero {
           height: 110vh;
@@ -122,35 +118,41 @@ export default function HomeClient() {
         }
 
         @media (max-width: 767px) {
-  .hero {
-    height: auto; /* ❌ όχι vh στο κινητό */
-  }
-  .hero > div {
-    position: relative;
-    aspect-ratio: 2746 / 1987; /* ✅ σωστή αναλογία εικόνας */
-    width: 100%;
-    max-height: 100svh; /* να μη ξεπερνά ποτέ το ύψος της οθόνης */
-  }
-  .hero h1 {
-    margin: 0;
-    line-height: 1.1;
-    padding: 0 1rem;
-    font-size: 1.5rem;
-  }
-  .section {
-    padding: 1.5rem 0;
-  }
-  .section h2:empty {
-    display: none;
-  }
-}
+          .hero {
+            height: auto; /* όχι vh στο κινητό */
+          }
+          .hero > div {
+            position: relative;
+            aspect-ratio: 2746 / 1987;
+            width: 100%;
+            max-height: 100svh;
+          }
+          .hero h1 {
+            margin: 0;
+            line-height: 1.1;
+            padding: 0 0.5rem;
+            font-size: 1.3rem;
+          }
 
+          /* πολύ πιο σφιχτό spacing */
+          .section {
+            padding: 0.5rem 0;
+          }
+          .partners {
+            padding-top: 0; /* μηδέν κενό πάνω από Our Partners */
+          }
+
+          .section h2:empty {
+            display: none;
+            margin: 0;
+          }
           p {
-            margin-bottom: 0.75rem; /* λίγο πιο “σφιχτά” κείμενα */
+            margin-bottom: 0.5rem;
           }
         }
       `}</style>
     </main>
   );
 }
+
 
