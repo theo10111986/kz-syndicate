@@ -134,12 +134,12 @@ export default function HomeClient() {
             font-size: 1.3rem;
           }
 
-          /* πολύ πιο σφιχτό spacing */
+          /* πιο σφιχτό spacing */
           .section {
             padding: 0.5rem 0;
           }
           .partners {
-            padding-top: 0; /* μηδέν κενό πάνω από Our Partners */
+            padding-top: 0 !important; /* αφαιρεί τελείως το κενό πάνω από Our Partners */
           }
 
           .section h2:empty {
@@ -154,5 +154,3 @@ export default function HomeClient() {
     </main>
   );
 }
-
-
