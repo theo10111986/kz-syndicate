@@ -23,7 +23,7 @@ const VARIANTS: Variant[] = [
   { label: "Black / Orange",           file: "rapperblackorange.jpg",        id: "blackorange" },
   { label: "Black / Olive",            file: "rapperblackolive.jpg",         id: "blackolive" },
   { label: "Red / White",              file: "rapperredwhite.jpg",           id: "redwhite" },
-  { label: "Eclete / White",           file: "rapperecletewhite.jpg",        id: "ecletewhite" },
+  { label: "Royal / White",           file: "rapperroyalwhite.jpg",        id: "royalwhite" },
   { label: "Black / White",            file: "rapperblackwhite.jpg",         id: "blackwhite" },
   { label: "Yellow / White",           file: "rapperyellowwhite.jpg",        id: "yellowwhite" },
   { label: "Orange / White",           file: "rapperorangewhite.jpg",        id: "orangewhite" },
