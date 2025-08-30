@@ -39,8 +39,9 @@ export default function HomeClient() {
             priority
             sizes="100vw"
             quality={85}
+            className="heroBg"
             style={{
-              objectFit: "contain",       // ίδιο οπτικά με πριν
+              objectFit: "contain",       // ίδιο οπτικά με πριν (desktop/tablet)
               objectPosition: "center",
             }}
           />
@@ -123,7 +124,10 @@ export default function HomeClient() {
 
         @media (max-width: 767px) {
           .hero {
-            height: calc(100vh - 60px);
+            height: 100svh; /* mobile-safe viewport height */
+          }
+          .heroBg {
+            object-fit: cover; /* αποφυγή κενών/μπαρών στο κινητό */
           }
           .section {
             padding: 1.5rem 0;
@@ -133,3 +137,4 @@ export default function HomeClient() {
     </main>
   );
 }
+
