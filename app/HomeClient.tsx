@@ -9,29 +9,9 @@ export default function HomeClient() {
   return (
     <main style={{ backgroundColor: "#000", color: "#fff", position: "relative" }}>
       {/* Hero Section */}
-      <section
-        className="hero"
-        style={{
-          height: "110vh",
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginTop: 0,
-          paddingTop: 0,
-          overflow: "hidden",
-        }}
-      >
+      <section className="hero">
         {/* ✅ Background wrapper */}
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 0,
-            pointerEvents: "none",
-          }}
-        >
+        <div className="heroBgWrapper">
           <Image
             src="/IMG_0198.jpeg"
             alt=""
@@ -39,26 +19,12 @@ export default function HomeClient() {
             priority
             sizes="100vw"
             quality={85}
-            style={{
-              objectFit: "contain",
-              objectPosition: "center",
-            }}
+            className="heroImg"
           />
         </div>
 
         {/* Τίτλος */}
-        <h1
-          style={{
-            fontSize: "2rem",
-            color: "#010101ff",
-            textShadow: "0 0 8px #0ff, 0 0 16px #0ff",
-            textAlign: "center",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
-          Join the underground, wear the code.
-        </h1>
+        <h1 className="heroTitle">Join the underground, wear the code.</h1>
       </section>
 
       {/* Our Partners */}
@@ -112,44 +78,74 @@ export default function HomeClient() {
       <style jsx>{`
         .hero {
           height: 110vh;
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
         }
+
+        .heroBgWrapper {
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+        }
+
+        .heroImg {
+          object-fit: contain;
+          object-position: center;
+        }
+
+        .heroTitle {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 2rem;
+          color: #010101ff;
+          text-shadow: 0 0 8px #0ff, 0 0 16px #0ff;
+          text-align: center;
+          z-index: 1;
+          margin: 0;
+          padding: 0 1rem;
+        }
+
         .section {
           padding: 4rem 0;
         }
 
         @media (max-width: 767px) {
           .hero {
-            height: auto; /* όχι vh στο κινητό */
+            height: auto; /* όχι fixed vh στο κινητό */
           }
-          .hero > div {
+          .heroBgWrapper {
             position: relative;
             aspect-ratio: 2746 / 1987;
             width: 100%;
             max-height: 100svh;
           }
-          .hero h1 {
-            margin: 0;
-            line-height: 1.1;
-            padding: 0 0.5rem;
+          .heroTitle {
             font-size: 1.3rem;
+            line-height: 1.1;
           }
 
-          /* πιο σφιχτό spacing */
           .section {
             padding: 0.5rem 0;
           }
           .partners {
             padding-top: 0 !important;
-            margin-top: -1.5rem; /* ανεβάζει το Our Partners */
+            margin-top: 0 !important;
           }
           .partners h2 {
-            margin: 0 !important; /* ✅ αφαιρεί τελείως το κενό που δημιουργούσε το h2 */
+            margin: 0 !important;
           }
 
           .section h2:empty {
             display: none;
             margin: 0;
           }
+
           p {
             margin-bottom: 0.5rem;
           }
