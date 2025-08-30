@@ -12,13 +12,13 @@ type Variant = { label: string; file: string; id: string };
 type Size = "S" | "M" | "L" | "XL";
 
 const VARIANTS: Variant[] = [
-  { label: "Tarpley",     file: "tarpley_result.webp",   id: "tarpley" },
+  { label: "Roy Tarpley",     file: "tarpley_result.webp",   id: "tarpley" },
   { label: "Tony White",  file: "tonywhite_result.webp", id: "tonywhite" },
-  { label: "Turner",      file: "turner_result.webp",    id: "turner" },
-  { label: "Wilkins",     file: "wilkins_result.webp",   id: "wilkins" },
-  { label: "Barlow",      file: "barlow_result.webp",    id: "barlow" },
-  { label: "Wiggins",     file: "wiggins_result.webp",   id: "wiggins" },
-  { label: "Ancrum",      file: "ancrum_result.webp",    id: "ancrum" },
+  { label: "Henry Turner",      file: "turner_result.webp",    id: "turner" },
+  { label: "Dominique Wilkins",     file: "wilkins_result.webp",   id: "wilkins" },
+  { label: "Kenneth Barlow",      file: "barlow_result.webp",    id: "barlow" },
+  { label: "Mitchell Wiggins",     file: "wiggins_result.webp",   id: "wiggins" },
+  { label: "David Ancrum",      file: "ancrum_result.webp",    id: "ancrum" },
 ];
 
 /* ---------- Lightbox ---------- */
