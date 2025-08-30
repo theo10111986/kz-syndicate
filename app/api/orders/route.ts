@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import nodemailer from "nodemailer";
 
-// Εξασφαλίζουμε Node.js runtime σε Vercel (όχι Edge)
+// Βεβαιωνόμαστε ότι τρέχει σε Node.js runtime (όχι Edge)
 export const runtime = "nodejs";
 
 // --- Δημιουργία παραγγελίας ---
@@ -47,40 +47,39 @@ export async function POST(req: Request) {
       select: { id: true, createdAt: true },
     });
 
-    // --- Send confirmation email (δεν μπλοκάρει την παραγγελία αν αποτύχει) ---
+    // --- Prepare mailer (δεν μπλοκάρει την παραγγελία αν αποτύχει) ---
     try {
       const host = process.env.EMAIL_SERVER_HOST;
       const port = Number(process.env.EMAIL_SERVER_PORT || 465);
-      const userEmail = process.env.EMAIL_SERVER_USER;
-      const pass = process.env.EMAIL_SERVER_PASSWORD;
+      const smtpUser = process.env.EMAIL_SERVER_USER;
+      const smtpPass = process.env.EMAIL_SERVER_PASSWORD;
 
-      if (!host || !userEmail || !pass) {
+      if (!host || !smtpUser || !smtpPass) {
         console.error("Missing SMTP env vars (EMAIL_SERVER_HOST/USER/PASSWORD).");
       } else {
         const transporter = nodemailer.createTransport({
           host,
           port,
           secure: port === 465, // SSL για 465
-          auth: { user: userEmail, pass },
+          auth: { user: smtpUser, pass: smtpPass },
         });
 
         const from =
           process.env.EMAIL_FROM || // π.χ. "KZ Syndicate" <info@kzsyndicate.com>
           process.env.MAIL_FROM ||  // fallback
-          userEmail;
+          smtpUser;
 
         const prettyTotal = new Intl.NumberFormat("el-GR", {
           style: "currency",
           currency,
         }).format(total);
 
+        // Πελάτης: επιβεβαίωση
         await transporter.sendMail({
-          from: from,
-          to: user.email, // στέλνουμε στον πελάτη που έκανε login
+          from,
+          to: user.email,
           subject: "Λάβαμε την παραγγελία σου ✅",
-          text: `Γεια σου${user.name ? " " + user.name : ""}, λάβαμε την παραγγελία σου #${
-            order.id
-          }. Ποσό: ${prettyTotal}. Είναι σε διαδικασία επεξεργασίας—θα ενημερωθείς όταν σταλεί.`,
+          text: `Γεια σου${user.name ? " " + user.name : ""}, λάβαμε την παραγγελία σου #${order.id}. Ποσό: ${prettyTotal}. Είναι σε διαδικασία επεξεργασίας—θα ενημερωθείς όταν σταλεί.`,
           html: `
             <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">
               <h2 style="color:#00ffff;margin:0 0 8px">KZ Syndicate</h2>
@@ -92,6 +91,45 @@ export async function POST(req: Request) {
             </div>
           `,
         });
+
+        // Admin: ειδοποίηση
+        try {
+          const adminListRaw =
+            process.env.ADMIN_EMAILS || // "info@kz...,admin2@..."
+            process.env.MAIL_TO ||      // fallback
+            smtpUser;
+
+          const admins = (adminListRaw || "")
+            .split(",")
+            .map(s => s.trim())
+            .filter(Boolean);
+
+          if (admins.length) {
+            const itemsSummary = Array.isArray(items)
+              ? items
+                  .map((i: any) => `• ${i.name ?? i.title ?? "item"} × ${i.quantity ?? 1} @ ${i.price ?? 0}`)
+                  .join("<br/>")
+              : "";
+
+            await transporter.sendMail({
+              from,
+              to: admins,
+              subject: `🛎️ Νέα παραγγελία #${order.id}`,
+              html: `
+                <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif">
+                  <h3 style="margin:0 0 8px">Νέα παραγγελία</h3>
+                  <p><strong>Order ID:</strong> ${order.id}</p>
+                  <p><strong>Πελάτης:</strong> ${user.name ?? ""} &lt;${user.email}&gt;</p>
+                  <p><strong>Σύνολο:</strong> ${prettyTotal}</p>
+                  ${itemsSummary ? `<hr/><p style="margin:8px 0"><strong>Items:</strong><br/>${itemsSummary}</p>` : ""}
+                  <p style="margin-top:12px;opacity:.7;font-size:.9rem">Αυτόματο μήνυμα από το σύστημα.</p>
+                </div>
+              `,
+            });
+          }
+        } catch (adminErr) {
+          console.error("Admin notification email error:", adminErr);
+        }
       }
     } catch (emailErr) {
       console.error("Order confirmation email error:", emailErr);
