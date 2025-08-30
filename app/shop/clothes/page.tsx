@@ -89,8 +89,8 @@ export default function ClothesPage() {
           border: 2px solid #00ffff;
           border-radius: 2rem;
           padding: 2rem;
-          width: 200px;
-          height: 200px;
+          width: 230px;
+          height: 250px;
           display: flex;
           flex-direction: column;
           align-items: center;
