@@ -4,35 +4,37 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
+import { useSession, signIn } from "next-auth/react";
 
 const PRICE = 10.0;
 const BASE = "/products/atlantis-rapper/";
 
 type Variant = { label: string; file: string; id: string };
 
+// ΖΗΤΗΘΗΚΕ: 1) πρώτο Black / White, 2) δεύτερο Black, έπειτα τα υπόλοιπα
 const VARIANTS: Variant[] = [
+  { label: "Black / White",            file: "rapperblackwhite.jpg",         id: "blackwhite" },
+  { label: "Black",                    file: "rapperblack.jpg",              id: "black" },
   { label: "Fluo Pink / White",        file: "rapperfluopinkwhite.jpg",      id: "fluopinkwhite" },
   { label: "Fluo Green / White",       file: "rapperfluogreenwhite.jpg",     id: "fluogreenwhite" },
-  { label: "Bordeaux / White / Black", file: "rapperbordeuxwhiteblack.jpg", id: "bordeauxwhiteblack" },
+  { label: "Bordeaux / White / Black", file: "rapperbordeuxwhiteblack.jpg",  id: "bordeauxwhiteblack" },
   { label: "Pink / Black",             file: "rapperpinkblack.jpg",          id: "pinkblack" },
   { label: "White / Red / Black",      file: "rapperwhiteredblack.jpg",      id: "whiteredblack" },
-  { label: "Grey / Red",               file: "rappergreyred.jpg",             id: "greyred" },
+  { label: "Grey / Red",               file: "rappergreyred.jpg",            id: "greyred" },
   { label: "Orange / Black",           file: "rapperorangeblack.jpg",        id: "orangeblack" },
   { label: "Black / White / Green",    file: "rapperblackwhitegreen.jpg",    id: "blackwhitegreen" },
   { label: "Red / White / Royal",      file: "rapperredwhiteroyal.jpg",      id: "redwhiteroyal" },
   { label: "Black / Orange",           file: "rapperblackorange.jpg",        id: "blackorange" },
   { label: "Black / Olive",            file: "rapperblackolive.jpg",         id: "blackolive" },
   { label: "Red / White",              file: "rapperredwhite.jpg",           id: "redwhite" },
-  { label: "Royal / White",           file: "rapperroyalwhite.jpg",        id: "royalwhite" },
-  { label: "Black / White",            file: "rapperblackwhite.jpg",         id: "blackwhite" },
+  { label: "Royal / White",            file: "rapperroyalwhite.jpg",         id: "royalwhite" },
   { label: "Yellow / White",           file: "rapperyellowwhite.jpg",        id: "yellowwhite" },
   { label: "Orange / White",           file: "rapperorangewhite.jpg",        id: "orangewhite" },
   { label: "Blue / White",             file: "rapperbluewhite.jpg",          id: "bluewhite" },
   { label: "Green / White",            file: "rappergreenwhite.jpg",         id: "greenwhite" },
-  { label: "Black",                    file: "rapperblack.jpg",              id: "black" },
 ];
 
-/* ---------- Κοινό Lightbox, ίδιο στυλ ---------- */
+/* ---------- Lightbox ---------- */
 function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: () => void }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -113,9 +115,10 @@ function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: ()
   );
 }
 
-/* ---------- Κάρτα προϊόντος (ίδιο neon στυλ) ---------- */
+/* ---------- Κάρτα προϊόντος ---------- */
 function ProductCardRapper() {
-  const [variant, setVariant] = useState<Variant>(VARIANTS[0]);
+  const { status } = useSession(); // ΖΗΤΗΘΗΚΕ: έλεγχος login
+  const [variant, setVariant] = useState<Variant>(VARIANTS[0]); // ξεκινά με Black/White
   const [previewOpen, setPreviewOpen] = useState(false);
 
   const priceLabel = useMemo(
@@ -140,14 +143,14 @@ function ProductCardRapper() {
           width: 340,
         }}
       >
-        {/* Εικόνα — να φαίνεται ΟΛΟ το καπέλο: objectFit contain + ελαφρύ zoom */}
+        {/* Εικόνα — ΜΕΓΑΛΥΤΕΡΟ zoom αλλά να φαίνεται όλο το καπέλο */}
         <div
           onClick={() => setPreviewOpen(true)}
           title="Μεγέθυνση"
           style={{
             position: "relative",
             width: "100%",
-            height: 240,
+            height: 260, // λίγο ψηλότερο
             marginBottom: "1rem",
             overflow: "hidden",
             borderRadius: "1rem",
@@ -161,16 +164,16 @@ function ProductCardRapper() {
             fill
             style={{
               objectFit: "contain",
-              transform: "scale(1.06)",
+              transform: "scale(1.14)", // ΖΗΤΗΘΗΚΕ: μεγαλύτερο zoom
               transition: "transform 0.3s ease",
               borderRadius: "1rem",
               display: "block",
             }}
             onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.12)")
+              ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.2)")
             }
             onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.06)")
+              ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.14)")
             }
             sizes="(max-width: 768px) 90vw, 340px"
             priority
@@ -209,13 +212,33 @@ function ProductCardRapper() {
           </label>
         </div>
 
-        {/* CTA – Add to cart */}
-        <AddToCartButton
-          id={`atlantis-rapper-${variant.id}`}
-          name={`Atlantis Rapper (${variant.label})`}
-          price={PRICE}
-          image={BASE + variant.file}
-        />
+        {/* CTA – αν δεν είσαι login, δεν έχει Add to Cart */}
+        {status !== "authenticated" ? (
+          <button
+            type="button"
+            onClick={() => signIn()}
+            style={{
+              width: "100%",
+              padding: "0.75rem 1rem",
+              borderRadius: 12,
+              border: "2px solid #00ffff",
+              background: "#000",
+              color: "#00ffff",
+              fontWeight: 700,
+              cursor: "pointer",
+              boxShadow: "0 0 16px #0ff",
+            }}
+          >
+            Σύνδεση για αγορά
+          </button>
+        ) : (
+          <AddToCartButton
+            id={`atlantis-rapper-${variant.id}`}
+            name={`Atlantis Rapper (${variant.label})`}
+            price={PRICE}
+            image={BASE + variant.file}
+          />
+        )}
       </div>
 
       {previewOpen && (
@@ -266,3 +289,4 @@ export default function AccessoriesPage() {
     </main>
   );
 }
+
