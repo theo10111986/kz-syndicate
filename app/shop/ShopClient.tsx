@@ -5,26 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 
 const categories = [
-  {
-    title: "Sneakers",
-    img: "/shop-categories/sneakers.png",
-    link: "/shop/sneakers",
-  },
-  {
-    title: "Clothes",
-    img: "/shop-categories/clothes.png",
-    link: "/shop/clothes",
-  },
-  {
-    title: "Accessories",
-    img: "/shop-categories/accessories.png",
-    link: "/shop/accessories",
-  },
-  {
-    title: "Custom Yourself",
-    img: "/shop-categories/art.png",
-    link: "/shop/custom",
-  },
+  { title: "Sneakers",        img: "/shop-categories/sneakers.png",    link: "/shop/sneakers" },
+  { title: "Clothes",         img: "/shop-categories/clothes.png",     link: "/shop/clothes" },
+  { title: "Accessories",     img: "/shop-categories/accessories.png", link: "/shop/accessories" },
+  { title: "Custom Yourself", img: "/shop-categories/art.png",         link: "/shop/custom" },
 ];
 
 export default function ShopPage() {
@@ -57,24 +41,27 @@ export default function ShopPage() {
           flexWrap: "wrap",
           justifyContent: "center",
           gap: "2rem",
+          width: "100%",
+          maxWidth: 1200,
         }}
       >
         {categories.map((cat, index) => (
-          <Link key={index} href={cat.link}>
+          <Link key={index} href={cat.link} style={{ textDecoration: "none" }}>
             <div
               style={{
                 backgroundColor: "#000",
                 border: "2px solid #00ffff",
                 borderRadius: "2rem",
-                padding: "2rem",
-                width: "200px",
-                height: "180px",
+                padding: "1.25rem",
+                width: 200,
+                height: 180,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
                 boxShadow: "0 0 15px #0ff",
                 transition: "transform 0.3s, box-shadow 0.3s",
+                overflow: "hidden", // μην ξεφεύγει τίποτα από την κάρτα
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "scale(1.08)";
@@ -85,19 +72,40 @@ export default function ShopPage() {
                 e.currentTarget.style.boxShadow = "0 0 15px #0ff";
               }}
             >
-              <Image
-                src={cat.img}
-                alt={cat.title}
-                width={170}
-                height={170}
-                style={{ marginBottom: "1rem" }}
-              />
+              {/* Wrapper που κρατάει ΟΠΩΣΔΗΠΟΤΕ την εικόνα μέσα */}
+              <div
+                style={{
+                  width: 170,
+                  height: 120, // λίγο πιο κοντό για να χωράει άνετα ο τίτλος
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                <Image
+                  src={cat.img}
+                  alt={cat.title}
+                  width={170}
+                  height={170}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    objectFit: "contain",
+                    display: "block",
+                  }}
+                />
+              </div>
+
               <p
                 style={{
                   color: "#00ffff",
                   fontWeight: "bold",
                   textShadow: "0 0 8px #0ff",
                   textAlign: "center",
+                  lineHeight: 1.1,
+                  margin: 0,
                 }}
               >
                 {cat.title}
