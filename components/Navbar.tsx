@@ -154,6 +154,7 @@ export default function Navbar() {
           <button
             onClick={() => setOpen(true)}
             aria-label="Open menu"
+            className="hamburger"
             style={{ color: "#00ffff", fontSize: "1.6rem", lineHeight: 1 }}
           >
             ☰
@@ -267,19 +268,33 @@ export default function Navbar() {
 
         @media (max-width: 767px) {
           .desktopBar   { display: none !important; }
-          .mobileBar    { display: block !important; }
+          .mobileBar    { display: block !important; left: 0; right: 0; } /* ✅ κλείδωμα στις άκρες */
           .mobileSidebar{ display: flex !important; }
 
           .spacerDesktop { display: none; }
           .spacerMobile  { display: block; height: 0px; }
 
-          /* ✅ Safe padding για notch / cutouts */
+          /* ✅ Safe padding για notch / cutouts, με fallback */
           .mobileBar .mobileInner {
-            padding-left: max(12px, env(safe-area-inset-left));
-            padding-right: max(12px, env(safe-area-inset-right));
+            width: 100%;
+            box-sizing: border-box;
+            padding-left: max(12px, env(safe-area-inset-left, 0px));
+            padding-right: max(16px, env(safe-area-inset-right, 0px));
+          }
+
+          /* ✅ το hamburger να μην κολλάει στην άκρη ούτε όταν δεν υποστηρίζεται env() */
+          .mobileBar .mobileInner .hamburger {
+            margin-right: max(8px, env(safe-area-inset-right, 0px));
           }
         }
+      `}</style>
+
+      {/* Global μικρο-fix για overflow που σπρώχνει δεξιά στοιχεία */}
+      <style jsx global>{`
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { width: 100%; overflow-x: hidden; }
       `}</style>
     </>
   );
 }
+
