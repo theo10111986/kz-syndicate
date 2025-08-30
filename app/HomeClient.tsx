@@ -76,8 +76,9 @@ export default function HomeClient() {
       <Contact />
 
       <style jsx>{`
+        /* ---------- Desktop/Tablet ---------- */
         .hero {
-          height: 110vh;
+          height: 110vh; /* full screen */
           position: relative;
           display: flex;
           align-items: center;
@@ -98,10 +99,6 @@ export default function HomeClient() {
         }
 
         .heroTitle {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
           font-size: 2rem;
           color: #010101ff;
           text-shadow: 0 0 8px #0ff, 0 0 16px #0ff;
@@ -109,15 +106,18 @@ export default function HomeClient() {
           z-index: 1;
           margin: 0;
           padding: 0 1rem;
+          position: relative; /* ✅ στο PC κάθεται με flexbox */
         }
 
         .section {
           padding: 4rem 0;
         }
 
+        /* ---------- Mobile ---------- */
         @media (max-width: 767px) {
           .hero {
-            height: auto; /* όχι fixed vh στο κινητό */
+            height: auto; /* όχι vh στο κινητό */
+            display: block; /* βγάζουμε το flex για να δουλέψει το absolute */
           }
           .heroBgWrapper {
             position: relative;
@@ -126,6 +126,10 @@ export default function HomeClient() {
             max-height: 100svh;
           }
           .heroTitle {
+            position: absolute; /* ✅ στο κινητό απόλυτη τοποθέτηση */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             font-size: 1.3rem;
             line-height: 1.1;
           }
