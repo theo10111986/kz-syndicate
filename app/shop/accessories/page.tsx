@@ -11,27 +11,27 @@ const BASE = "/products/atlantis-rapper/";
 
 type Variant = { label: string; file: string; id: string };
 
-// ΖΗΤΗΘΗΚΕ: 1) πρώτο Black / White, 2) δεύτερο Black, έπειτα τα υπόλοιπα
+// Πρώτο Black / White, δεύτερο Black, όλα με _result.webp
 const VARIANTS: Variant[] = [
-  { label: "Black / White",            file: "rapperblackwhite.jpg",         id: "blackwhite" },
-  { label: "Black",                    file: "rapperblack.jpg",              id: "black" },
-  { label: "Fluo Pink / White",        file: "rapperfluopinkwhite.jpg",      id: "fluopinkwhite" },
-  { label: "Fluo Green / White",       file: "rapperfluogreenwhite.jpg",     id: "fluogreenwhite" },
-  { label: "Bordeaux / White / Black", file: "rapperbordeuxwhiteblack.jpg",  id: "bordeauxwhiteblack" },
-  { label: "Pink / Black",             file: "rapperpinkblack.jpg",          id: "pinkblack" },
-  { label: "White / Red / Black",      file: "rapperwhiteredblack.jpg",      id: "whiteredblack" },
-  { label: "Grey / Red",               file: "rappergreyred.jpg",            id: "greyred" },
-  { label: "Orange / Black",           file: "rapperorangeblack.jpg",        id: "orangeblack" },
-  { label: "Black / White / Green",    file: "rapperblackwhitegreen.jpg",    id: "blackwhitegreen" },
-  { label: "Red / White / Royal",      file: "rapperredwhiteroyal.jpg",      id: "redwhiteroyal" },
-  { label: "Black / Orange",           file: "rapperblackorange.jpg",        id: "blackorange" },
-  { label: "Black / Olive",            file: "rapperblackolive.jpg",         id: "blackolive" },
-  { label: "Red / White",              file: "rapperredwhite.jpg",           id: "redwhite" },
-  { label: "Royal / White",            file: "rapperroyalwhite.jpg",         id: "royalwhite" },
-  { label: "Yellow / White",           file: "rapperyellowwhite.jpg",        id: "yellowwhite" },
-  { label: "Orange / White",           file: "rapperorangewhite.jpg",        id: "orangewhite" },
-  { label: "Blue / White",             file: "rapperbluewhite.jpg",          id: "bluewhite" },
-  { label: "Green / White",            file: "rappergreenwhite.jpg",         id: "greenwhite" },
+  { label: "Black / White",            file: "rapperblackwhite_result.webp",         id: "blackwhite" },
+  { label: "Black",                    file: "rapperblack_result.webp",              id: "black" },
+  { label: "Fluo Pink / White",        file: "rapperfluopinkwhite_result.webp",      id: "fluopinkwhite" },
+  { label: "Fluo Green / White",       file: "rapperfluogreenwhite_result.webp",     id: "fluogreenwhite" },
+  { label: "Bordeaux / White / Black", file: "rapperbordeuxwhiteblack_result.webp",  id: "bordeauxwhiteblack" },
+  { label: "Pink / Black",             file: "rapperpinkblack_result.webp",          id: "pinkblack" },
+  { label: "White / Red / Black",      file: "rapperwhiteredblack_result.webp",      id: "whiteredblack" },
+  { label: "Grey / Red",               file: "rappergreyred_result.webp",            id: "greyred" },
+  { label: "Orange / Black",           file: "rapperorangeblack_result.webp",        id: "orangeblack" },
+  { label: "Black / White / Green",    file: "rapperblackwhitegreen_result.webp",    id: "blackwhitegreen" },
+  { label: "Red / White / Royal",      file: "rapperredwhiteroyal_result.webp",      id: "redwhiteroyal" },
+  { label: "Black / Orange",           file: "rapperblackorange_result.webp",        id: "blackorange" },
+  { label: "Black / Olive",            file: "rapperblackolive_result.webp",         id: "blackolive" },
+  { label: "Red / White",              file: "rapperredwhite_result.webp",           id: "redwhite" },
+  { label: "Royal / White",            file: "rapperroyalwhite_result.webp",         id: "royalwhite" },
+  { label: "Yellow / White",           file: "rapperyellowwhite_result.webp",        id: "yellowwhite" },
+  { label: "Orange / White",           file: "rapperorangewhite_result.webp",        id: "orangewhite" },
+  { label: "Blue / White",             file: "rapperbluewhite_result.webp",          id: "bluewhite" },
+  { label: "Green / White",            file: "rappergreenwhite_result.webp",         id: "greenwhite" },
 ];
 
 /* ---------- Lightbox ---------- */
@@ -117,8 +117,8 @@ function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: ()
 
 /* ---------- Κάρτα προϊόντος ---------- */
 function ProductCardRapper() {
-  const { status } = useSession(); // ΖΗΤΗΘΗΚΕ: έλεγχος login
-  const [variant, setVariant] = useState<Variant>(VARIANTS[0]); // ξεκινά με Black/White
+  const { status } = useSession();
+  const [variant, setVariant] = useState<Variant>(VARIANTS[0]);
   const [previewOpen, setPreviewOpen] = useState(false);
 
   const priceLabel = useMemo(
@@ -143,14 +143,14 @@ function ProductCardRapper() {
           width: 340,
         }}
       >
-        {/* Εικόνα — ΜΕΓΑΛΥΤΕΡΟ zoom αλλά να φαίνεται όλο το καπέλο */}
+        {/* Εικόνα με zoom */}
         <div
           onClick={() => setPreviewOpen(true)}
           title="Μεγέθυνση"
           style={{
             position: "relative",
             width: "100%",
-            height: 260, // λίγο ψηλότερο
+            height: 260,
             marginBottom: "1rem",
             overflow: "hidden",
             borderRadius: "1rem",
@@ -164,7 +164,7 @@ function ProductCardRapper() {
             fill
             style={{
               objectFit: "contain",
-              transform: "scale(1.14)", // ΖΗΤΗΘΗΚΕ: μεγαλύτερο zoom
+              transform: "scale(1.14)",
               transition: "transform 0.3s ease",
               borderRadius: "1rem",
               display: "block",
@@ -212,7 +212,7 @@ function ProductCardRapper() {
           </label>
         </div>
 
-        {/* CTA – αν δεν είσαι login, δεν έχει Add to Cart */}
+        {/* CTA */}
         {status !== "authenticated" ? (
           <button
             type="button"
@@ -289,4 +289,3 @@ export default function AccessoriesPage() {
     </main>
   );
 }
-
