@@ -31,7 +31,7 @@ export default function Navbar() {
 
   return (
     <>
-      {/* ===== Desktop bar (ΑΚΡΙΒΩΣ όπως το είχες) ===== */}
+      {/* ===== Desktop bar ===== */}
       <div
         className="desktopBar"
         style={{
@@ -122,7 +122,7 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* ===== Mobile top bar (brand + hamburger) ===== */}
+      {/* ===== Mobile top bar ===== */}
       <div
         className="mobileBar"
         style={{
@@ -133,10 +133,11 @@ export default function Navbar() {
           borderBottom: "1px solid #111",
           padding: "0.75rem 0",
           zIndex: 10000,
-          display: "none", // ενεργοποιείται κάτω από 768px μέσω styled-jsx
+          display: "none",
         }}
       >
         <div
+          className="mobileInner"
           style={{
             maxWidth: 1100,
             margin: "0 auto",
@@ -153,7 +154,7 @@ export default function Navbar() {
           <button
             onClick={() => setOpen(true)}
             aria-label="Open menu"
-            style={{ color: "#00ffff", fontSize: "1.6rem", lineHeight: 1, marginRight: 2 }}
+            style={{ color: "#00ffff", fontSize: "1.6rem", lineHeight: 1 }}
           >
             ☰
           </button>
@@ -173,7 +174,7 @@ export default function Navbar() {
         />
       )}
 
-      {/* ===== Mobile sidebar (slide-in από δεξιά) ===== */}
+      {/* ===== Mobile sidebar ===== */}
       <aside
         role="dialog"
         aria-modal="true"
@@ -191,7 +192,7 @@ export default function Navbar() {
           zIndex: 10000,
           transform: open ? "translateX(0)" : "translateX(100%)",
           transition: "transform 0.3s ease",
-          display: "none", // ενεργοποιείται κάτω από 768px μέσω styled-jsx
+          display: "none",
           flexDirection: "column",
           gap: "0.75rem",
         }}
@@ -255,13 +256,12 @@ export default function Navbar() {
         )}
       </aside>
 
-      {/* Spacers για να μην σκεπάζει το περιεχόμενο η fixed μπάρα */}
+      {/* Spacers */}
       <div className="spacerDesktop" aria-hidden />
       <div className="spacerMobile" aria-hidden />
 
-      {/* Styled-JSX: responsive εμφάνιση + spacers */}
+      {/* Styled-JSX */}
       <style jsx>{`
-        /* Desktop spacer ~96px */
         .spacerDesktop { height: 96px; display: block; }
         .spacerMobile  { height: 0;   display: none;  }
 
@@ -269,11 +269,18 @@ export default function Navbar() {
           .desktopBar   { display: none !important; }
           .mobileBar    { display: block !important; }
           .mobileSidebar{ display: flex !important; }
-          /* Mobile spacer ~64px για μικρότερα κενά */
+
           .spacerDesktop { display: none; }
           .spacerMobile  { display: block; height: 0px; }
+
+          /* ✅ Safe padding για notch / cutouts */
+          .mobileBar .mobileInner {
+            padding-left: max(12px, env(safe-area-inset-left));
+            padding-right: max(12px, env(safe-area-inset-right));
+          }
         }
       `}</style>
     </>
   );
 }
+
