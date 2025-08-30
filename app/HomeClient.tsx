@@ -18,7 +18,7 @@ export default function HomeClient() {
             fill
             priority
             sizes="100vw"
-            quality={85}
+            quality={90}
             className="heroImg"
           />
         </div>
@@ -76,9 +76,9 @@ export default function HomeClient() {
       <Contact />
 
       <style jsx>{`
-        /* ---------- Hero (σταθερή εικόνα) ---------- */
+        /* ---------- Hero με σταθερή αναλογία εικόνας ---------- */
         .hero {
-          height: 100vh;
+          width: 100%;
           position: relative;
           display: flex;
           align-items: center;
@@ -89,18 +89,22 @@ export default function HomeClient() {
         }
 
         .heroBgWrapper {
-          position: absolute;
-          inset: 0;
+          position: relative;
+          width: 100%;
+          aspect-ratio: 2746 / 1987; /* ✅ σταθερή αναλογία */
           z-index: 0;
-          pointer-events: none;
         }
 
         .heroImg {
-          object-fit: cover; /* ✅ γεμίζει πάντα όλη την οθόνη */
+          object-fit: contain; /* ✅ πάντα σωστή εικόνα */
           object-position: center;
         }
 
         .heroTitle {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
           font-size: 2rem;
           color: #010101ff;
           text-shadow: 0 0 8px #0ff, 0 0 16px #0ff;
