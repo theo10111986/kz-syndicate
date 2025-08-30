@@ -76,9 +76,9 @@ export default function HomeClient() {
       <Contact />
 
       <style jsx>{`
-        /* ---------- Desktop/Tablet (ίδιο με αρχικό) ---------- */
+        /* ---------- Hero (σταθερή εικόνα) ---------- */
         .hero {
-          height: 110vh;
+          height: 100vh;
           position: relative;
           display: flex;
           align-items: center;
@@ -96,7 +96,7 @@ export default function HomeClient() {
         }
 
         .heroImg {
-          object-fit: contain;
+          object-fit: cover; /* ✅ γεμίζει πάντα όλη την οθόνη */
           object-position: center;
         }
 
@@ -105,7 +105,6 @@ export default function HomeClient() {
           color: #010101ff;
           text-shadow: 0 0 8px #0ff, 0 0 16px #0ff;
           text-align: center;
-          position: relative;
           z-index: 1;
           margin: 0;
           padding: 0 1rem;
@@ -117,9 +116,6 @@ export default function HomeClient() {
 
         /* ---------- Mobile tweaks ---------- */
         @media (max-width: 767px) {
-          .hero {
-            height: calc(100vh - 60px); /* πιο μικρό αλλά κρατά full-screen αίσθηση */
-          }
           .heroTitle {
             font-size: 1.3rem;
             line-height: 1.1;
@@ -150,5 +146,6 @@ export default function HomeClient() {
     </main>
   );
 }
+
 
 
