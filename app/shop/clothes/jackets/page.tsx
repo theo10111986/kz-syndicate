@@ -24,7 +24,7 @@ export default function ComingSoonJerseys() {
           marginBottom: "1rem",
         }}
       >
-        Jerseys – Coming Soon
+        Jackets – Coming Soon
       </h1>
       <p style={{ maxWidth: 500, opacity: 0.8 }}>
         Η κατηγορία Jackets ετοιμάζεται... μείνε συντονισμένος!  
