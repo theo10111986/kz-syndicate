@@ -22,29 +22,43 @@ export default function HomeClient() {
           overflow: "hidden",
         }}
       >
-        <div className="heroFrame">
-          <div
-            aria-hidden
+        {/* ✅ Background wrapper (πάνω από το body, κάτω από το κείμενο) */}
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 0,
+            pointerEvents: "none",
+          }}
+        >
+          <Image
+            src="/IMG_0198.jpeg"          // βεβαιώσου ότι υπάρχει ακριβώς αυτό το όνομα στο /public
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            quality={85}
             style={{
-              position: "absolute",
-              inset: 0,
-              zIndex: 0,
-              pointerEvents: "none",
+              objectFit: "contain",       // κρατάει την αναλογία (χωρίς crop)
+              objectPosition: "center",
             }}
-          >
-            <Image
-              src="/IMG_0198.jpeg"
-              alt=""
-              fill
-              priority
-              sizes="100vw"
-              quality={85}
-              className="heroBg"
-            />
-          </div>
-
-          <h1 className="heroTitle">Join the underground, wear the code.</h1>
+          />
         </div>
+
+        {/* Τίτλος επάνω από την εικόνα */}
+        <h1
+          style={{
+            fontSize: "2rem",
+            color: "#010101ff",
+            textShadow: "0 0 8px #0ff, 0 0 16px #0ff",
+            textAlign: "center",
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          Join the underground, wear the code.
+        </h1>
       </section>
 
       {/* Our Partners */}
@@ -92,9 +106,13 @@ export default function HomeClient() {
         </a>
       </section>
 
+      {/* Newsletter */}
       <Newsletter />
+
+      {/* Contact */}
       <Contact />
 
+      {/* Responsive tweaks */}
       <style jsx>{`
         .hero {
           height: 110vh;
@@ -103,41 +121,24 @@ export default function HomeClient() {
           padding: 4rem 0;
         }
 
-        .heroFrame {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .heroBg {
-          object-fit: contain;
-          object-position: center;
-        }
-        .heroTitle {
-          font-size: 2rem;
-          color: #010101ff;
-          text-shadow: 0 0 8px #0ff, 0 0 16px #0ff;
-          text-align: center;
-          position: relative;
-          z-index: 1;
-          margin: 0;
-          padding: 0 1rem;
-        }
-
         @media (max-width: 767px) {
+          /* Μόνο σύσφιξη αποστάσεων στο mobile */
           .hero {
-            height: auto;
+            height: 80svh; /* πιο κοντό hero στο κινητό (χωρίς να αλλάζει η αναλογία εικόνας) */
           }
-          .heroFrame {
-            width: 100vw;
-            margin: 0 auto;
-            aspect-ratio: 2746 / 1987; /* ✅ σωστή αναλογία */
-            max-height: 100svh;
+          .hero h1 {
+            margin: 0;           /* βγάζει τα default margins του h1 */
+            line-height: 1.1;
+            padding: 0 1rem;
           }
           .section {
-            padding: 1.5rem 0;
+            padding: 0.75rem 0;  /* μικρότερο κάθετο padding στα sections */
+          }
+          .section h2:empty {
+            display: none;       /* κρύβει το άδειο <h2> στο Partners που πρόσθετε κενό */
+          }
+          p {
+            margin-bottom: 0.75rem; /* λίγο πιο “σφιχτά” κείμενα */
           }
         }
       `}</style>
