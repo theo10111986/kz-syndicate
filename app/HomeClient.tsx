@@ -22,40 +22,29 @@ export default function HomeClient() {
           overflow: "hidden",
         }}
       >
-        {/* ✅ Background wrapper (πάνω από το body, κάτω από το κείμενο) */}
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 0,
-            pointerEvents: "none",
-          }}
-        >
-          <Image
-            src="/IMG_0198.jpeg"          // βεβαιώσου ότι υπάρχει ακριβώς αυτό το όνομα στο /public
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            quality={85}
-            className="heroBg"
-          />
-        </div>
+        <div className="heroFrame">
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 0,
+              pointerEvents: "none",
+            }}
+          >
+            <Image
+              src="/IMG_0198.jpeg"
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              quality={85}
+              className="heroBg"
+            />
+          </div>
 
-        {/* Τίτλος επάνω από την εικόνα */}
-        <h1
-          style={{
-            fontSize: "2rem",
-            color: "#010101ff",
-            textShadow: "0 0 8px #0ff, 0 0 16px #0ff",
-            textAlign: "center",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
-          Join the underground, wear the code.
-        </h1>
+          <h1 className="heroTitle">Join the underground, wear the code.</h1>
+        </div>
       </section>
 
       {/* Our Partners */}
@@ -103,13 +92,9 @@ export default function HomeClient() {
         </a>
       </section>
 
-      {/* Newsletter */}
       <Newsletter />
-
-      {/* Contact */}
       <Contact />
 
-      {/* Responsive tweaks */}
       <style jsx>{`
         .hero {
           height: 110vh;
@@ -117,18 +102,39 @@ export default function HomeClient() {
         .section {
           padding: 4rem 0;
         }
-        /* default (desktop/tablet) */
+
+        .heroFrame {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
         .heroBg {
           object-fit: contain;
           object-position: center;
         }
+        .heroTitle {
+          font-size: 2rem;
+          color: #010101ff;
+          text-shadow: 0 0 8px #0ff, 0 0 16px #0ff;
+          text-align: center;
+          position: relative;
+          z-index: 1;
+          margin: 0;
+          padding: 0 1rem;
+        }
 
         @media (max-width: 767px) {
           .hero {
-            height: 100svh; /* mobile-safe viewport height */
+            height: auto;
           }
-          .heroBg {
-            object-fit: cover; /* γεμίζει όλη την ενότητα στο κινητό */
+          .heroFrame {
+            width: 100vw;
+            margin: 0 auto;
+            aspect-ratio: 2746 / 1987; /* ✅ σωστή αναλογία */
+            max-height: 100svh;
           }
           .section {
             padding: 1.5rem 0;
