@@ -96,7 +96,7 @@ export default function HomeClient() {
         }
 
         .heroImg {
-          object-fit: contain; /* ✅ πάντα σωστή εικόνα */
+          object-fit: contain;
           object-position: center;
         }
 
@@ -121,13 +121,14 @@ export default function HomeClient() {
         /* ---------- Mobile tweaks ---------- */
         @media (max-width: 767px) {
           .heroTitle {
-            font-size: 1.3rem;
-            line-height: 1.1;
-            padding: 0 0.5rem;
+            font-size: 1rem;   /* πιο μικρό για να χωράει */
+            white-space: nowrap; /* ✅ μένει σε μία γραμμή */
+            line-height: 1.2;
+            padding: 0;
           }
 
           .section {
-            padding: 0.75rem 0; /* πιο σφιχτά */
+            padding: 0.75rem 0;
           }
           .partners {
             padding-top: 0;
