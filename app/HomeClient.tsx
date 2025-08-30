@@ -9,60 +9,23 @@ export default function HomeClient() {
   return (
     <main style={{ backgroundColor: "#000", color: "#fff", position: "relative" }}>
       {/* Hero Section */}
-      <section
-        className="hero"
-        style={{
-          height: "110vh",
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginTop: 0,
-          paddingTop: 0,
-          overflow: "hidden",
-        }}
-      >
-        {/* ✅ Background wrapper (πάνω από το body, κάτω από το κείμενο) */}
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 0,
-            pointerEvents: "none",
-          }}
-        >
+      <section className="hero">
+        <div className="heroFrame">
           <Image
-            src="/IMG_0198.jpeg"          // βεβαιώσου ότι υπάρχει ακριβώς αυτό το όνομα στο /public
+            src="/IMG_0198.jpeg"
             alt=""
-            fill
+            width={2746}
+            height={1987}
             priority
-            sizes="100vw"
             quality={85}
-            style={{
-              objectFit: "contain",       // κρατάει την αναλογία (χωρίς crop)
-              objectPosition: "center",
-            }}
+            className="heroImg"
           />
+          <h1 className="heroTitle">Join the underground, wear the code.</h1>
         </div>
-
-        {/* Τίτλος επάνω από την εικόνα */}
-        <h1
-          style={{
-            fontSize: "2rem",
-            color: "#010101ff",
-            textShadow: "0 0 8px #0ff, 0 0 16px #0ff",
-            textAlign: "center",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
-          Join the underground, wear the code.
-        </h1>
       </section>
 
       {/* Our Partners */}
-      <section className="section" style={{ padding: "4rem 0", textAlign: "center" }}>
+      <section className="section" style={{ textAlign: "center" }}>
         <h2
           style={{
             fontSize: "1.8rem",
@@ -75,7 +38,7 @@ export default function HomeClient() {
       </section>
 
       {/* App */}
-      <section className="section" style={{ padding: "4rem 0", textAlign: "center" }}>
+      <section className="section" style={{ textAlign: "center" }}>
         <h2
           style={{
             fontSize: "1.8rem",
@@ -106,39 +69,53 @@ export default function HomeClient() {
         </a>
       </section>
 
-      {/* Newsletter */}
       <Newsletter />
-
-      {/* Contact */}
       <Contact />
 
-      {/* Responsive tweaks */}
       <style jsx>{`
         .hero {
-          height: 110vh;
+          position: relative;
+          margin: 0;
+          padding: 0;
         }
+
+        .heroFrame {
+          width: 100%;
+          position: relative;
+        }
+
+        .heroImg {
+          width: 100%;
+          height: auto;
+          display: block;
+        }
+
+        .heroTitle {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2rem;
+          color: #010101ff;
+          text-shadow: 0 0 8px #0ff, 0 0 16px #0ff;
+          margin: 0;
+          padding: 0 1rem;
+          z-index: 1;
+          text-align: center;
+        }
+
         .section {
           padding: 4rem 0;
         }
 
         @media (max-width: 767px) {
-          /* Μόνο σύσφιξη αποστάσεων στο mobile */
-          .hero {
-            height: 80svh; /* πιο κοντό hero στο κινητό (χωρίς να αλλάζει η αναλογία εικόνας) */
-          }
-          .hero h1 {
-            margin: 0;           /* βγάζει τα default margins του h1 */
-            line-height: 1.1;
-            padding: 0 1rem;
-          }
           .section {
-            padding: 0.75rem 0;  /* μικρότερο κάθετο padding στα sections */
+            padding: 1.5rem 0;
           }
-          .section h2:empty {
-            display: none;       /* κρύβει το άδειο <h2> στο Partners που πρόσθετε κενό */
-          }
-          p {
-            margin-bottom: 0.75rem; /* λίγο πιο “σφιχτά” κείμενα */
+          .heroTitle {
+            font-size: 1.5rem;
+            line-height: 1.2;
           }
         }
       `}</style>
