@@ -53,15 +53,7 @@ export default function HomeClient() {
         </h3>
 
         <div className="videoWrapper">
-          <video
-            controls
-            style={{
-              width: "100%",
-              height: "auto",
-              borderRadius: "0.5rem",
-              boxShadow: "0 0 14px #0ff",
-            }}
-          >
+          <video controls>
             <source src="/0914 (1).mp4" type="video/mp4" />
             Ο browser σας δεν υποστηρίζει το video.
           </video>
@@ -145,14 +137,20 @@ export default function HomeClient() {
           padding: 4rem 0;
         }
 
-        /* ---------- Video responsive wrapper ---------- */
         .videoWrapper {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 100%;       /* πάντα γεμίζει τον διαθέσιμο χώρο */
-          max-width: 800px;  /* desktop max width */
-          margin: 0 auto;    /* κεντράρισμα */
+          position: relative;
+          width: 100%;
+          max-width: 800px;
+          margin: 0 auto;
+          aspect-ratio: 16 / 9; /* ✅ σταθερό μέγεθος */
+        }
+
+        .videoWrapper video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover; /* γεμίζει χωρίς κενά */
+          border-radius: 0.5rem;
+          box-shadow: 0 0 14px #0ff;
         }
 
         @media (max-width: 767px) {
@@ -166,10 +164,12 @@ export default function HomeClient() {
           .section {
             padding: 0.75rem 0;
           }
+
           .partners {
             padding-top: 0;
             margin-top: 0;
           }
+
           .partners h2 {
             margin: 0 !important;
           }
@@ -188,16 +188,15 @@ export default function HomeClient() {
           }
 
           .videoWrapper {
-            width: 100%;        /* mobile: γεμίζει 100% του container */
-            max-width: 100%;    /* περιορισμός mobile */
-            margin: 0 auto;     /* πάντα κεντραρισμένο */
+            width: 90%;
+            max-width: 100%;
+            margin: 0 auto;
           }
         }
       `}</style>
     </main>
   );
 }
-
 
 
 
