@@ -21,6 +21,7 @@ export default function HomeClient() {
             className="heroImg"
           />
         </div>
+
         <h1 className="heroTitle">Join the underground, wear the code.</h1>
       </section>
 
@@ -52,7 +53,15 @@ export default function HomeClient() {
         </h3>
 
         <div className="videoWrapper">
-          <video controls>
+          <video
+            controls
+            style={{
+              width: "100%",
+              height: "auto",
+              borderRadius: "0.5rem",
+              boxShadow: "0 0 14px #0ff",
+            }}
+          >
             <source src="/0914 (1).mp4" type="video/mp4" />
             Ο browser σας δεν υποστηρίζει το video.
           </video>
@@ -109,14 +118,12 @@ export default function HomeClient() {
         .heroBgWrapper {
           position: relative;
           width: 100%;
-          aspect-ratio: 16 / 9; /* σταθερή αναλογία */
-          min-height: 300px; /* fallback ύψος */
-          background: #000; /* μαύρο background όσο φορτώνει */
+          aspect-ratio: 2746 / 1987;
           z-index: 0;
         }
 
         .heroImg {
-          object-fit: cover;
+          object-fit: contain;
           object-position: center;
         }
 
@@ -138,22 +145,14 @@ export default function HomeClient() {
           padding: 4rem 0;
         }
 
+        /* ---------- Video responsive wrapper ---------- */
         .videoWrapper {
-          position: relative;
-          width: 100%;
-          max-width: 800px;
-          margin: 0 auto;
-          aspect-ratio: 16 / 9; /* ✅ σταθερό aspect ratio */
-          background: #000; /* ✅ φόντο όσο φορτώνει */
-        }
-
-        .videoWrapper video {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-radius: 0.5rem;
-          box-shadow: 0 0 14px #0ff;
-          display: block;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;       /* πάντα γεμίζει τον διαθέσιμο χώρο */
+          max-width: 800px;  /* desktop max width */
+          margin: 0 auto;    /* κεντράρισμα */
         }
 
         @media (max-width: 767px) {
@@ -189,9 +188,9 @@ export default function HomeClient() {
           }
 
           .videoWrapper {
-            width: 90%;
-            max-width: 100%;
-            margin: 0 auto;
+            width: 100%;        /* mobile: γεμίζει 100% του container */
+            max-width: 100%;    /* περιορισμός mobile */
+            margin: 0 auto;     /* πάντα κεντραρισμένο */
           }
         }
       `}</style>
