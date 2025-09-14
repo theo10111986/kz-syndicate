@@ -10,7 +10,6 @@ export default function HomeClient() {
     <main style={{ backgroundColor: "#000", color: "#fff", position: "relative" }}>
       {/* Hero Section */}
       <section className="hero">
-        {/* ✅ Background wrapper */}
         <div className="heroBgWrapper">
           <Image
             src="/IMG_0198.jpeg"
@@ -23,7 +22,6 @@ export default function HomeClient() {
           />
         </div>
 
-        {/* Τίτλος */}
         <h1 className="heroTitle">Join the underground, wear the code.</h1>
       </section>
 
@@ -54,10 +52,15 @@ export default function HomeClient() {
           Δες εδώ πώς δουλεύει το Customizer 👟✨
         </h3>
 
-        <div className="videoWrapper w-full max-w-[300px]">
+        <div className="videoWrapper" style={{ width: "400px", margin: "0 auto" }}>
           <video
             controls
-            className="w-full h-auto rounded-lg shadow-lg"
+            style={{
+              width: "100%",
+              height: "auto",
+              borderRadius: "0.5rem",
+              boxShadow: "0 0 14px #0ff",
+            }}
           >
             <source src="/0914 (1).mp4" type="video/mp4" />
             Ο browser σας δεν υποστηρίζει το video.
@@ -101,7 +104,6 @@ export default function HomeClient() {
       <Contact />
 
       <style jsx>{`
-        /* ---------- Hero με σταθερή αναλογία εικόνας ---------- */
         .hero {
           width: 100%;
           position: relative;
@@ -116,7 +118,7 @@ export default function HomeClient() {
         .heroBgWrapper {
           position: relative;
           width: 100%;
-          aspect-ratio: 2746 / 1987; /* ✅ σταθερή αναλογία */
+          aspect-ratio: 2746 / 1987;
           z-index: 0;
         }
 
@@ -147,14 +149,12 @@ export default function HomeClient() {
           display: flex;
           justify-content: center;
           align-items: center;
-          margin: 0 auto;
         }
 
-        /* ---------- Mobile tweaks ---------- */
         @media (max-width: 767px) {
           .heroTitle {
-            font-size: 1rem; /* πιο μικρό για να χωράει */
-            white-space: nowrap; /* ✅ μένει σε μία γραμμή */
+            font-size: 1rem;
+            white-space: nowrap;
             line-height: 1.2;
             padding: 0;
           }
@@ -179,12 +179,12 @@ export default function HomeClient() {
             margin-bottom: 0.5rem;
           }
 
-          .videoWrapper {
-            max-width: 100%;
-          }
-
           h3 {
             font-size: 1rem;
+          }
+
+          .videoWrapper {
+            width: 90%;
           }
         }
       `}</style>
