@@ -42,11 +42,10 @@ export default function HomeClient() {
 
       {/* Video Section */}
       <section className="section flex justify-center">
-        <div className="w-full max-w-3xl px-4">
+        <div className="w-full max-w-[700px] mx-auto px-4">
           <video
             controls
-            poster="/IMG_0198.jpeg"
-            className="w-full h-auto mx-auto rounded-lg shadow-lg"
+          className="w-full h-auto mx-auto rounded-lg shadow-lg"
           >
             <source src="/0914 (1).mp4" type="video/mp4" />
             Ο browser σας δεν υποστηρίζει το video.
