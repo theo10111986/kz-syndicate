@@ -40,6 +40,20 @@ export default function HomeClient() {
         <Partners />
       </section>
 
+      {/* Video Section */}
+      <section className="section flex justify-center">
+        <div className="w-full max-w-3xl px-4">
+          <video
+            controls
+            poster="/IMG_0198.jpeg"
+            className="w-full h-auto mx-auto rounded-lg shadow-lg"
+          >
+            <source src="/0914 (1).mp4" type="video/mp4" />
+            Ο browser σας δεν υποστηρίζει το video.
+          </video>
+        </div>
+      </section>
+
       {/* App */}
       <section className="section" style={{ textAlign: "center" }}>
         <h2
@@ -121,7 +135,7 @@ export default function HomeClient() {
         /* ---------- Mobile tweaks ---------- */
         @media (max-width: 767px) {
           .heroTitle {
-            font-size: 1rem;   /* πιο μικρό για να χωράει */
+            font-size: 1rem; /* πιο μικρό για να χωράει */
             white-space: nowrap; /* ✅ μένει σε μία γραμμή */
             line-height: 1.2;
             padding: 0;
