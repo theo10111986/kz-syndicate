@@ -41,11 +41,23 @@ export default function HomeClient() {
       </section>
 
       {/* Video Section */}
-      <section className="section flex justify-center">
-        <div className="w-full max-w-[700px] mx-auto px-4">
+      <section className="section flex flex-col items-center">
+        <h3
+          style={{
+            fontSize: "1.2rem",
+            color: "#0ff",
+            textShadow: "0 0 6px #0ff, 0 0 12px #0ff",
+            marginBottom: "1rem",
+            textAlign: "center",
+          }}
+        >
+          Δες εδώ πώς δουλεύει το Customizer 👟✨
+        </h3>
+
+        <div className="videoWrapper w-full max-w-[500px]">
           <video
             controls
-          className="w-full h-auto mx-auto rounded-lg shadow-lg"
+            className="w-full h-auto rounded-lg shadow-lg"
           >
             <source src="/0914 (1).mp4" type="video/mp4" />
             Ο browser σας δεν υποστηρίζει το video.
@@ -131,6 +143,13 @@ export default function HomeClient() {
           padding: 4rem 0;
         }
 
+        .videoWrapper {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin: 0 auto;
+        }
+
         /* ---------- Mobile tweaks ---------- */
         @media (max-width: 767px) {
           .heroTitle {
@@ -158,6 +177,14 @@ export default function HomeClient() {
 
           p {
             margin-bottom: 0.5rem;
+          }
+
+          .videoWrapper {
+            max-width: 100%;
+          }
+
+          h3 {
+            font-size: 1rem;
           }
         }
       `}</style>
