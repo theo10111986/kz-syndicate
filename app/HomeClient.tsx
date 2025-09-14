@@ -52,7 +52,7 @@ export default function HomeClient() {
           Δες εδώ πώς δουλεύει το Customizer 👟✨
         </h3>
 
-        <div className="videoWrapper" style={{ width: "800px", margin: "0 auto" }}>
+        <div className="videoWrapper" style={{ width: "1000px", margin: "0 auto" }}>
           <video
             controls
             style={{
