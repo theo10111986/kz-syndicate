@@ -52,7 +52,7 @@ export default function HomeClient() {
           Δες εδώ πώς δουλεύει το Customizer 👟✨
         </h3>
 
-        <div className="videoWrapper" style={{ width: "800px", margin: "0 auto" }}>
+        <div className="videoWrapper">
           <video
             controls
             style={{
@@ -149,7 +149,9 @@ export default function HomeClient() {
           display: flex;
           justify-content: center;
           align-items: center;
-          margin: 0 auto; /* ✅ Κεντράρισμα σε desktop */
+          width: 100%;
+          max-width: 800px; /* Μέγιστο μέγεθος desktop */
+          margin: 0 auto;   /* Κεντράρισμα */
         }
 
         @media (max-width: 767px) {
@@ -186,7 +188,8 @@ export default function HomeClient() {
 
           .videoWrapper {
             width: 90%;
-            margin: 0 auto; /* ✅ Κεντράρισμα σε mobile */
+            max-width: 100%; /* mobile περιορισμός */
+            margin: 0 auto;  /* Κεντράρισμα σε mobile */
           }
         }
       `}</style>
