@@ -145,13 +145,14 @@ export default function HomeClient() {
           padding: 4rem 0;
         }
 
+        /* ---------- Video responsive wrapper ---------- */
         .videoWrapper {
           display: flex;
           justify-content: center;
           align-items: center;
-          width: 100%;
-          max-width: 800px; /* Μέγιστο μέγεθος desktop */
-          margin: 0 auto;   /* Κεντράρισμα */
+          width: 100%;       /* πάντα γεμίζει τον διαθέσιμο χώρο */
+          max-width: 800px;  /* desktop max width */
+          margin: 0 auto;    /* κεντράρισμα */
         }
 
         @media (max-width: 767px) {
@@ -187,15 +188,16 @@ export default function HomeClient() {
           }
 
           .videoWrapper {
-            width: 90%;
-            max-width: 100%; /* mobile περιορισμός */
-            margin: 0 auto;  /* Κεντράρισμα σε mobile */
+            width: 100%;        /* mobile: γεμίζει 100% του container */
+            max-width: 100%;    /* περιορισμός mobile */
+            margin: 0 auto;     /* πάντα κεντραρισμένο */
           }
         }
       `}</style>
     </main>
   );
 }
+
 
 
 
