@@ -54,7 +54,7 @@ export default function HomeClient() {
           Δες εδώ πώς δουλεύει το Customizer 👟✨
         </h3>
 
-        <div className="videoWrapper w-full max-w-[400px]">
+        <div className="videoWrapper w-full max-w-[300px]">
           <video
             controls
             className="w-full h-auto rounded-lg shadow-lg"
