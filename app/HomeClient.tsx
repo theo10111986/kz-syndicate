@@ -103,7 +103,54 @@ export default function HomeClient() {
       <Newsletter />
       <Contact />
 
+      {/* Footer Section */}
+      <footer
+        style={{
+          padding: "2rem 1rem",
+          backgroundColor: "#000",
+          textAlign: "center",
+          borderTop: "1px solid #0ff",
+          marginTop: "2rem",
+        }}
+      >
+        <h4 style={{ color: "#0ff", marginBottom: "1rem" }}>Payment Partners</h4>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "1.5rem",
+          }}
+        >
+          {[
+            { src: "/Visa_Brandmark_White_RGB_2021.png", alt: "Visa", width: 120, height: 40 },
+            { src: "/mc_idcheck_hrz_pos_105px.png", alt: "Mastercard ID Check", width: 105, height: 40 },
+            { src: "/mc_symbol_opt_73_3x.png", alt: "Mastercard Symbol", width: 73, height: 40 },
+            { src: "/visa-secure_dkbg_blk_120dpi.jpg", alt: "Visa Secure", width: 120, height: 40 },
+          ].map((logo) => (
+            <div
+              key={logo.src}
+              style={{
+                display: "inline-block",
+                transition: "filter 0.3s ease",
+              }}
+              className="logoWrapper"
+            >
+              <Image {...logo} />
+            </div>
+          ))}
+        </div>
+        <p style={{ color: "#0ff", opacity: 0.6, marginTop: "1rem", fontSize: "0.85rem" }}>
+          &copy; {new Date().getFullYear()} KZ Syndicate. All rights reserved.
+        </p>
+      </footer>
+
       <style jsx>{`
+        .logoWrapper:hover {
+          filter: drop-shadow(0 0 8px #0ff);
+        }
+
         .hero {
           width: 100%;
           position: relative;
