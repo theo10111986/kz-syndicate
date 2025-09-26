@@ -43,7 +43,6 @@ const AF1_BLACK_STOCK: Record<Gender, Record<number, number>> = {
   },
 };
 
-
 /* ---------- Μικρό neon button για τοπική χρήση ---------- */
 function NeonButton({
   onClick,
@@ -172,10 +171,12 @@ function ProductCardBasic({
   id,
   name,
   img,
+  stock = AF1_STOCK,
 }: {
   id: string;
   name: string;
   img: string;
+  stock?: Record<Gender, Record<number, number>>;
 }) {
   const { status } = useSession();
   const [gender, setGender] = useState<Gender>("men");
@@ -269,7 +270,7 @@ function ProductCardBasic({
               value={size === "" ? "" : String(size)}
               onChange={(e) => {
                 const val = e.target.value ? Number(e.target.value) : "";
-                if (val !== "" && AF1_STOCK[gender][val] === 0) {
+                if (val !== "" && stock[gender][val] === 0) {
                   setError("Το μέγεθος δεν είναι διαθέσιμο");
                   return;
                 }
@@ -290,8 +291,8 @@ function ProductCardBasic({
                 <option
                   key={`${gender}-${eu}`}
                   value={eu}
-                  disabled={AF1_STOCK[gender][eu] === 0}
-                  style={{ color: AF1_STOCK[gender][eu] === 0 ? "#555" : "#fff" }}
+                  disabled={stock[gender][eu] === 0}
+                  style={{ color: stock[gender][eu] === 0 ? "#555" : "#fff" }}
                 >
                   {eu}
                 </option>
@@ -591,8 +592,8 @@ export default function SneakersPage() {
           justifyItems: "center",
         }}
       >
-        <ProductCardBasic id="af1-white" name="Nike Air Force 1 '07 White" img="/products/af1-white.avif" />
-        <ProductCardBasic id="af1-black" name="Nike Air Force 1 '07 Black" img="/products/af1-black.avif" />
+        <ProductCardBasic id="af1-white" name="Nike Air Force 1 '07 White" img="/products/af1-white.avif" stock={AF1_STOCK} />
+        <ProductCardBasic id="af1-black" name="Nike Air Force 1 '07 Black" img="/products/af1-black.avif" stock={AF1_BLACK_STOCK} />
 
         <ProductCardRope />
       </div>
