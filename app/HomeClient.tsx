@@ -14,7 +14,7 @@ export default function HomeClient() {
   ];
 
   return (
-    <main style={{ backgroundColor: "#000", color: "#fff", position: "relative" }}>
+    <main>
       {/* Hero Section */}
       <section className="hero">
         <div className="heroBgWrapper">
@@ -32,17 +32,14 @@ export default function HomeClient() {
       </section>
 
       {/* Our Partners */}
-      <section className="section partners" style={{ textAlign: "center" }}>
+      <section className="section partners">
         <h2 />
         <Partners />
       </section>
 
       {/* Video Section */}
-      <section className="section flex flex-col items-center">
-        <h3>
-          Δες εδώ πώς δουλεύει το Customizer 👟✨
-        </h3>
-
+      <section className="section videoSection">
+        <h3>Δες εδώ πώς δουλεύει το Customizer 👟✨</h3>
         <div className="videoWrapper">
           <video controls>
             <source src="/0914 (1).mp4" type="video/mp4" />
@@ -52,7 +49,7 @@ export default function HomeClient() {
       </section>
 
       {/* App Section */}
-      <section className="section" style={{ textAlign: "center" }}>
+      <section className="section appSection">
         <h2>KZ Syndicate App</h2>
         <p>Κατέβασε την εφαρμογή μας για Android ή δες οδηγίες εγκατάστασης.</p>
         <a href="/app">⬇️ Download / Οδηγίες</a>
@@ -74,7 +71,6 @@ export default function HomeClient() {
         <p>&copy; {new Date().getFullYear()} KZ Syndicate. All rights reserved.</p>
       </footer>
 
-      {/* Styles */}
       <style jsx>{`
         main {
           background-color: #000;
@@ -90,8 +86,6 @@ export default function HomeClient() {
           align-items: center;
           justify-content: center;
           overflow: hidden;
-          margin: 0;
-          padding: 0;
         }
         .heroBgWrapper {
           position: relative;
@@ -119,7 +113,7 @@ export default function HomeClient() {
 
         /* Sections */
         .section {
-          padding: 4rem 0;
+          padding: 4rem 1rem;
           text-align: center;
         }
         h2 {
