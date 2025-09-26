@@ -21,14 +21,25 @@ const AF1_WOMEN_EU = [
 
 type Gender = "men" | "women";
 
-/* ---------- Stock (μόνο για GitHub) ---------- */
+/* ---------- Stock για Basic AF1 ---------- */
 const AF1_STOCK: Record<Gender, Record<number, number>> = {
   men: {
     38.5: 1, 39: 1, 40: 1, 40.5: 1, 41: 1, 42: 1, 42.5: 1, 43: 1,
-    44: 1, 44.5: 1, 45: 1, 45.5: 1, 46: 1, 47: 1, 48: 0,
+    44: 1, 44.5: 1, 45: 1, 45.5: 1, 46: 1, 47: 1, 48: 1,
   },
   women: {
-    35.5: 0, 36: 1, 36.5: 1, 37.5: 1, 38: 1, 38.5: 1, 39: 1, 40: 1, 40.5: 1,
+    35.5: 1, 36: 1, 36.5: 1, 37.5: 1, 38: 1, 38.5: 1, 39: 1, 40: 1, 40.5: 1,
+  },
+};
+
+/* ---------- Stock για Rope AF1 ---------- */
+const AF1_ROPE_STOCK: Record<Gender, Record<number, number>> = {
+  men: {
+    38.5: 2, 39: 2, 40: 2, 40.5: 2, 41: 2, 42: 2, 42.5: 2, 43: 2,
+    44: 2, 44.5: 2, 45: 2, 45.5: 2, 46: 2, 47: 2, 48: 2,
+  },
+  women: {
+    35.5: 2, 36: 2, 36.5: 2, 37.5: 2, 38: 2, 38.5: 2, 39: 2, 40: 2, 40.5: 2,
   },
 };
 
@@ -315,7 +326,6 @@ function ProductCardBasic({
             image={img}
           />
         )}
-        <p style={{ marginTop: 8, fontSize: 12, opacity: 0.8, textAlign: "center" }}></p>
       </div>
 
       {previewOpen && <Lightbox img={img} alt={name} onClose={() => setPreviewOpen(false)} />}
@@ -482,7 +492,12 @@ function ProductCardRope() {
             <select
               value={size === "" ? "" : String(size)}
               onChange={(e) => {
-                setSize(e.target.value ? Number(e.target.value) : "");
+                const val = e.target.value ? Number(e.target.value) : "";
+                if (val !== "" && AF1_ROPE_STOCK[gender][val] === 0) {
+                  setError("Το μέγεθος δεν είναι διαθέσιμο");
+                  return;
+                }
+                setSize(val);
                 setError("");
               }}
               style={{
@@ -495,7 +510,7 @@ function ProductCardRope() {
               }}
             >
               <option value="">Επίλεξε μέγεθος</option>
-              {(gender === "men" ? AF1_MEN_EU : AF1_WOMEN_EU).map((eu) => (
+              {sizes.map((eu) => (
                 <option key={`${gender}-${eu}`} value={eu}>
                   {eu}
                 </option>
@@ -579,5 +594,4 @@ export default function SneakersPage() {
     </main>
   );
 }
-
 
