@@ -32,6 +32,18 @@ const AF1_STOCK: Record<Gender, Record<number, number>> = {
   },
 };
 
+/* ---------- Stock για AF1 Black (προσθήκη) ---------- */
+const AF1_BLACK_STOCK: Record<Gender, Record<number, number>> = {
+  men: {
+    38.5: 2, 39: 2, 40: 2, 40.5: 2, 41: 2, 42: 2, 42.5: 2, 43: 2,
+    44: 2, 44.5: 2, 45: 2, 45.5: 2, 46: 2, 47: 2, 48: 1,
+  },
+  women: {
+    35.5: 2, 36: 2, 36.5: 2, 37.5: 2, 38: 2, 38.5: 2, 39: 2, 40: 2, 40.5: 2,
+  },
+};
+
+
 /* ---------- Μικρό neon button για τοπική χρήση ---------- */
 function NeonButton({
   onClick,
