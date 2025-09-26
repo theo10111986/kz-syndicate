@@ -21,7 +21,7 @@ const AF1_WOMEN_EU = [
 
 type Gender = "men" | "women";
 
-/* ---------- Stock για AF1 White ---------- */
+/* ---------- Stock (μόνο για GitHub) ---------- */
 const AF1_STOCK: Record<Gender, Record<number, number>> = {
   men: {
     38.5: 1, 39: 1, 40: 1, 40.5: 1, 41: 1, 42: 1, 42.5: 1, 43: 1,
@@ -32,7 +32,7 @@ const AF1_STOCK: Record<Gender, Record<number, number>> = {
   },
 };
 
-/* ---------- Stock για AF1 Black ---------- */
+/* ---------- Stock για AF1 Black (προσθήκη) ---------- */
 const AF1_BLACK_STOCK: Record<Gender, Record<number, number>> = {
   men: {
     38.5: 2, 39: 2, 40: 2, 40.5: 2, 41: 2, 42: 2, 42.5: 2, 43: 2,
@@ -42,6 +42,7 @@ const AF1_BLACK_STOCK: Record<Gender, Record<number, number>> = {
     35.5: 0, 36: 2, 36.5: 2, 37.5: 2, 38: 2, 38.5: 2, 39: 2, 40: 2, 40.5: 2,
   },
 };
+
 
 /* ---------- Μικρό neon button για τοπική χρήση ---------- */
 function NeonButton({
@@ -171,12 +172,10 @@ function ProductCardBasic({
   id,
   name,
   img,
-  stock,
 }: {
   id: string;
   name: string;
   img: string;
-  stock: Record<Gender, Record<number, number>>;
 }) {
   const { status } = useSession();
   const [gender, setGender] = useState<Gender>("men");
@@ -192,6 +191,13 @@ function ProductCardBasic({
     currency: "EUR",
     minimumFractionDigits: 2,
   });
+
+  useEffect(() => {
+    if (!previewOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setPreviewOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [previewOpen]);
 
   const isValid = size !== "";
 
@@ -263,7 +269,7 @@ function ProductCardBasic({
               value={size === "" ? "" : String(size)}
               onChange={(e) => {
                 const val = e.target.value ? Number(e.target.value) : "";
-                if (val !== "" && stock[gender][val] === 0) {
+                if (val !== "" && AF1_STOCK[gender][val] === 0) {
                   setError("Το μέγεθος δεν είναι διαθέσιμο");
                   return;
                 }
@@ -284,8 +290,8 @@ function ProductCardBasic({
                 <option
                   key={`${gender}-${eu}`}
                   value={eu}
-                  disabled={stock[gender][eu] === 0}
-                  style={{ color: stock[gender][eu] === 0 ? "#555" : "#fff" }}
+                  disabled={AF1_STOCK[gender][eu] === 0}
+                  style={{ color: AF1_STOCK[gender][eu] === 0 ? "#555" : "#fff" }}
                 >
                   {eu}
                 </option>
@@ -349,8 +355,6 @@ function ProductCardRope() {
   const [size, setSize] = useState<number | "">("");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [error, setError] = useState<string>("");
-
-  const stock = af1Color === "white" ? AF1_STOCK : AF1_BLACK_STOCK;
 
   const { img, isFallback } = useMemo(() => {
     const exact = ROPE_IMAGE[af1Color][rope];
@@ -456,8 +460,6 @@ function ProductCardRope() {
               onChange={(e) => {
                 setRope(e.target.value as RopeColor);
                 setError("");
-             
-
               }}
               style={{ padding: 10, borderRadius: 8, background: "#000", color: "#fff", border: "1px solid #00ffff" }}
             >
@@ -597,5 +599,6 @@ export default function SneakersPage() {
     </main>
   );
 }
+
 
 
