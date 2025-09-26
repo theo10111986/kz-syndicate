@@ -21,7 +21,6 @@ export default function HomeClient() {
             className="heroImg"
           />
         </div>
-
         <h1 className="heroTitle">Join the underground, wear the code.</h1>
       </section>
 
@@ -124,39 +123,39 @@ export default function HomeClient() {
           }}
         >
           <div className="logoWrapper">
-            <img
+            <Image
               src="/Visa_Brandmark_White_RGB_2021.png"
               alt="Visa"
               width={120}
               height={40}
-              style={{ display: "block" }}
+              style={{ objectFit: "contain" }}
             />
           </div>
           <div className="logoWrapper">
-            <img
+            <Image
               src="/mc_idcheck_hrz_pos_105px.png"
               alt="Mastercard ID Check"
               width={105}
               height={40}
-              style={{ display: "block" }}
+              style={{ objectFit: "contain" }}
             />
           </div>
           <div className="logoWrapper">
-            <img
+            <Image
               src="/mc_symbol_opt_73_3x.png"
               alt="Mastercard Symbol"
               width={73}
               height={40}
-              style={{ display: "block" }}
+              style={{ objectFit: "contain" }}
             />
           </div>
           <div className="logoWrapper">
-            <img
+            <Image
               src="/visa-secure_dkbg_blk_120dpi.jpg"
               alt="Visa Secure"
               width={120}
               height={40}
-              style={{ display: "block" }}
+              style={{ objectFit: "contain" }}
             />
           </div>
         </div>
@@ -222,9 +221,9 @@ export default function HomeClient() {
           display: flex;
           justify-content: center;
           align-items: center;
-          width: 100%;       /* πάντα γεμίζει τον διαθέσιμο χώρο */
-          max-width: 800px;  /* desktop max width */
-          margin: 0 auto;    /* κεντράρισμα */
+          width: 100%;
+          max-width: 800px;
+          margin: 0 auto;
         }
 
         @media (max-width: 767px) {
@@ -260,14 +259,15 @@ export default function HomeClient() {
           }
 
           .videoWrapper {
-            width: 100%;        /* mobile: γεμίζει 100% του container */
-            max-width: 100%;    /* περιορισμός mobile */
-            margin: 0 auto;     /* πάντα κεντραρισμένο */
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
           }
         }
       `}</style>
     </main>
   );
 }
+
 
 
