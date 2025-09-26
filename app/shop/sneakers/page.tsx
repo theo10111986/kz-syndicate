@@ -21,6 +21,17 @@ const AF1_WOMEN_EU = [
 
 type Gender = "men" | "women";
 
+/* ---------- Stock (μόνο για GitHub) ---------- */
+const AF1_STOCK: Record<Gender, Record<number, number>> = {
+  men: {
+    38.5: 1, 39: 1, 40: 1, 40.5: 1, 41: 1, 42: 1, 42.5: 1, 43: 1,
+    44: 1, 44.5: 1, 45: 1, 45.5: 1, 46: 1, 47: 1, 48: 0,
+  },
+  women: {
+    35.5: 0, 36: 1, 36.5: 1, 37.5: 1, 38: 1, 38.5: 1, 39: 1, 40: 1, 40.5: 1,
+  },
+};
+
 /* ---------- Μικρό neon button για τοπική χρήση ---------- */
 function NeonButton({
   onClick,
@@ -245,7 +256,12 @@ function ProductCardBasic({
             <select
               value={size === "" ? "" : String(size)}
               onChange={(e) => {
-                setSize(e.target.value ? Number(e.target.value) : "");
+                const val = e.target.value ? Number(e.target.value) : "";
+                if (val !== "" && AF1_STOCK[gender][val] === 0) {
+                  setError("Το μέγεθος δεν είναι διαθέσιμο");
+                  return;
+                }
+                setSize(val);
                 setError("");
               }}
               style={{
@@ -254,12 +270,17 @@ function ProductCardBasic({
                 background: "#000",
                 color: "#fff",
                 border: "1px solid #00ffff",
-                outline: isValid ? "none" : "2px solid #ff2e2e",
+                outline: isValid ? "none" : size === "" ? "2px solid #ff2e2e" : "none",
               }}
             >
               <option value="">Επίλεξε μέγεθος</option>
               {sizes.map((eu) => (
-                <option key={`${gender}-${eu}`} value={eu}>
+                <option
+                  key={`${gender}-${eu}`}
+                  value={eu}
+                  disabled={AF1_STOCK[gender][eu] === 0}
+                  style={{ color: AF1_STOCK[gender][eu] === 0 ? "#555" : "#fff" }}
+                >
                   {eu}
                 </option>
               ))}
@@ -306,7 +327,6 @@ function ProductCardBasic({
 type AF1Color = "white" | "black";
 type RopeColor = "white" | "black" | "beige";
 
-// Διαθέσιμες εικόνες (ό,τι μου έδωσες)
 const ROPE_IMAGE: Record<AF1Color, Partial<Record<RopeColor, string>>> = {
   white: {
     white: "/products/Nike_Air_Force_1_White_Rope_Laces_White_-_frontal.webp",
@@ -317,8 +337,6 @@ const ROPE_IMAGE: Record<AF1Color, Partial<Record<RopeColor, string>>> = {
   },
 };
 
-const ROPE_COLORS_ALL: RopeColor[] = ["white", "black", "beige"];
-
 function ProductCardRope() {
   const { status } = useSession();
   const [af1Color, setAf1Color] = useState<AF1Color>("white");
@@ -328,7 +346,6 @@ function ProductCardRope() {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [error, setError] = useState<string>("");
 
-  // Υπολογισμός εικόνας + αν είναι fallback
   const { img, isFallback } = useMemo(() => {
     const exact = ROPE_IMAGE[af1Color][rope];
     if (exact) return { img: exact, isFallback: false };
@@ -367,7 +384,7 @@ function ProductCardRope() {
           width: 320,
         }}
       >
-        {/* Εικόνα — rounded + μικρό “ζουμ” + hover */}
+        {/* Εικόνα */}
         <div
           onClick={() => setPreviewOpen(true)}
           title="Μεγέθυνση"
@@ -404,7 +421,6 @@ function ProductCardRope() {
           {priceLabel}
         </p>
 
-        {/* Σημείωση αν είναι ενδεικτική προεπισκόπηση */}
         {isFallback && (
           <p style={{ textAlign: "center", fontSize: 12, opacity: 0.7, marginBottom: 8 }}>
             * Ενδεικτική προεπισκόπηση για τον συνδυασμό που επέλεξες.
@@ -412,7 +428,6 @@ function ProductCardRope() {
         )}
 
         <div style={{ display: "grid", gap: 10, marginBottom: 14 }}>
-          {/* AF1 χρώμα */}
           <label style={{ display: "grid", gap: 6 }}>
             <span style={{ fontSize: 12, opacity: 0.9 }}>AF1 Χρώμα</span>
             <select
@@ -428,7 +443,6 @@ function ProductCardRope() {
             </select>
           </label>
 
-          {/* Rope χρώμα — πάντα δείχνω και τα 3 */}
           <label style={{ display: "grid", gap: 6 }}>
             <span style={{ fontSize: 12, opacity: 0.9 }}>Χρώμα σχοινιού</span>
             <select
@@ -447,7 +461,6 @@ function ProductCardRope() {
             </select>
           </label>
 
-          {/* Φύλο */}
           <label style={{ display: "grid", gap: 6 }}>
             <span style={{ fontSize: 12, opacity: 0.9 }}>Φύλο</span>
             <select
@@ -464,7 +477,6 @@ function ProductCardRope() {
             </select>
           </label>
 
-          {/* Μέγεθος */}
           <label style={{ display: "grid", gap: 6 }}>
             <span style={{ fontSize: 12, opacity: 0.9 }}>Μέγεθος (EU)</span>
             <select
@@ -492,7 +504,6 @@ function ProductCardRope() {
           </label>
         </div>
 
-        {/* CTA ζώνη */}
         {status !== "authenticated" ? (
           <NeonButton onClick={() => signIn()} ariaLabel="Σύνδεση">
             Σύνδεση για αγορά
@@ -545,7 +556,7 @@ export default function SneakersPage() {
           color: "#00e5ff",
           fontSize: "2rem",
           fontWeight: "bold",
-          textShadow: "0 0 10px #00e5ff", // ✅ fix
+          textShadow: "0 0 10px #00e5ff",
           marginBottom: "2rem",
         }}
       >
@@ -560,11 +571,9 @@ export default function SneakersPage() {
           justifyItems: "center",
         }}
       >
-        {/* Βασικά AF1 (119,99€) — επαναφέρω .avif για να μην “χαθούν” */}
         <ProductCardBasic id="af1-white" name="Nike Air Force 1 '07 White" img="/products/af1-white.avif" />
         <ProductCardBasic id="af1-black" name="Nike Air Force 1 '07 Black" img="/products/af1-black.avif" />
 
-        {/* ΝΕΟ: Rope Laces (169,99€) */}
         <ProductCardRope />
       </div>
     </main>
