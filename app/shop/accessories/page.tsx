@@ -165,7 +165,7 @@ function FunkoCard({ funko }: { funko: Funko }) {
           }}
         >
           <Image
-            src={"/products/funko/" + funko.file}
+            src={"/products/atlantis-rapper/"}
             alt={funko.label}
             fill
             style={{
