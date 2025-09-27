@@ -5,59 +5,27 @@ import Image from "next/image";
 import AddToCartButton from "@/components/AddToCartButton";
 import { useSession, signIn } from "next-auth/react";
 
+const PRICE = 40.0;
 const BASE = "/products/creait_wear/"; // φάκελος εικόνων
 
-type Variant = {
-  label: string;
-  file: string;
-  id: string;
-  size?: string;
-  stock?: number;
-  price: number;
-};
+type Variant = { label: string; file: string; id: string };
 type Size = "S" | "M" | "L" | "XL";
 
 const VARIANTS: Variant[] = [
-  // Spurs
-  {
-    label: "NBA San Antonio Spurs – Tim Duncan T-Shirt",
-    file: "1.jpg",
-    id: "timduncan",
-    size: "XL",
-    stock: 1,
-    price: 40,
-  },
-  // Celtics
+  { label: "Roy Tarpley", file: "tarpley_result.webp", id: "tarpley" },
+  { label: "Tony White", file: "tonywhite_result.webp", id: "tonywhite" },
+  { label: "Henry Turner", file: "turner_result.webp", id: "turner" },
+  { label: "Dominique Wilkins", file: "wilkins_result.webp", id: "wilkins" },
+  { label: "Kenneth Barlow", file: "barlow_result.webp", id: "barlow" },
+  { label: "Mitchell Wiggins", file: "wiggins_result.webp", id: "wiggins" },
+  { label: "David Ancrum", file: "ancrum_result.webp", id: "ancrum" },
+
+  // ΝΕΟ T-SHIRT
   {
     label: "Boston Celtics Garage Hero T-Shirt - Kelly Green",
     file: "bostonkelly.avif",
     id: "bostonkelly",
-    size: "M",
-    stock: 1,
-    price: 40,
   },
-  { label: "Roy Tarpley", file: "tarpley_result.webp", id: "tarpley", price: 40 },
-  { label: "Tony White", file: "tonywhite_result.webp", id: "tonywhite", price: 40 },
-  { label: "Henry Turner", file: "turner_result.webp", id: "turner", price: 40 },
-  {
-    label: "Dominique Wilkins",
-    file: "wilkins_result.webp",
-    id: "wilkins",
-    price: 40,
-  },
-  {
-    label: "Kenneth Barlow",
-    file: "barlow_result.webp",
-    id: "barlow",
-    price: 40,
-  },
-  {
-    label: "Mitchell Wiggins",
-    file: "wiggins_result.webp",
-    id: "wiggins",
-    price: 40,
-  },
-  { label: "David Ancrum", file: "ancrum_result.webp", id: "ancrum", price: 40 },
 ];
 
 /* ---------- Lightbox ---------- */
@@ -158,25 +126,20 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
   const { status } = useSession();
   const [size, setSize] = useState<Size | "">("");
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [soldOut, setSoldOut] = useState(false);
 
   const priceLabel = useMemo(
     () =>
-      variant.price.toLocaleString("el-GR", {
+      PRICE.toLocaleString("el-GR", {
         style: "currency",
         currency: "EUR",
         minimumFractionDigits: 2,
       }),
-    [variant.price]
+    []
   );
 
-  const isBoston = variant.id === "bostonkelly";
-  const isDuncan = variant.id === "timduncan";
+  const isValid = size !== "";
 
-  useEffect(() => {
-    if (isBoston) setSize("M");
-    if (isDuncan) setSize("XL");
-  }, [isBoston, isDuncan]);
+  const isBoston = variant.id === "bostonkelly";
 
   return (
     <>
@@ -244,8 +207,73 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
           {priceLabel}
         </p>
 
+        <div style={{ display: "grid", gap: 10, marginBottom: 14 }}>
+          {/* Μέγεθος */}
+          <label style={{ display: "grid", gap: 6 }}>
+            <span style={{ fontSize: 12, opacity: 0.9 }}>Μέγεθος</span>
+            <select
+              value={size}
+              onChange={(e) => setSize((e.target.value || "") as Size | "")}
+              style={{
+                padding: 10,
+                borderRadius: 8,
+                background: "#000",
+                color: "#fff",
+                border: "1px solid #00ffff",
+                outline: isValid ? "none" : "2px solid #ff2e2e",
+              }}
+            >
+              <option value="">Επίλεξε μέγεθος</option>
+
+              {isBoston ? (
+                <option value="M">Medium</option>
+              ) : (
+                (["S", "M", "L", "XL"] as Size[]).map((s) => (
+                  <option key={s} value={s}>
+                    {s === "XL"
+                      ? "XLarge"
+                      : s === "L"
+                      ? "Large"
+                      : s === "M"
+                      ? "Medium"
+                      : "Small"}
+                  </option>
+                ))
+              )}
+            </select>
+          </label>
+        </div>
+
         {/* CTA */}
-        {soldOut ? (
+        {status !== "authenticated" || !isValid ? (
+          <button
+            type="button"
+            onClick={() => (status !== "authenticated" ? signIn() : null)}
+            style={{
+              width: "100%",
+              padding: "0.75rem 1rem",
+              borderRadius: 12,
+              border: "2px solid #00ffff",
+              background: "#000",
+              color: "#00ffff",
+              fontWeight: 700,
+              cursor: "pointer",
+              boxShadow: "0 0 16px #0ff",
+            }}
+          >
+            {status !== "authenticated"
+              ? "Σύνδεση για αγορά"
+              : "Συμπλήρωσε μέγεθος"}
+          </button>
+        ) : isBoston && size === "M" ? (
+          // Εδώ μπορείς να κάνεις state όταν εξαντληθεί (π.χ. disabled)
+          <AddToCartButton
+            id={`creait-wear-tshirt-${variant.id}-${size}`}
+            name={`creait_wear T-Shirt • ${variant.label} (Size ${size})`}
+            price={PRICE}
+            image={BASE + variant.file}
+          />
+        ) : (
           <button
             disabled
             style={{
@@ -261,37 +289,6 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
           >
             Εξαντλημένο
           </button>
-        ) : status !== "authenticated" ? (
-          <button
-            type="button"
-            onClick={() => signIn()}
-            style={{
-              width: "100%",
-              padding: "0.75rem 1rem",
-              borderRadius: 12,
-              border: "2px solid #00ffff",
-              background: "#000",
-              color: "#00ffff",
-              fontWeight: 700,
-              cursor: "pointer",
-              boxShadow: "0 0 16px #0ff",
-            }}
-          >
-            Σύνδεση για αγορά
-          </button>
-        ) : (
-          <div
-            onClick={() => {
-              if (variant.stock === 1) setSoldOut(true);
-            }}
-          >
-            <AddToCartButton
-              id={`creait-wear-tshirt-${variant.id}-${size}`}
-              name={`creait_wear T-Shirt • ${variant.label} (Size ${size})`}
-              price={variant.price}
-              image={BASE + variant.file}
-            />
-          </div>
         )}
       </div>
 
@@ -345,5 +342,6 @@ export default function TshirtsPage() {
     </main>
   );
 }
+
 
 
