@@ -23,6 +23,15 @@ const HATS: Hat[] = [
   { label: "NHL Chicago Blackhawks", file: "blackhawks.jpg", id: "blackhawks", stock: 1, price: 25 },
 ];
 
+// ---------- COLLECTIBLES ----------
+type Collectible = { label: string; file: string; id: string; stock: number; price: number };
+const COLLECTIBLES: Collectible[] = [
+  { label: "Chicago Bulls Benny the Bull 25cm", file: "benny.jpg", id: "benny", stock: 1, price: 35 },
+  { label: "Seattle SuperSonics Squatch 25cm", file: "squatch.jpg", id: "squatch", stock: 1, price: 35 },
+  { label: "Vince Carter 25cm", file: "carter.jpg", id: "carter", stock: 1, price: 35 },
+  { label: "Toronto Raptors Cuff Knit", file: "raptors.png", id: "raptors", stock: 1, price: 30 },
+];
+
 // Πρώτο Black / White, δεύτερο Black, όλα με _result.webp
 type Variant = { label: string; file: string; id: string };
 const VARIANTS: Variant[] = [
@@ -128,20 +137,32 @@ function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: ()
   );
 }
 
-/* ---------- Funko Card ---------- */
-function FunkoCard({ funko }: { funko: Funko }) {
+/* ---------- Generic Card ---------- */
+function ProductCard({
+  label,
+  file,
+  id,
+  price,
+  stock,
+}: {
+  label: string;
+  file: string;
+  id: string;
+  price: number;
+  stock: number;
+}) {
   const { status } = useSession();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [soldOut, setSoldOut] = useState(false);
 
   const priceLabel = useMemo(
     () =>
-      funko.price.toLocaleString("el-GR", {
+      price.toLocaleString("el-GR", {
         style: "currency",
         currency: "EUR",
         minimumFractionDigits: 2,
       }),
-    [funko.price]
+    [price]
   );
 
   return (
@@ -153,7 +174,7 @@ function FunkoCard({ funko }: { funko: Funko }) {
           borderRadius: "1rem",
           padding: "1.25rem",
           boxShadow: "0 0 20px #0ff",
-          width: 240,
+          width: 260,
         }}
       >
         <div
@@ -171,20 +192,20 @@ function FunkoCard({ funko }: { funko: Funko }) {
           }}
         >
           <Image
-            src={BASE + funko.file}
-            alt={funko.label}
+            src={BASE + file}
+            alt={label}
             fill
             style={{
               objectFit: "contain",
               borderRadius: "1rem",
               display: "block",
             }}
-            sizes="(max-width: 768px) 90vw, 240px"
+            sizes="(max-width: 768px) 90vw, 260px"
             priority
           />
         </div>
 
-        <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>{funko.label}</h3>
+        <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>{label}</h3>
         <p style={{ textAlign: "center", marginBottom: 12, fontWeight: 700 }}>{priceLabel}</p>
 
         {soldOut ? (
@@ -224,138 +245,15 @@ function FunkoCard({ funko }: { funko: Funko }) {
         ) : (
           <div
             onClick={() => {
-              if (funko.stock === 1) setSoldOut(true);
+              if (stock === 1) setSoldOut(true);
             }}
           >
-            <AddToCartButton
-              id={`funko-${funko.id}`}
-              name={funko.label}
-              price={funko.price}
-              image={BASE + funko.file}
-            />
+            <AddToCartButton id={`product-${id}`} name={label} price={price} image={BASE + file} />
           </div>
         )}
       </div>
 
-      {previewOpen && (
-        <Lightbox img={BASE + funko.file} alt={funko.label} onClose={() => setPreviewOpen(false)} />
-      )}
-    </>
-  );
-}
-
-/* ---------- Hat Card ---------- */
-function HatCard({ hat }: { hat: Hat }) {
-  const { status } = useSession();
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [soldOut, setSoldOut] = useState(false);
-
-  const priceLabel = useMemo(
-    () =>
-      hat.price.toLocaleString("el-GR", {
-        style: "currency",
-        currency: "EUR",
-        minimumFractionDigits: 2,
-      }),
-    [hat.price]
-  );
-
-  return (
-    <>
-      <div
-        style={{
-          backgroundColor: "#000",
-          border: "2px solid #00ffff",
-          borderRadius: "1rem",
-          padding: "1.25rem",
-          boxShadow: "0 0 20px #0ff",
-          width: 300,
-        }}
-      >
-        <div
-          onClick={() => setPreviewOpen(true)}
-          title="Μεγέθυνση"
-          style={{
-            position: "relative",
-            width: "100%",
-            height: 220,
-            marginBottom: "1rem",
-            overflow: "hidden",
-            borderRadius: "1rem",
-            cursor: "zoom-in",
-            background: "#000",
-          }}
-        >
-          <Image
-            src={BASE + hat.file}
-            alt={hat.label}
-            fill
-            style={{
-              objectFit: "contain",
-              borderRadius: "1rem",
-              display: "block",
-            }}
-            sizes="(max-width: 768px) 90vw, 300px"
-            priority
-          />
-        </div>
-
-        <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>{hat.label}</h3>
-        <p style={{ textAlign: "center", marginBottom: 12, fontWeight: 700 }}>{priceLabel}</p>
-
-        {soldOut ? (
-          <button
-            disabled
-            style={{
-              width: "100%",
-              padding: "0.75rem 1rem",
-              borderRadius: 12,
-              border: "2px solid #aaa",
-              background: "#111",
-              color: "#777",
-              fontWeight: 700,
-              cursor: "not-allowed",
-            }}
-          >
-            Εξαντλημένο
-          </button>
-        ) : status !== "authenticated" ? (
-          <button
-            type="button"
-            onClick={() => signIn()}
-            style={{
-              width: "100%",
-              padding: "0.75rem 1rem",
-              borderRadius: 12,
-              border: "2px solid #00ffff",
-              background: "#000",
-              color: "#00ffff",
-              fontWeight: 700,
-              cursor: "pointer",
-              boxShadow: "0 0 16px #0ff",
-            }}
-          >
-            Σύνδεση για αγορά
-          </button>
-        ) : (
-          <div
-            onClick={() => {
-              if (hat.stock === 1) setSoldOut(true);
-            }}
-          >
-            <AddToCartButton
-              id={`hat-${hat.id}`}
-              name={hat.label}
-              price={hat.price}
-              image={BASE + hat.file}
-            />
-          </div>
-        )}
-      </div>
-
-      {previewOpen && (
-        <Lightbox img={BASE + hat.file} alt={hat.label} onClose={() => setPreviewOpen(false)} />
-      )}
+      {previewOpen && <Lightbox img={BASE + file} alt={label} onClose={() => setPreviewOpen(false)} />}
     </>
   );
 }
@@ -414,12 +312,8 @@ function ProductCardRapper() {
               borderRadius: "1rem",
               display: "block",
             }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.4)")
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.8)")
-            }
+            onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.4)")}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.8)")}
             sizes="(max-width: 768px) 90vw, 340px"
             priority
           />
@@ -484,9 +378,7 @@ function ProductCardRapper() {
         )}
       </div>
 
-      {previewOpen && (
-        <Lightbox img={BASE + variant.file} alt={`Atlantis Rapper — ${variant.label}`} onClose={() => setPreviewOpen(false)} />
-      )}
+      {previewOpen && <Lightbox img={BASE + variant.file} alt={`Atlantis Rapper — ${variant.label}`} onClose={() => setPreviewOpen(false)} />}
     </>
   );
 }
@@ -525,10 +417,13 @@ export default function AccessoriesPage() {
         }}
       >
         {FUNKOS.map((f) => (
-          <FunkoCard key={f.id} funko={f} />
+          <ProductCard key={f.id} {...f} />
         ))}
         {HATS.map((h) => (
-          <HatCard key={h.id} hat={h} />
+          <ProductCard key={h.id} {...h} />
+        ))}
+        {COLLECTIBLES.map((c) => (
+          <ProductCard key={c.id} {...c} />
         ))}
         <ProductCardRapper />
       </div>
