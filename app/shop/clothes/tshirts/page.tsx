@@ -139,6 +139,8 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
 
   const isValid = size !== "";
 
+  const isBoston = variant.id === "bostonkelly";
+
   return (
     <>
       <div
@@ -151,7 +153,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
           width: 360,
         }}
       >
-        {/* Εικόνα με μόνιμο zoom και hover */}
+        {/* Εικόνα */}
         <div
           onClick={() => setPreviewOpen(true)}
           title="Μεγέθυνση"
@@ -223,7 +225,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
             >
               <option value="">Επίλεξε μέγεθος</option>
 
-              {variant.id === "bostonkelly" ? (
+              {isBoston ? (
                 <option value="M">Medium</option>
               ) : (
                 (["S", "M", "L", "XL"] as Size[]).map((s) => (
@@ -242,7 +244,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
           </label>
         </div>
 
-        {/* CTA: login check */}
+        {/* CTA */}
         {status !== "authenticated" || !isValid ? (
           <button
             type="button"
@@ -263,7 +265,15 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
               ? "Σύνδεση για αγορά"
               : "Συμπλήρωσε μέγεθος"}
           </button>
-        ) : variant.id === "bostonkelly" && size !== "M" ? (
+        ) : isBoston && size === "M" ? (
+          // Εδώ μπορείς να κάνεις state όταν εξαντληθεί (π.χ. disabled)
+          <AddToCartButton
+            id={`creait-wear-tshirt-${variant.id}-${size}`}
+            name={`creait_wear T-Shirt • ${variant.label} (Size ${size})`}
+            price={PRICE}
+            image={BASE + variant.file}
+          />
+        ) : (
           <button
             disabled
             style={{
@@ -277,16 +287,8 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
               cursor: "not-allowed",
             }}
           >
-            Μη διαθέσιμο
+            Εξαντλημένο
           </button>
-        ) : (
-          <AddToCartButton
-            id={`creait-wear-tshirt-${variant.id}-${size}`}
-            name={`creait_wear T-Shirt • ${variant.label} (Size ${size})`}
-            price={PRICE}
-            image={BASE + variant.file}
-            stock={variant.id === "bostonkelly" ? 1 : undefined}
-          />
         )}
       </div>
 
