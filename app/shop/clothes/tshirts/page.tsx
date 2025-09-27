@@ -267,7 +267,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
         )}
 
         <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>
-          creait_wear — {variant.label}
+          {variant.label}
         </h3>
         <p
           style={{
