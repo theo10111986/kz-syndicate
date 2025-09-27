@@ -22,6 +22,8 @@ type Hat = { label: string; file: string; id: string; stock: number; price: numb
 const HATS: Hat[] = [
   { label: "NHL Chicago Blackhawks", file: "blackhawks.jpg", id: "blackhawks", stock: 1, price: 25 },
 ];
+
+// Πρώτο Black / White, δεύτερο Black, όλα με _result.webp
 type Variant = { label: string; file: string; id: string };
 const VARIANTS: Variant[] = [
   { label: "Black / White", file: "rapperblackwhite_result.webp", id: "blackwhite" },
@@ -513,48 +515,25 @@ export default function AccessoriesPage() {
         Accessories
       </h1>
 
-      {/* Funko Pops */}
+      {/* Όλα τα προϊόντα σε ενιαίο grid */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
           gap: "2rem",
           justifyItems: "center",
-          marginBottom: "3rem",
         }}
       >
         {FUNKOS.map((f) => (
           <FunkoCard key={f.id} funko={f} />
         ))}
-      </div>
-
-      {/* Hat */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-          gap: "2rem",
-          justifyItems: "center",
-          marginBottom: "3rem",
-        }}
-      >
         {HATS.map((h) => (
           <HatCard key={h.id} hat={h} />
         ))}
-      </div>
-
-      {/* Trucker caps */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
-          gap: "2rem",
-          justifyItems: "center",
-        }}
-      >
         <ProductCardRapper />
       </div>
     </main>
   );
 }
+
 
