@@ -12,17 +12,32 @@ type Variant = { label: string; file: string; id: string };
 type Size = "S" | "M" | "L" | "XL";
 
 const VARIANTS: Variant[] = [
-  { label: "Roy Tarpley",     file: "tarpley_result.webp",   id: "tarpley" },
-  { label: "Tony White",  file: "tonywhite_result.webp", id: "tonywhite" },
-  { label: "Henry Turner",      file: "turner_result.webp",    id: "turner" },
-  { label: "Dominique Wilkins",     file: "wilkins_result.webp",   id: "wilkins" },
-  { label: "Kenneth Barlow",      file: "barlow_result.webp",    id: "barlow" },
-  { label: "Mitchell Wiggins",     file: "wiggins_result.webp",   id: "wiggins" },
-  { label: "David Ancrum",      file: "ancrum_result.webp",    id: "ancrum" },
+  { label: "Roy Tarpley", file: "tarpley_result.webp", id: "tarpley" },
+  { label: "Tony White", file: "tonywhite_result.webp", id: "tonywhite" },
+  { label: "Henry Turner", file: "turner_result.webp", id: "turner" },
+  { label: "Dominique Wilkins", file: "wilkins_result.webp", id: "wilkins" },
+  { label: "Kenneth Barlow", file: "barlow_result.webp", id: "barlow" },
+  { label: "Mitchell Wiggins", file: "wiggins_result.webp", id: "wiggins" },
+  { label: "David Ancrum", file: "ancrum_result.webp", id: "ancrum" },
+
+  // ΝΕΟ T-SHIRT
+  {
+    label: "Boston Celtics Garage Hero T-Shirt - Kelly Green",
+    file: "bostonkelly.avif",
+    id: "bostonkelly",
+  },
 ];
 
 /* ---------- Lightbox ---------- */
-function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: () => void }) {
+function Lightbox({
+  img,
+  alt,
+  onClose,
+}: {
+  img: string;
+  alt: string;
+  onClose: () => void;
+}) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
@@ -92,7 +107,11 @@ function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: ()
             src={img}
             alt={alt}
             fill
-            style={{ objectFit: "contain", background: "#000", borderRadius: "1rem" }}
+            style={{
+              objectFit: "contain",
+              background: "#000",
+              borderRadius: "1rem",
+            }}
             sizes="80vw"
             priority
           />
@@ -159,20 +178,32 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
               display: "block",
             }}
             onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.18)")
+              ((e.currentTarget as HTMLImageElement).style.transform =
+                "scale(1.18)")
             }
             onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.12)")
+              ((e.currentTarget as HTMLImageElement).style.transform =
+                "scale(1.12)")
             }
             sizes="(max-width: 768px) 90vw, 360px"
             priority
           />
         </div>
 
-        <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>
+        <h3
+          style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}
+        >
           creait_wear — {variant.label}
         </h3>
-        <p style={{ textAlign: "center", marginBottom: 12, fontWeight: 700 }}>{priceLabel}</p>
+        <p
+          style={{
+            textAlign: "center",
+            marginBottom: 12,
+            fontWeight: 700,
+          }}
+        >
+          {priceLabel}
+        </p>
 
         <div style={{ display: "grid", gap: 10, marginBottom: 14 }}>
           {/* Μέγεθος */}
@@ -191,11 +222,22 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
               }}
             >
               <option value="">Επίλεξε μέγεθος</option>
-              {(["S", "M", "L", "XL"] as Size[]).map((s) => (
-                <option key={s} value={s}>
-                  {s === "XL" ? "XLarge" : s === "L" ? "Large" : s === "M" ? "Medium" : "Small"}
-                </option>
-              ))}
+
+              {variant.id === "bostonkelly" ? (
+                <option value="M">Medium</option>
+              ) : (
+                (["S", "M", "L", "XL"] as Size[]).map((s) => (
+                  <option key={s} value={s}>
+                    {s === "XL"
+                      ? "XLarge"
+                      : s === "L"
+                      ? "Large"
+                      : s === "M"
+                      ? "Medium"
+                      : "Small"}
+                  </option>
+                ))
+              )}
             </select>
           </label>
         </div>
@@ -217,7 +259,25 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
               boxShadow: "0 0 16px #0ff",
             }}
           >
-            {status !== "authenticated" ? "Σύνδεση για αγορά" : "Συμπλήρωσε μέγεθος"}
+            {status !== "authenticated"
+              ? "Σύνδεση για αγορά"
+              : "Συμπλήρωσε μέγεθος"}
+          </button>
+        ) : variant.id === "bostonkelly" && size !== "M" ? (
+          <button
+            disabled
+            style={{
+              width: "100%",
+              padding: "0.75rem 1rem",
+              borderRadius: 12,
+              border: "2px solid #aaa",
+              background: "#111",
+              color: "#777",
+              fontWeight: 700,
+              cursor: "not-allowed",
+            }}
+          >
+            Μη διαθέσιμο
           </button>
         ) : (
           <AddToCartButton
@@ -225,6 +285,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
             name={`creait_wear T-Shirt • ${variant.label} (Size ${size})`}
             price={PRICE}
             image={BASE + variant.file}
+            stock={variant.id === "bostonkelly" ? 1 : undefined}
           />
         )}
       </div>
@@ -279,3 +340,4 @@ export default function TshirtsPage() {
     </main>
   );
 }
+
