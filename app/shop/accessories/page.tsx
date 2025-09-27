@@ -17,6 +17,12 @@ const FUNKOS: Funko[] = [
   { label: "Funko Pop! Luka Doncic", file: "doncic.png", id: "doncic", stock: 1, price: 17 },
 ];
 
+// ---------- HATS ----------
+type Hat = { label: string; file: string; id: string; stock: number; price: number };
+const HATS: Hat[] = [
+  { label: "NHL Chicago Blackhawks", file: "blackhawks.jpg", id: "blackhawks", stock: 1, price: 25 },
+];
+
 // Πρώτο Black / White, δεύτερο Black, όλα με _result.webp
 type Variant = { label: string; file: string; id: string };
 const VARIANTS: Variant[] = [
@@ -165,7 +171,7 @@ function FunkoCard({ funko }: { funko: Funko }) {
           }}
         >
           <Image
-            src={"/products/atlantis-rapper/" + funko.file}
+            src={BASE + funko.file}
             alt={funko.label}
             fill
             style={{
@@ -225,18 +231,130 @@ function FunkoCard({ funko }: { funko: Funko }) {
               id={`funko-${funko.id}`}
               name={funko.label}
               price={funko.price}
-              image={"/products/atlantis-rapper/" + funko.file}
+              image={BASE + funko.file}
             />
           </div>
         )}
       </div>
 
       {previewOpen && (
-        <Lightbox
-          img={"/products/atlantis-rapper/" + funko.file}
-          alt={funko.label}
-          onClose={() => setPreviewOpen(false)}
-        />
+        <Lightbox img={BASE + funko.file} alt={funko.label} onClose={() => setPreviewOpen(false)} />
+      )}
+    </>
+  );
+}
+
+/* ---------- Hat Card ---------- */
+function HatCard({ hat }: { hat: Hat }) {
+  const { status } = useSession();
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [soldOut, setSoldOut] = useState(false);
+
+  const priceLabel = useMemo(
+    () =>
+      hat.price.toLocaleString("el-GR", {
+        style: "currency",
+        currency: "EUR",
+        minimumFractionDigits: 2,
+      }),
+    [hat.price]
+  );
+
+  return (
+    <>
+      <div
+        style={{
+          backgroundColor: "#000",
+          border: "2px solid #00ffff",
+          borderRadius: "1rem",
+          padding: "1.25rem",
+          boxShadow: "0 0 20px #0ff",
+          width: 300,
+        }}
+      >
+        <div
+          onClick={() => setPreviewOpen(true)}
+          title="Μεγέθυνση"
+          style={{
+            position: "relative",
+            width: "100%",
+            height: 220,
+            marginBottom: "1rem",
+            overflow: "hidden",
+            borderRadius: "1rem",
+            cursor: "zoom-in",
+            background: "#000",
+          }}
+        >
+          <Image
+            src={BASE + hat.file}
+            alt={hat.label}
+            fill
+            style={{
+              objectFit: "contain",
+              borderRadius: "1rem",
+              display: "block",
+            }}
+            sizes="(max-width: 768px) 90vw, 300px"
+            priority
+          />
+        </div>
+
+        <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>{hat.label}</h3>
+        <p style={{ textAlign: "center", marginBottom: 12, fontWeight: 700 }}>{priceLabel}</p>
+
+        {soldOut ? (
+          <button
+            disabled
+            style={{
+              width: "100%",
+              padding: "0.75rem 1rem",
+              borderRadius: 12,
+              border: "2px solid #aaa",
+              background: "#111",
+              color: "#777",
+              fontWeight: 700,
+              cursor: "not-allowed",
+            }}
+          >
+            Εξαντλημένο
+          </button>
+        ) : status !== "authenticated" ? (
+          <button
+            type="button"
+            onClick={() => signIn()}
+            style={{
+              width: "100%",
+              padding: "0.75rem 1rem",
+              borderRadius: 12,
+              border: "2px solid #00ffff",
+              background: "#000",
+              color: "#00ffff",
+              fontWeight: 700,
+              cursor: "pointer",
+              boxShadow: "0 0 16px #0ff",
+            }}
+          >
+            Σύνδεση για αγορά
+          </button>
+        ) : (
+          <div
+            onClick={() => {
+              if (hat.stock === 1) setSoldOut(true);
+            }}
+          >
+            <AddToCartButton
+              id={`hat-${hat.id}`}
+              name={hat.label}
+              price={hat.price}
+              image={BASE + hat.file}
+            />
+          </div>
+        )}
+      </div>
+
+      {previewOpen && (
+        <Lightbox img={BASE + hat.file} alt={hat.label} onClose={() => setPreviewOpen(false)} />
       )}
     </>
   );
@@ -367,11 +485,7 @@ function ProductCardRapper() {
       </div>
 
       {previewOpen && (
-        <Lightbox
-          img={BASE + variant.file}
-          alt={`Atlantis Rapper — ${variant.label}`}
-          onClose={() => setPreviewOpen(false)}
-        />
+        <Lightbox img={BASE + variant.file} alt={`Atlantis Rapper — ${variant.label}`} onClose={() => setPreviewOpen(false)} />
       )}
     </>
   );
@@ -416,6 +530,21 @@ export default function AccessoriesPage() {
         ))}
       </div>
 
+      {/* Hat */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          gap: "2rem",
+          justifyItems: "center",
+          marginBottom: "3rem",
+        }}
+      >
+        {HATS.map((h) => (
+          <HatCard key={h.id} hat={h} />
+        ))}
+      </div>
+
       {/* Trucker caps */}
       <div
         style={{
@@ -430,3 +559,4 @@ export default function AccessoriesPage() {
     </main>
   );
 }
+
