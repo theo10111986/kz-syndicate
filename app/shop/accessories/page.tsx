@@ -165,7 +165,7 @@ function FunkoCard({ funko }: { funko: Funko }) {
           }}
         >
           <Image
-            src={"/products/atlantis-rapper/"}
+            src={"/products/atlantis-rapper/" + funko.file}
             alt={funko.label}
             fill
             style={{
@@ -225,14 +225,18 @@ function FunkoCard({ funko }: { funko: Funko }) {
               id={`funko-${funko.id}`}
               name={funko.label}
               price={funko.price}
-              image={"/products/funko/" + funko.file}
+              image={"/products/atlantis-rapper/" + funko.file}
             />
           </div>
         )}
       </div>
 
       {previewOpen && (
-        <Lightbox img={"/products/funko/" + funko.file} alt={funko.label} onClose={() => setPreviewOpen(false)} />
+        <Lightbox
+          img={"/products/atlantis-rapper/" + funko.file}
+          alt={funko.label}
+          onClose={() => setPreviewOpen(false)}
+        />
       )}
     </>
   );
@@ -363,7 +367,11 @@ function ProductCardRapper() {
       </div>
 
       {previewOpen && (
-        <Lightbox img={BASE + variant.file} alt={`Atlantis Rapper — ${variant.label}`} onClose={() => setPreviewOpen(false)} />
+        <Lightbox
+          img={BASE + variant.file}
+          alt={`Atlantis Rapper — ${variant.label}`}
+          onClose={() => setPreviewOpen(false)}
+        />
       )}
     </>
   );
