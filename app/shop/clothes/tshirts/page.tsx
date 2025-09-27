@@ -17,20 +17,48 @@ type Variant = {
 };
 type Size = "S" | "M" | "L" | "XL";
 
-const VARIANTS: Variant[] = [ 
- // Spurs
-  { label: "NBA San Antonio Spurs – Tim Duncan T-Shirt", file: "1.jpg", id: "timduncan", size: "XL", stock: 1,  price: 40, },
- // Celtics
-  { label: "Boston Celtics Garage Hero T-Shirt - Kelly Green", file: "bostonkelly.avif", id: "bostonkelly",  size: "M", stock: 1, price: 40, },
+const VARIANTS: Variant[] = [
+  // Spurs
+  {
+    label: "NBA San Antonio Spurs – Tim Duncan T-Shirt",
+    file: "1.jpg",
+    id: "timduncan",
+    size: "XL",
+    stock: 1,
+    price: 40,
+  },
+  // Celtics
+  {
+    label: "Boston Celtics Garage Hero T-Shirt - Kelly Green",
+    file: "bostonkelly.avif",
+    id: "bostonkelly",
+    size: "M",
+    stock: 1,
+    price: 40,
+  },
   { label: "Roy Tarpley", file: "tarpley_result.webp", id: "tarpley", price: 40 },
   { label: "Tony White", file: "tonywhite_result.webp", id: "tonywhite", price: 40 },
   { label: "Henry Turner", file: "turner_result.webp", id: "turner", price: 40 },
-  { label: "Dominique Wilkins", file: "wilkins_result.webp", id: "wilkins", price: 40 },
-  { label: "Kenneth Barlow", file: "barlow_result.webp", id: "barlow", price: 40 },
-  { label: "Mitchell Wiggins", file: "wiggins_result.webp", id: "wiggins", price: 40 },
+  {
+    label: "Dominique Wilkins",
+    file: "wilkins_result.webp",
+    id: "wilkins",
+    price: 40,
+  },
+  {
+    label: "Kenneth Barlow",
+    file: "barlow_result.webp",
+    id: "barlow",
+    price: 40,
+  },
+  {
+    label: "Mitchell Wiggins",
+    file: "wiggins_result.webp",
+    id: "wiggins",
+    price: 40,
+  },
   { label: "David Ancrum", file: "ancrum_result.webp", id: "ancrum", price: 40 },
-
- ];
+];
 
 /* ---------- Lightbox ---------- */
 function Lightbox({
@@ -252,15 +280,18 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
             Σύνδεση για αγορά
           </button>
         ) : (
-          <AddToCartButton
-            id={`creait-wear-tshirt-${variant.id}-${size}`}
-            name={`creait_wear T-Shirt • ${variant.label} (Size ${size})`}
-            price={variant.price}
-            image={BASE + variant.file}
+          <div
             onClick={() => {
               if (variant.stock === 1) setSoldOut(true);
             }}
-          />
+          >
+            <AddToCartButton
+              id={`creait-wear-tshirt-${variant.id}-${size}`}
+              name={`creait_wear T-Shirt • ${variant.label} (Size ${size})`}
+              price={variant.price}
+              image={BASE + variant.file}
+            />
+          </div>
         )}
       </div>
 
@@ -314,4 +345,5 @@ export default function TshirtsPage() {
     </main>
   );
 }
+
 
