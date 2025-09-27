@@ -9,9 +9,10 @@ const BASE = "/products/creait_wear/"; // φάκελος εικόνων
 
 type Variant = {
   label: string;
-  file: string;
+  file: string | string[];
   id: string;
   size?: string; // προκαθορισμένο μέγεθος (αν υπάρχει)
+  sizes?: string[]; // για πολλαπλά μεγέθη
   stock?: number;
   price: number;
 };
@@ -41,6 +42,32 @@ const VARIANTS: Variant[] = [
   { label: "Kenneth Barlow", file: "barlow_result.webp", id: "barlow", price: 40 },
   { label: "Mitchell Wiggins", file: "wiggins_result.webp", id: "wiggins", price: 40 },
   { label: "David Ancrum", file: "ancrum_result.webp", id: "ancrum", price: 40 },
+
+  // 🔥 ΝΕΑ
+  {
+    label: "NBA Chicago Bulls – Dennis Rodman",
+    file: "dennis.jpg",
+    id: "rodman",
+    size: "L",
+    stock: 1,
+    price: 55,
+  },
+  {
+    label: "NBA Nike TEE Spurs – Victor Wembanyama",
+    file: "victor.jpg",
+    id: "wemby",
+    sizes: ["M", "L"],
+    stock: 1,
+    price: 35,
+  },
+  {
+    label: "NBA Lakers – Magic Johnson",
+    file: ["magic.jpg", "magic2.jpg"],
+    id: "magic",
+    size: "L",
+    stock: 2,
+    price: 45,
+  },
 ];
 
 /* ---------- Lightbox ---------- */
@@ -142,6 +169,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
   const [size, setSize] = useState<Size | "">("");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [soldOut, setSoldOut] = useState(false);
+  const [imageIndex, setImageIndex] = useState(0);
 
   const priceLabel = useMemo(
     () =>
@@ -158,6 +186,13 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
       setSize(variant.size as Size);
     }
   }, [variant.size]);
+
+  const currentImage =
+    Array.isArray(variant.file) && variant.file.length > 1
+      ? variant.file[imageIndex]
+      : Array.isArray(variant.file)
+      ? variant.file[0]
+      : variant.file;
 
   return (
     <>
@@ -187,7 +222,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
           }}
         >
           <Image
-            src={BASE + variant.file}
+            src={BASE + currentImage}
             alt={`creait_wear — ${variant.label}`}
             fill
             style={{
@@ -197,22 +232,40 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
               borderRadius: "1rem",
               display: "block",
             }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLImageElement).style.transform =
-                "scale(1.18)")
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLImageElement).style.transform =
-                "scale(1.12)")
-            }
             sizes="(max-width: 768px) 90vw, 360px"
             priority
           />
         </div>
 
-        <h3
-          style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}
-        >
+        {/* thumbnails αν έχει παραπάνω από μία */}
+        {Array.isArray(variant.file) && variant.file.length > 1 && (
+          <div
+            style={{
+              display: "flex",
+              gap: 8,
+              justifyContent: "center",
+              marginBottom: 12,
+            }}
+          >
+            {variant.file.map((f, i) => (
+              <Image
+                key={i}
+                src={BASE + f}
+                alt={`${variant.label} thumb ${i + 1}`}
+                width={60}
+                height={60}
+                style={{
+                  cursor: "pointer",
+                  border: i === imageIndex ? "2px solid #00ffff" : "2px solid transparent",
+                  borderRadius: 8,
+                }}
+                onClick={() => setImageIndex(i)}
+              />
+            ))}
+          </div>
+        )}
+
+        <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>
           creait_wear — {variant.label}
         </h3>
         <p
@@ -226,18 +279,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
         </p>
 
         {/* Επιλογή Μεγέθους */}
-        {variant.size ? (
-          <p
-            style={{
-              textAlign: "center",
-              marginBottom: 12,
-              fontWeight: 700,
-              color: "#00ffff",
-            }}
-          >
-            Μέγεθος: {variant.size}
-          </p>
-        ) : (
+        {variant.sizes ? (
           <select
             value={size}
             onChange={(e) => setSize(e.target.value as Size)}
@@ -254,12 +296,24 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
             }}
           >
             <option value="">Επιλέξτε μέγεθος</option>
-            <option value="S">Small (S)</option>
-            <option value="M">Medium (M)</option>
-            <option value="L">Large (L)</option>
-            <option value="XL">XL</option>
+            {variant.sizes.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
           </select>
-        )}
+        ) : variant.size ? (
+          <p
+            style={{
+              textAlign: "center",
+              marginBottom: 12,
+              fontWeight: 700,
+              color: "#00ffff",
+            }}
+          >
+            Μέγεθος: {variant.size}
+          </p>
+        ) : null}
 
         {/* CTA */}
         {soldOut ? (
@@ -278,7 +332,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
           >
             Εξαντλημένο
           </button>
-        ) : status !== "authenticated" || !size ? (
+        ) : status !== "authenticated" || (!size && variant.sizes) ? (
           <button
             type="button"
             onClick={() => (status !== "authenticated" ? signIn() : null)}
@@ -294,9 +348,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
               boxShadow: "0 0 16px #0ff",
             }}
           >
-            {status !== "authenticated"
-              ? "Σύνδεση για αγορά"
-              : "Συμπλήρωσε μέγεθος"}
+            {status !== "authenticated" ? "Σύνδεση για αγορά" : "Συμπλήρωσε μέγεθος"}
           </button>
         ) : (
           <div
@@ -306,9 +358,9 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
           >
             <AddToCartButton
               id={`creait-wear-tshirt-${variant.id}-${size}`}
-              name={`creait_wear T-Shirt • ${variant.label} (Size ${size})`}
+              name={`creait_wear T-Shirt • ${variant.label} (Size ${size || variant.size})`}
               price={variant.price}
-              image={BASE + variant.file}
+              image={BASE + currentImage}
             />
           </div>
         )}
@@ -316,7 +368,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
 
       {previewOpen && (
         <Lightbox
-          img={BASE + variant.file}
+          img={BASE + currentImage}
           alt={`creait_wear — ${variant.label}`}
           onClose={() => setPreviewOpen(false)}
         />
@@ -364,6 +416,5 @@ export default function TshirtsPage() {
     </main>
   );
 }
-
 
 
