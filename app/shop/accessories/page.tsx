@@ -22,8 +22,6 @@ type Hat = { label: string; file: string; id: string; stock: number; price: numb
 const HATS: Hat[] = [
   { label: "NHL Chicago Blackhawks", file: "blackhawks.jpg", id: "blackhawks", stock: 1, price: 25 },
 ];
-
-// Πρώτο Black / White, δεύτερο Black, όλα με _result.webp
 type Variant = { label: string; file: string; id: string };
 const VARIANTS: Variant[] = [
   { label: "Black / White", file: "rapperblackwhite_result.webp", id: "blackwhite" },
