@@ -59,13 +59,13 @@ const VARIANTS: Variant[] = [
     stock: 2,
     price: 45,
   },
-  { label: "Roy Tarpley", file: "tarpley_result.webp", id: "tarpley", price: 40 },
-  { label: "Tony White", file: "tonywhite_result.webp", id: "tonywhite", price: 40 },
-  { label: "Henry Turner", file: "turner_result.webp", id: "turner", price: 40 },
-  { label: "Dominique Wilkins", file: "wilkins_result.webp", id: "wilkins", price: 40 },
-  { label: "Kenneth Barlow", file: "barlow_result.webp", id: "barlow", price: 40 },
-  { label: "Mitchell Wiggins", file: "wiggins_result.webp", id: "wiggins", price: 40 },
-  { label: "David Ancrum", file: "ancrum_result.webp", id: "ancrum", price: 40 },
+  { label: "creait_wear-Roy Tarpley", file: "tarpley_result.webp", id: "tarpley", price: 40 },
+  { label: "creait_wear-Tony White", file: "tonywhite_result.webp", id: "tonywhite", price: 40 },
+  { label: "creait_wear-Henry Turner", file: "turner_result.webp", id: "turner", price: 40 },
+  { label: "creait_wear-Dominique Wilkins", file: "wilkins_result.webp", id: "wilkins", price: 40 },
+  { label: "creait_wear-Kenneth Barlow", file: "barlow_result.webp", id: "barlow", price: 40 },
+  { label: "creait_wear-Mitchell Wiggins", file: "wiggins_result.webp", id: "wiggins", price: 40 },
+  { label: "creait_wear-David Ancrum", file: "ancrum_result.webp", id: "ancrum", price: 40 },
 
   //
   
