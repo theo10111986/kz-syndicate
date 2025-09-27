@@ -12,7 +12,7 @@ type Jersey = {
   label: string;
   images: string[];
   price: number;
-  sizes: { [key: string]: number }; // π.χ. { M:1, L:2 }
+  sizes: { [key: string]: number };
 };
 
 const JERSEYS: Jersey[] = [
@@ -67,7 +67,7 @@ const JERSEYS: Jersey[] = [
   },
 ];
 
-/* ---------- Lightbox με πολλαπλές εικόνες ---------- */
+/* ---------- Lightbox ---------- */
 function Lightbox({
   images,
   startIndex,
@@ -151,46 +151,6 @@ function Lightbox({
             priority
           />
         </div>
-
-        {/* arrows */}
-        {images.length > 1 && (
-          <>
-            <button
-              onClick={() => setIndex((i) => (i - 1 + images.length) % images.length)}
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: 10,
-                transform: "translateY(-50%)",
-                background: "rgba(0,0,0,0.6)",
-                border: "2px solid #0ff",
-                color: "#0ff",
-                padding: "0.5rem 1rem",
-                cursor: "pointer",
-                borderRadius: 8,
-              }}
-            >
-              ‹
-            </button>
-            <button
-              onClick={() => setIndex((i) => (i + 1) % images.length)}
-              style={{
-                position: "absolute",
-                top: "50%",
-                right: 10,
-                transform: "translateY(-50%)",
-                background: "rgba(0,0,0,0.6)",
-                border: "2px solid #0ff",
-                color: "#0ff",
-                padding: "0.5rem 1rem",
-                cursor: "pointer",
-                borderRadius: 8,
-              }}
-            >
-              ›
-            </button>
-          </>
-        )}
       </div>
     </div>
   );
@@ -233,7 +193,7 @@ function JerseyCard({ jersey }: { jersey: Jersey }) {
           width: 360,
         }}
       >
-        {/* Εικόνα */}
+        {/* Εικόνα με hover zoom + swap */}
         <div
           onClick={() => setPreviewOpen(true)}
           onMouseEnter={() => setHovered(true)}
@@ -253,7 +213,13 @@ function JerseyCard({ jersey }: { jersey: Jersey }) {
             src={BASE + (hovered && jersey.images[1] ? jersey.images[1] : jersey.images[0])}
             alt={jersey.label}
             fill
-            style={{ objectFit: "contain", borderRadius: "1rem" }}
+            style={{
+              objectFit: "contain",
+              borderRadius: "1rem",
+              transform: hovered ? "scale(1.18)" : "scale(1.12)",
+              transition: "transform 0.3s ease",
+              display: "block",
+            }}
             sizes="(max-width: 768px) 90vw, 360px"
             priority
           />
