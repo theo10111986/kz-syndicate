@@ -1,4 +1,3 @@
-// app/shop/accessories/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -9,29 +8,37 @@ import { useSession, signIn } from "next-auth/react";
 const PRICE = 10.0;
 const BASE = "/products/atlantis-rapper/";
 
-type Variant = { label: string; file: string; id: string };
+// ---------- FUNKO POPS ----------
+type Funko = { label: string; file: string; id: string; stock: number; price: number };
+const FUNKOS: Funko[] = [
+  { label: "Funko Pop! Stephen Curry", file: "curry.jpg", id: "curry", stock: 2, price: 17 },
+  { label: "Funko Pop! Michael Jordan", file: "jordan.jpg", id: "jordan", stock: 1, price: 17 },
+  { label: "Funko Pop! Dennis Rodman", file: "rodman.jpg", id: "rodman", stock: 1, price: 17 },
+  { label: "Funko Pop! Luka Doncic", file: "doncic.png", id: "doncic", stock: 1, price: 17 },
+];
 
 // Πρώτο Black / White, δεύτερο Black, όλα με _result.webp
+type Variant = { label: string; file: string; id: string };
 const VARIANTS: Variant[] = [
-  { label: "Black / White",            file: "rapperblackwhite_result.webp",         id: "blackwhite" },
-  { label: "Black",                    file: "rapperblack_result.webp",              id: "black" },
-  { label: "Fluo Pink / White",        file: "rapperfluopinkwhite_result.webp",      id: "fluopinkwhite" },
-  { label: "Fluo Green / White",       file: "rapperfluogreenwhite_result.webp",     id: "fluogreenwhite" },
-  { label: "Bordeaux / White / Black", file: "rapperbordeuxwhiteblack_result.webp",  id: "bordeauxwhiteblack" },
-  { label: "Pink / Black",             file: "rapperpinkblack_result.webp",          id: "pinkblack" },
-  { label: "White / Red / Black",      file: "rapperwhiteredblack_result.webp",      id: "whiteredblack" },
-  { label: "Grey / Red",               file: "rappergreyred_result.webp",            id: "greyred" },
-  { label: "Orange / Black",           file: "rapperorangeblack_result.webp",        id: "orangeblack" },
-  { label: "Black / White / Green",    file: "rapperblackwhitegreen_result.webp",    id: "blackwhitegreen" },
-  { label: "Red / White / Royal",      file: "rapperredwhiteroyal_result.webp",      id: "redwhiteroyal" },
-  { label: "Black / Orange",           file: "rapperblackorange_result.webp",        id: "blackorange" },
-  { label: "Black / Olive",            file: "rapperblackolive_result.webp",         id: "blackolive" },
-  { label: "Red / White",              file: "rapperredwhite_result.webp",           id: "redwhite" },
-  { label: "Royal / White",            file: "rapperroyalwhite_result.webp",         id: "royalwhite" },
-  { label: "Yellow / White",           file: "rapperyellowwhite_result.webp",        id: "yellowwhite" },
-  { label: "Orange / White",           file: "rapperorangewhite_result.webp",        id: "orangewhite" },
-  { label: "Blue / White",             file: "rapperbluewhite_result.webp",          id: "bluewhite" },
-  { label: "Green / White",            file: "rappergreenwhite_result.webp",         id: "greenwhite" },
+  { label: "Black / White", file: "rapperblackwhite_result.webp", id: "blackwhite" },
+  { label: "Black", file: "rapperblack_result.webp", id: "black" },
+  { label: "Fluo Pink / White", file: "rapperfluopinkwhite_result.webp", id: "fluopinkwhite" },
+  { label: "Fluo Green / White", file: "rapperfluogreenwhite_result.webp", id: "fluogreenwhite" },
+  { label: "Bordeaux / White / Black", file: "rapperbordeuxwhiteblack_result.webp", id: "bordeauxwhiteblack" },
+  { label: "Pink / Black", file: "rapperpinkblack_result.webp", id: "pinkblack" },
+  { label: "White / Red / Black", file: "rapperwhiteredblack_result.webp", id: "whiteredblack" },
+  { label: "Grey / Red", file: "rappergreyred_result.webp", id: "greyred" },
+  { label: "Orange / Black", file: "rapperorangeblack_result.webp", id: "orangeblack" },
+  { label: "Black / White / Green", file: "rapperblackwhitegreen_result.webp", id: "blackwhitegreen" },
+  { label: "Red / White / Royal", file: "rapperredwhiteroyal_result.webp", id: "redwhiteroyal" },
+  { label: "Black / Orange", file: "rapperblackorange_result.webp", id: "blackorange" },
+  { label: "Black / Olive", file: "rapperblackolive_result.webp", id: "blackolive" },
+  { label: "Red / White", file: "rapperredwhite_result.webp", id: "redwhite" },
+  { label: "Royal / White", file: "rapperroyalwhite_result.webp", id: "royalwhite" },
+  { label: "Yellow / White", file: "rapperyellowwhite_result.webp", id: "yellowwhite" },
+  { label: "Orange / White", file: "rapperorangewhite_result.webp", id: "orangewhite" },
+  { label: "Blue / White", file: "rapperbluewhite_result.webp", id: "bluewhite" },
+  { label: "Green / White", file: "rappergreenwhite_result.webp", id: "greenwhite" },
 ];
 
 /* ---------- Lightbox ---------- */
@@ -115,7 +122,123 @@ function Lightbox({ img, alt, onClose }: { img: string; alt: string; onClose: ()
   );
 }
 
-/* ---------- Κάρτα προϊόντος ---------- */
+/* ---------- Funko Card ---------- */
+function FunkoCard({ funko }: { funko: Funko }) {
+  const { status } = useSession();
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [soldOut, setSoldOut] = useState(false);
+
+  const priceLabel = useMemo(
+    () =>
+      funko.price.toLocaleString("el-GR", {
+        style: "currency",
+        currency: "EUR",
+        minimumFractionDigits: 2,
+      }),
+    [funko.price]
+  );
+
+  return (
+    <>
+      <div
+        style={{
+          backgroundColor: "#000",
+          border: "2px solid #00ffff",
+          borderRadius: "1rem",
+          padding: "1.25rem",
+          boxShadow: "0 0 20px #0ff",
+          width: 240,
+        }}
+      >
+        <div
+          onClick={() => setPreviewOpen(true)}
+          title="Μεγέθυνση"
+          style={{
+            position: "relative",
+            width: "100%",
+            height: 200,
+            marginBottom: "1rem",
+            overflow: "hidden",
+            borderRadius: "1rem",
+            cursor: "zoom-in",
+            background: "#000",
+          }}
+        >
+          <Image
+            src={"/products/funko/" + funko.file}
+            alt={funko.label}
+            fill
+            style={{
+              objectFit: "contain",
+              borderRadius: "1rem",
+              display: "block",
+            }}
+            sizes="(max-width: 768px) 90vw, 240px"
+            priority
+          />
+        </div>
+
+        <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>{funko.label}</h3>
+        <p style={{ textAlign: "center", marginBottom: 12, fontWeight: 700 }}>{priceLabel}</p>
+
+        {soldOut ? (
+          <button
+            disabled
+            style={{
+              width: "100%",
+              padding: "0.75rem 1rem",
+              borderRadius: 12,
+              border: "2px solid #aaa",
+              background: "#111",
+              color: "#777",
+              fontWeight: 700,
+              cursor: "not-allowed",
+            }}
+          >
+            Εξαντλημένο
+          </button>
+        ) : status !== "authenticated" ? (
+          <button
+            type="button"
+            onClick={() => signIn()}
+            style={{
+              width: "100%",
+              padding: "0.75rem 1rem",
+              borderRadius: 12,
+              border: "2px solid #00ffff",
+              background: "#000",
+              color: "#00ffff",
+              fontWeight: 700,
+              cursor: "pointer",
+              boxShadow: "0 0 16px #0ff",
+            }}
+          >
+            Σύνδεση για αγορά
+          </button>
+        ) : (
+          <div
+            onClick={() => {
+              if (funko.stock === 1) setSoldOut(true);
+            }}
+          >
+            <AddToCartButton
+              id={`funko-${funko.id}`}
+              name={funko.label}
+              price={funko.price}
+              image={"/products/funko/" + funko.file}
+            />
+          </div>
+        )}
+      </div>
+
+      {previewOpen && (
+        <Lightbox img={"/products/funko/" + funko.file} alt={funko.label} onClose={() => setPreviewOpen(false)} />
+      )}
+    </>
+  );
+}
+
+/* ---------- Rapper Card ---------- */
 function ProductCardRapper() {
   const { status } = useSession();
   const [variant, setVariant] = useState<Variant>(VARIANTS[0]);
@@ -180,9 +303,7 @@ function ProductCardRapper() {
           />
         </div>
 
-        <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>
-          Atlantis — Rapper
-        </h3>
+        <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>Atlantis — Rapper</h3>
         <p style={{ textAlign: "center", marginBottom: 12, fontWeight: 700 }}>{priceLabel}</p>
 
         {/* Επιλογή χρώματος */}
@@ -242,11 +363,7 @@ function ProductCardRapper() {
       </div>
 
       {previewOpen && (
-        <Lightbox
-          img={BASE + variant.file}
-          alt={`Atlantis Rapper — ${variant.label}`}
-          onClose={() => setPreviewOpen(false)}
-        />
+        <Lightbox img={BASE + variant.file} alt={`Atlantis Rapper — ${variant.label}`} onClose={() => setPreviewOpen(false)} />
       )}
     </>
   );
@@ -276,6 +393,22 @@ export default function AccessoriesPage() {
         Accessories
       </h1>
 
+      {/* Funko Pops */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          gap: "2rem",
+          justifyItems: "center",
+          marginBottom: "3rem",
+        }}
+      >
+        {FUNKOS.map((f) => (
+          <FunkoCard key={f.id} funko={f} />
+        ))}
+      </div>
+
+      {/* Trucker caps */}
       <div
         style={{
           display: "grid",
