@@ -1,7 +1,7 @@
 export default function Partners() {
   const partners = [
      { src: '/logos/mitchell.png', url: 'https://www.mitchellandness.com/en/' },
-     { src: '/logos/nike.jpg.png', url: 'https://www.nike.com' },
+     { src: '/logos/nike.jpg', url: 'https://www.nike.com' },
     { src: '/logos/logo1.png', url: 'https://instagram.com/shoesservice.gr' },
     { src: '/logos/logo2.png', url: 'https://instagram.com/creait_wear' },
     { src: '/logos/logo3.png', url: 'https://www.instagram.com/john_parza/' },
