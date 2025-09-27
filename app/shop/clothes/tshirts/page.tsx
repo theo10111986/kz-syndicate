@@ -59,13 +59,14 @@ const VARIANTS: Variant[] = [
     stock: 2,
     price: 45,
   },
-  { label: "creait_wear-Roy Tarpley", file: "tarpley_result.webp", id: "tarpley", price: 40 },
-  { label: "creait_wear-Tony White", file: "tonywhite_result.webp", id: "tonywhite", price: 40 },
-  { label: "creait_wear-Henry Turner", file: "turner_result.webp", id: "turner", price: 40 },
-  { label: "creait_wear-Dominique Wilkins", file: "wilkins_result.webp", id: "wilkins", price: 40 },
-  { label: "creait_wear-Kenneth Barlow", file: "barlow_result.webp", id: "barlow", price: 40 },
-  { label: "creait_wear-Mitchell Wiggins", file: "wiggins_result.webp", id: "wiggins", price: 40 },
-  { label: "creait_wear-David Ancrum", file: "ancrum_result.webp", id: "ancrum", price: 40 },
+{ label: "creait_wear-Roy Tarpley", file: "tarpley_result.webp", id: "tarpley", sizes: ["S","M","L","XL"], price: 40 },
+{ label: "creait_wear-Tony White", file: "tonywhite_result.webp", id: "tonywhite", sizes: ["S","M","L","XL"], price: 40 },
+{ label: "creait_wear-Henry Turner", file: "turner_result.webp", id: "turner", sizes: ["S","M","L","XL"], price: 40 },
+{ label: "creait_wear-Dominique Wilkins", file: "wilkins_result.webp", id: "wilkins", sizes: ["S","M","L","XL"], price: 40 },
+{ label: "creait_wear-Kenneth Barlow", file: "barlow_result.webp", id: "barlow", sizes: ["S","M","L","XL"], price: 40 },
+{ label: "creait_wear-Mitchell Wiggins", file: "wiggins_result.webp", id: "wiggins", sizes: ["S","M","L","XL"], price: 40 },
+{ label: "creait_wear-David Ancrum", file: "ancrum_result.webp", id: "ancrum", sizes: ["S","M","L","XL"], price: 40 },
+
 
   //
   
