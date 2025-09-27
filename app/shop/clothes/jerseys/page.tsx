@@ -7,102 +7,89 @@ import { useSession, signIn } from "next-auth/react";
 
 const BASE = "/products/jersey/";
 
-type Size = "XS" | "S" | "M" | "L" | "XL";
-
 type Jersey = {
   id: string;
   label: string;
-  files: string[];
-  sizes: { size: Size; stock: number }[];
+  images: string[];
   price: number;
+  sizes: { [key: string]: number }; // π.χ. { M:1, L:2 }
 };
 
-/* ---------- Data ---------- */
 const JERSEYS: Jersey[] = [
   {
     id: "mj-red",
     label: "Mitchell & Ness NBA AUTHENTIC JERSEY CHICAGO BULLS 1997-98 MICHAEL JORDAN #23",
-    files: ["red.jpg", "red2.avif"],
-    sizes: [{ size: "M", stock: 1 }],
+    images: ["red.jpg", "red2.avif"],
     price: 249.99,
+    sizes: { M: 1 },
   },
   {
     id: "mj-black",
     label: "Mitchell & Ness NBA AUTHENTIC JERSEY CHICAGO BULLS 1995-96 MICHAEL JORDAN #23",
-    files: ["black.avif", "black2.avif"],
-    sizes: [{ size: "M", stock: 1 }],
+    images: ["black.avif", "black2.avif"],
     price: 249.99,
+    sizes: { M: 1 },
   },
   {
     id: "jason",
-    label: "Sacramento Kings 2000 – Jason Williams",
-    files: ["jason.jpg", "jason2.jpg"],
-    sizes: [
-      { size: "M", stock: 2 },
-      { size: "L", stock: 1 },
-      { size: "XL", stock: 1 },
-    ],
+    label: "SACRAMENTO KINGS 2000 – JASON WILLIAMS",
+    images: ["jason.jpg", "jason2.jpg"],
     price: 120,
+    sizes: { M: 2, L: 1, XL: 1 },
   },
   {
     id: "curry",
-    label: "Golden State Warriors 2009 – Stephen Curry",
-    files: ["stephen.jpg", "stephen2.jpg"],
-    sizes: [
-      { size: "M", stock: 1 },
-      { size: "L", stock: 1 },
-      { size: "XL", stock: 1 },
-    ],
+    label: "GOLDEN STATE WARRIORS 2009 – STEPHEN CURRY",
+    images: ["stephen.jpg", "stephen2.jpg"],
     price: 120,
+    sizes: { M: 1, L: 1, XL: 1 },
   },
   {
     id: "stockton",
-    label: "Utah Jazz 1996 – John Stockton",
-    files: ["stockton.jpeg", "stockton2.jpeg"],
-    sizes: [
-      { size: "M", stock: 1 },
-      { size: "L", stock: 1 },
-    ],
+    label: "UTAH JAZZ 1996 – JOHN STOCKTON",
+    images: ["stockton.jpeg", "stockton2.jpeg"],
     price: 120,
+    sizes: { M: 1, L: 1 },
   },
   {
     id: "iverson",
-    label: "Philadelphia 76ers 2000 – Allen Iverson",
-    files: ["allen.jpeg", "allen2.jpeg"],
-    sizes: [{ size: "XS", stock: 1 }],
+    label: "PHILADELPHIA 76ERS 2000 – ALLEN IVERSON",
+    images: ["allen.jpeg", "allen2.jpeg"],
     price: 120,
+    sizes: { XS: 1 },
   },
   {
     id: "oneal",
-    label: "Los Angeles Lakers 1999 – Shaquille O'Neal",
-    files: ["oneal.jpeg", "oneal2.jpeg"],
-    sizes: [{ size: "M", stock: 1 }],
+    label: "LOS ANGELES LAKERS 1999 – SHAQUILLE O'NEAL",
+    images: ["oneal.jpeg", "oneal2.jpeg"],
     price: 120,
+    sizes: { M: 1 },
   },
 ];
 
-/* ---------- Lightbox ---------- */
+/* ---------- Lightbox με πολλαπλές εικόνες ---------- */
 function Lightbox({
-  files,
+  images,
+  startIndex,
   alt,
   onClose,
 }: {
-  files: string[];
+  images: string[];
+  startIndex: number;
   alt: string;
   onClose: () => void;
 }) {
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(startIndex);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight") setIndex((i) => (i + 1) % files.length);
-      if (e.key === "ArrowLeft")
-        setIndex((i) => (i - 1 + files.length) % files.length);
+      if (e.key === "ArrowRight") setIndex((i) => (i + 1) % images.length);
+      if (e.key === "ArrowLeft") setIndex((i) => (i - 1 + images.length) % images.length);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [files]);
+  }, [images.length, onClose]);
 
   return (
     <div
@@ -112,35 +99,110 @@ function Lightbox({
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.9)",
+        background: "rgba(0,0,0,0.85)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        padding: "2rem",
         zIndex: 9999,
       }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{ position: "relative", maxWidth: "90vw", maxHeight: "85vh" }}
+        style={{
+          position: "relative",
+          maxWidth: "90vw",
+          maxHeight: "85vh",
+          borderRadius: "1rem",
+          boxShadow: "0 0 30px #0ff",
+          overflow: "hidden",
+        }}
       >
-        <Image
-          src={BASE + files[index]}
-          alt={alt}
-          width={800}
-          height={800}
-          style={{ objectFit: "contain", borderRadius: "1rem" }}
-        />
+        <button
+          onClick={onClose}
+          aria-label="Κλείσιμο"
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            width: 36,
+            height: 36,
+            borderRadius: 999,
+            border: "2px solid #00ffff",
+            background: "#000",
+            color: "#00ffff",
+            fontSize: 20,
+            fontWeight: 700,
+            cursor: "pointer",
+            boxShadow: "0 0 12px #0ff",
+            zIndex: 1,
+          }}
+        >
+          ×
+        </button>
+
+        <div style={{ position: "relative", width: "80vw", height: "70vh" }}>
+          <Image
+            src={BASE + images[index]}
+            alt={alt}
+            fill
+            style={{ objectFit: "contain", background: "#000" }}
+            sizes="80vw"
+            priority
+          />
+        </div>
+
+        {/* arrows */}
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={() => setIndex((i) => (i - 1 + images.length) % images.length)}
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: 10,
+                transform: "translateY(-50%)",
+                background: "rgba(0,0,0,0.6)",
+                border: "2px solid #0ff",
+                color: "#0ff",
+                padding: "0.5rem 1rem",
+                cursor: "pointer",
+                borderRadius: 8,
+              }}
+            >
+              ‹
+            </button>
+            <button
+              onClick={() => setIndex((i) => (i + 1) % images.length)}
+              style={{
+                position: "absolute",
+                top: "50%",
+                right: 10,
+                transform: "translateY(-50%)",
+                background: "rgba(0,0,0,0.6)",
+                border: "2px solid #0ff",
+                color: "#0ff",
+                padding: "0.5rem 1rem",
+                cursor: "pointer",
+                borderRadius: 8,
+              }}
+            >
+              ›
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-/* ---------- Card ---------- */
+/* ---------- Jersey Card ---------- */
 function JerseyCard({ jersey }: { jersey: Jersey }) {
   const { status } = useSession();
+  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [stocks, setStocks] = useState({ ...jersey.sizes });
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [availableSizes, setAvailableSizes] = useState(jersey.sizes);
-  const [selectedSize, setSelectedSize] = useState<Size | "">("");
+  const [hovered, setHovered] = useState(false);
 
   const priceLabel = useMemo(
     () =>
@@ -151,60 +213,60 @@ function JerseyCard({ jersey }: { jersey: Jersey }) {
     [jersey.price]
   );
 
-  const handleBuy = () => {
-    if (!selectedSize) return;
-    setAvailableSizes((prev) =>
-      prev
-        .map((s) =>
-          s.size === selectedSize ? { ...s, stock: s.stock - 1 } : s
-        )
-        .filter((s) => s.stock > 0)
-    );
-    setSelectedSize("");
-  };
+  const availableSizes = Object.entries(stocks).filter(([, qty]) => qty > 0);
 
-  const soldOut = availableSizes.length === 0;
+  const handleAddToCart = () => {
+    if (selectedSize && stocks[selectedSize] > 0) {
+      setStocks((prev) => ({ ...prev, [selectedSize]: prev[selectedSize] - 1 }));
+    }
+  };
 
   return (
     <>
       <div
         style={{
-          background: "#000",
+          backgroundColor: "#000",
           border: "2px solid #00ffff",
           borderRadius: "1rem",
           padding: "1.25rem",
-          width: 340,
           boxShadow: "0 0 20px #0ff",
+          width: 360,
         }}
       >
+        {/* Εικόνα */}
         <div
           onClick={() => setPreviewOpen(true)}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
           style={{
             position: "relative",
             width: "100%",
-            height: 260,
+            height: 280,
             marginBottom: "1rem",
-            cursor: "zoom-in",
-            borderRadius: "1rem",
             overflow: "hidden",
+            borderRadius: "1rem",
+            cursor: "zoom-in",
+            background: "#000",
           }}
         >
           <Image
-            src={BASE + jersey.files[0]}
+            src={BASE + (hovered && jersey.images[1] ? jersey.images[1] : jersey.images[0])}
             alt={jersey.label}
             fill
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: "contain", borderRadius: "1rem" }}
+            sizes="(max-width: 768px) 90vw, 360px"
+            priority
           />
         </div>
 
-        <h3 style={{ color: "#00ffff", textAlign: "center" }}>{jersey.label}</h3>
-        <p style={{ textAlign: "center", fontWeight: 700 }}>{priceLabel}</p>
+        <h3 style={{ color: "#00ffff", textAlign: "center", marginBottom: 6 }}>{jersey.label}</h3>
+        <p style={{ textAlign: "center", marginBottom: 12, fontWeight: 700 }}>{priceLabel}</p>
 
-        {/* Sizes */}
+        {/* Επιλογή Μεγέθους */}
         {availableSizes.length > 1 ? (
           <select
             value={selectedSize}
-            onChange={(e) => setSelectedSize(e.target.value as Size)}
+            onChange={(e) => setSelectedSize(e.target.value)}
             style={{
               width: "100%",
               marginBottom: 12,
@@ -218,61 +280,60 @@ function JerseyCard({ jersey }: { jersey: Jersey }) {
             }}
           >
             <option value="">Επιλέξτε μέγεθος</option>
-            {availableSizes.map((s) => (
-              <option key={s.size} value={s.size}>
-                {s.size}
+            {availableSizes.map(([size]) => (
+              <option key={size} value={size}>
+                {size}
               </option>
             ))}
           </select>
-        ) : availableSizes.length === 1 ? (
+        ) : (
           <p style={{ textAlign: "center", marginBottom: 12, color: "#00ffff" }}>
-            Μέγεθος: {availableSizes[0].size}
+            Μέγεθος: {availableSizes[0]?.[0] ?? "—"}
           </p>
-        ) : null}
+        )}
 
         {/* CTA */}
-        {soldOut ? (
+        {availableSizes.length === 0 ? (
           <button
             disabled
             style={{
               width: "100%",
-              padding: "0.75rem",
+              padding: "0.75rem 1rem",
               borderRadius: 12,
               border: "2px solid #aaa",
               background: "#111",
               color: "#777",
               fontWeight: 700,
+              cursor: "not-allowed",
             }}
           >
             Εξαντλημένο
           </button>
-        ) : status !== "authenticated" || !selectedSize && availableSizes.length > 1 ? (
+        ) : status !== "authenticated" || !selectedSize ? (
           <button
-            onClick={() =>
-              status !== "authenticated" ? signIn() : null
-            }
+            type="button"
+            onClick={() => (status !== "authenticated" ? signIn() : null)}
             style={{
               width: "100%",
-              padding: "0.75rem",
+              padding: "0.75rem 1rem",
               borderRadius: 12,
               border: "2px solid #00ffff",
               background: "#000",
               color: "#00ffff",
               fontWeight: 700,
               cursor: "pointer",
+              boxShadow: "0 0 16px #0ff",
             }}
           >
-            {status !== "authenticated"
-              ? "Σύνδεση για αγορά"
-              : "Συμπλήρωσε μέγεθος"}
+            {status !== "authenticated" ? "Σύνδεση για αγορά" : "Συμπλήρωσε μέγεθος"}
           </button>
         ) : (
-          <div onClick={handleBuy}>
+          <div onClick={handleAddToCart}>
             <AddToCartButton
               id={`jersey-${jersey.id}-${selectedSize}`}
-              name={`${jersey.label} (Size ${selectedSize || availableSizes[0].size})`}
+              name={`Jersey • ${jersey.label} (Size ${selectedSize})`}
               price={jersey.price}
-              image={BASE + jersey.files[0]}
+              image={BASE + jersey.images[0]}
             />
           </div>
         )}
@@ -280,7 +341,8 @@ function JerseyCard({ jersey }: { jersey: Jersey }) {
 
       {previewOpen && (
         <Lightbox
-          files={jersey.files}
+          images={jersey.images}
+          startIndex={0}
           alt={jersey.label}
           onClose={() => setPreviewOpen(false)}
         />
@@ -289,13 +351,13 @@ function JerseyCard({ jersey }: { jersey: Jersey }) {
   );
 }
 
-/* ---------- Page ---------- */
+/* ---------- Σελίδα ---------- */
 export default function JerseysPage() {
   return (
     <main
       style={{
         minHeight: "100vh",
-        background: "#000",
+        backgroundColor: "#000",
         color: "#fff",
         padding: "3rem 1.5rem",
       }}
@@ -305,8 +367,9 @@ export default function JerseysPage() {
           textAlign: "center",
           color: "#00e5ff",
           fontSize: "2rem",
-          marginBottom: "2rem",
+          fontWeight: "bold",
           textShadow: "0 0 10px #00e5ff",
+          marginBottom: "2rem",
         }}
       >
         Jerseys
@@ -315,7 +378,7 @@ export default function JerseysPage() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))",
           gap: "2rem",
           justifyItems: "center",
         }}
@@ -327,3 +390,4 @@ export default function JerseysPage() {
     </main>
   );
 }
+
