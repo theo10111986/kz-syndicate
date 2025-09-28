@@ -13,6 +13,11 @@ const customCategories = [
     img: "/shop-categories/additives.png",
     link: "/shop/custom/additives",
   },
+  {
+    title: "Rit – Βαφή για ύφασμα",
+    img: "/shop-categories/rit.png",
+    link: "/shop/custom/rit",
+  },
 ];
 
 export default function CustomClient() {
@@ -99,5 +104,6 @@ export default function CustomClient() {
     </main>
   );
 }
+
 
 
