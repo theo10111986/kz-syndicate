@@ -359,11 +359,12 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
             }}
           >
             <AddToCartButton
-              id={`creait-wear-tshirt-${variant.id}-${size}`}
-              name={`creait_wear T-Shirt • ${variant.label} (Size ${size || variant.size})`}
-              price={variant.price}
-              image={BASE + currentImage}
+            id={`tshirt-${variant.id}-${size || variant.size}`}
+            name={`${variant.label} ${size || variant.size ? `(Size ${size || variant.size})` : ""}`}
+            price={variant.price}
+            image={BASE + currentImage}
             />
+
           </div>
         )}
       </div>
