@@ -133,7 +133,7 @@ export default function RitPage() {
               onClick={() => track("Click Product", { name: item.name, price: 11 })}
             />
             <h2 style={{ color: "#00ffff", marginBottom: "0.5rem" }}>{item.name}</h2>
-            <p style={{ fontWeight: "bold" }}>Τιμή: €7.50</p>
+            <p style={{ fontWeight: "bold" }}>Τιμή: €11</p>
 
             {/* ✅ Gating: μόνο συνδεδεμένοι βλέπουν AddToCart */}
             {status === "loading" ? (
