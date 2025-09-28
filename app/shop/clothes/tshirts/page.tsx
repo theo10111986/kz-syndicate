@@ -225,7 +225,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
         >
           <Image
             src={BASE + currentImage}
-            alt={`creait_wear — ${variant.label}`}
+            alt={`tshirt — ${variant.label}`}
             fill
             style={{
               objectFit: "contain",
@@ -372,7 +372,7 @@ function ProductCardTshirt({ variant }: { variant: Variant }) {
       {previewOpen && (
         <Lightbox
           img={BASE + currentImage}
-          alt={`creait_wear — ${variant.label}`}
+          alt={` tshirt— ${variant.label}`}
           onClose={() => setPreviewOpen(false)}
         />
       )}
