@@ -25,7 +25,7 @@ const VARIANTS: Variant[] = [
     id: "timduncan",
     size: "XL",
     stock: 1,
-    price: 20,
+    price: 40,
   },
   {
     label: "Boston Celtics Garage Hero T-Shirt - Kelly Green",
@@ -33,7 +33,7 @@ const VARIANTS: Variant[] = [
     id: "bostonkelly",
     size: "M",
     stock: 1,
-    price: 40,
+    price: 20,
   },
   {
     label: "NBA Chicago Bulls – Dennis Rodman",
