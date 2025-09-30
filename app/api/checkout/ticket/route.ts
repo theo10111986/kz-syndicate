@@ -41,21 +41,20 @@ export async function GET() {
     method: "POST",
     headers: {
       "Content-Type": "text/xml; charset=utf-8",
-      "SOAPAction": "IssueNewTicket", // 👶 μόνο αυτό
+      "SOAPAction": "http://tempuri.org/IssueNewTicket", // 👶 νέα δοκιμή
     },
     body: xml,
   });
 
   const text = await res.text();
 
-  // Βρίσκουμε το TransTicket από την απάντηση
   const match = text.match(/<TransTicket>(.*?)<\/TransTicket>/);
   const ticket = match ? match[1] : null;
 
   return NextResponse.json({
     merchantReference,
     ticket,
-    raw: text, // όλο το XML για debugging
+    raw: text,
   });
 }
 
