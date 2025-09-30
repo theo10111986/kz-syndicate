@@ -16,7 +16,7 @@ function md5hex(input: string) {
 }
 
 // Διάλεξε σενάριο: "V1" ή "V2"
-const SOAP_VERSION: "V1" | "V2" = "V1";
+const SOAP_VERSION: "V1" | "V2" = "V2";
 
 export async function GET() {
   const merchantReference = "TEST-" + Date.now();
