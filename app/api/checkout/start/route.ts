@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import * as crypto from "crypto";
 
-export const runtime = "edge"; // αν χρησιμοποιείς edge, αλλιώς αφαίρεσέ το
+
 
 // --- Στοιχεία test account (βάλε εδώ τα δικά σου ή env variables) ---
 const SOAP_URL = "https://paycenter.piraeusbank.gr/services/tickets/issuer.asmx";
