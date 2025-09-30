@@ -7,19 +7,19 @@ const ACQUIRER_ID = "14";
 const MERCHANT_ID = "2145101053";
 const POS_ID = "2143820869";
 const USER = "TH695378";
-const PASSWORD_MD5 = "4db1f54e6f0b56080a51d99ec55d9bda"; // md5 του AS459632
+const PASSWORD_MD5 = "4db1f54e6f0b56080a51d99ec55d9bda";
 
 export async function GET() {
   const merchantReference = "TEST-" + Date.now();
-  const amount = "100"; // 1 ευρώ
-  const currencyCode = "978"; // EUR
+  const amount = "100";
+  const currencyCode = "978";
 
   const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xmlns:xsd="http://www.w3.org/2001/XMLSchema"
                xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
-    <IssueNewTicket xmlns="https://paycenter.piraeusbank.gr/redirection">
+    <IssueNewTicket xmlns="http://piraeusbank.gr/redirection">
       <AcquirerId>${ACQUIRER_ID}</AcquirerId>
       <MerchantId>${MERCHANT_ID}</MerchantId>
       <PosId>${POS_ID}</PosId>
@@ -41,7 +41,7 @@ export async function GET() {
     method: "POST",
     headers: {
       "Content-Type": "text/xml; charset=utf-8",
-      "SOAPAction": "https://paycenter.piraeusbank.gr/redirection/IssueNewTicket",
+      "SOAPAction": "http://piraeusbank.gr/redirection/IssueNewTicket", // <-- PROSOXH
     },
     body: xml,
   });
@@ -57,4 +57,5 @@ export async function GET() {
     raw: text,
   });
 }
+
 
