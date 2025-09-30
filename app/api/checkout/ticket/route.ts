@@ -7,12 +7,12 @@ const ACQUIRER_ID = "14";
 const MERCHANT_ID = "2145101053";
 const POS_ID = "2143820869";
 const USER = "TH695378";
-const PASSWORD_MD5 = "4db1f54e6f0b56080a51d99ec55d9bda";
+const PASSWORD_MD5 = "4db1f54e6f0b56080a51d99ec55d9bda"; // md5 του AS459632
 
 export async function GET() {
   const merchantReference = "TEST-" + Date.now();
-  const amount = "100";
-  const currencyCode = "978";
+  const amount = "100"; // δηλαδή 1,00 €
+  const currencyCode = "978"; // EUR
 
   const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -41,20 +41,21 @@ export async function GET() {
     method: "POST",
     headers: {
       "Content-Type": "text/xml; charset=utf-8",
-      "SOAPAction": "http://piraeusbank.gr/redirection/IssueNewTicket", // <-- PROSOXH
+      "SOAPAction": "IssueNewTicket", // 👶 μόνο αυτό
     },
     body: xml,
   });
 
   const text = await res.text();
 
+  // Βρίσκουμε το TransTicket από την απάντηση
   const match = text.match(/<TransTicket>(.*?)<\/TransTicket>/);
   const ticket = match ? match[1] : null;
 
   return NextResponse.json({
     merchantReference,
     ticket,
-    raw: text,
+    raw: text, // όλο το XML για debugging
   });
 }
 
