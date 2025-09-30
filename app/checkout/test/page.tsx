@@ -25,7 +25,7 @@ export default function TestCheckoutPage() {
         <input type="hidden" name="MerchantId" value="2145101053" />
         <input type="hidden" name="PosId" value="2143820869" />
         <input type="hidden" name="User" value="TH695378" />
-        <input type="hidden" name="Password" value={PASSWORD_MD5} />
+        <input type="hidden" name="Password" value="4db1f54e6f0b56080a51d99ec55d9bda" />
         <input
           type="hidden"
           name="MerchantReference"
