@@ -15,7 +15,7 @@ function md5hex(input: string) {
 
 export async function GET() {
   const merchantReference = "TEST-" + Date.now();
-  const amount = "100"; // 1 EUR
+  const amount = "100"; // σε λεπτά, άρα 1.00€
   const currencyCode = "978";
   const passwordMd5 = md5hex(PASSWORD_PLAIN);
 
@@ -24,20 +24,21 @@ export async function GET() {
                xmlns:xsd="http://www.w3.org/2001/XMLSchema"
                xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
-    <IssueNewTicket xmlns="https://paycenter.piraeusbank.gr/redirection">
-      <AcquirerId>${ACQUIRER_ID}</AcquirerId>
-      <MerchantId>${MERCHANT_ID}</MerchantId>
-      <PosId>${POS_ID}</PosId>
-      <Username>${USER}</Username>
-      <Password>${passwordMd5}</Password>
-      <MerchantReference>${merchantReference}</MerchantReference>
-      <Amount>${amount}</Amount>
-      <CurrencyCode>${currencyCode}</CurrencyCode>
-      <Installments>0</Installments>
-      <TransactionType>0</TransactionType>
-      <ParamBackLink>https://www.kzsyndicate.com/cart</ParamBackLink>
-      <ParamSuccessURL>https://www.kzsyndicate.com/api/checkout/payment/success</ParamSuccessURL>
-      <ParamFailureURL>https://www.kzsyndicate.com/api/checkout/payment/failure</ParamFailureURL>
+    <IssueNewTicket xmlns="https://paycenter.piraeusbank.gr/services/tickets/">
+      <Request>
+        <AcquirerId>${ACQUIRER_ID}</AcquirerId>
+        <MerchantId>${MERCHANT_ID}</MerchantId>
+        <PosId>${POS_ID}</PosId>
+        <Username>${USER}</Username>
+        <Password>${passwordMd5}</Password>
+        <RequestType>02</RequestType>
+        <CurrencyCode>${currencyCode}</CurrencyCode>
+        <MerchantReference>${merchantReference}</MerchantReference>
+        <Amount>${amount}</Amount>
+        <Installments>0</Installments>
+        <ExpirePreauth>0</ExpirePreauth>
+        <Bnpl>0</Bnpl>
+      </Request>
     </IssueNewTicket>
   </soap:Body>
 </soap:Envelope>`;
@@ -46,7 +47,7 @@ export async function GET() {
     method: "POST",
     headers: {
       "Content-Type": "text/xml; charset=utf-8",
-      "SOAPAction": "https://paycenter.piraeusbank.gr/redirection/IssueNewTicket",
+      "SOAPAction": "https://paycenter.piraeusbank.gr/services/tickets/IssueNewTicket",
     },
     body: xml,
   });
@@ -54,3 +55,4 @@ export async function GET() {
   const text = await res.text();
   return new Response(text, { headers: { "Content-Type": "text/xml" } });
 }
+
