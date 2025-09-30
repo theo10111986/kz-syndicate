@@ -24,7 +24,7 @@ export async function GET() {
                xmlns:xsd="http://www.w3.org/2001/XMLSchema"
                xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
-    <IssueNewTicket xmlns="http://www.easypay.gr/redirection">
+    <IssueNewTicket xmlns="http://piraeusbank.gr/redirection">
       <AcquirerId>${ACQUIRER_ID}</AcquirerId>
       <MerchantId>${MERCHANT_ID}</MerchantId>
       <PosId>${POS_ID}</PosId>
@@ -46,12 +46,11 @@ export async function GET() {
     method: "POST",
     headers: {
       "Content-Type": "text/xml; charset=utf-8",
-      "SOAPAction": "http://www.easypay.gr/redirection/IssueNewTicket",
+      "SOAPAction": "http://piraeusbank.gr/redirection/IssueNewTicket",
     },
     body: xml,
   });
 
   const text = await res.text();
-
   return new Response(text, { headers: { "Content-Type": "text/xml" } });
 }
