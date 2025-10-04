@@ -7,32 +7,50 @@ const ACQUIRER_ID = "14";
 const MERCHANT_ID = "2145101053";
 const POS_ID = "2143820869";
 const USER = "TH695378";
-const PASSWORD_MD5 = "4db1f54e6f0b56080a51d99ec55d9bda"; // md5 του AS459632
+const PASSWORD = "AS459632"; // Σωστό: η Πειραιώς θέλει το plain password, όχι MD5
 
 export async function GET() {
   const merchantReference = "TEST-" + Date.now();
-  const amount = "100"; // δηλαδή 1,00 €
+  const amount = "1.00"; // 1€ για δοκιμή
   const currencyCode = "978"; // EUR
 
+  // ✅ ΠΡΟΣΟΧΗ: το namespace είναι "http://piraeusbank.gr/paycenter/redirection"
   const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xmlns:xsd="http://www.w3.org/2001/XMLSchema"
                xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
-    <IssueNewTicket xmlns="http://piraeusbank.gr/redirection">
-      <AcquirerId>${ACQUIRER_ID}</AcquirerId>
-      <MerchantId>${MERCHANT_ID}</MerchantId>
-      <PosId>${POS_ID}</PosId>
-      <Username>${USER}</Username>
-      <Password>${PASSWORD_MD5}</Password>
-      <MerchantReference>${merchantReference}</MerchantReference>
-      <Amount>${amount}</Amount>
-      <CurrencyCode>${currencyCode}</CurrencyCode>
-      <Installments>0</Installments>
-      <TransactionType>0</TransactionType>
-      <ParamBackLink>https://www.kzsyndicate.com/cart</ParamBackLink>
-      <ParamSuccessURL>https://www.kzsyndicate.com/api/checkout/payment/success</ParamSuccessURL>
-      <ParamFailureURL>https://www.kzsyndicate.com/api/checkout/payment/failure</ParamFailureURL>
+    <IssueNewTicket xmlns="http://piraeusbank.gr/paycenter/redirection">
+      <Request>
+        <Username>${USER}</Username>
+        <Password>${PASSWORD}</Password>
+        <MerchantId>${MERCHANT_ID}</MerchantId>
+        <PosId>${POS_ID}</PosId>
+        <AcquirerId>${ACQUIRER_ID}</AcquirerId>
+        <MerchantReference>${merchantReference}</MerchantReference>
+        <RequestType>02</RequestType>
+        <ExpirePreauth>0</ExpirePreauth>
+        <Amount>${amount}</Amount>
+        <CurrencyCode>${currencyCode}</CurrencyCode>
+        <Installments>0</Installments>
+        <Bnpl>0</Bnpl>
+        <Parameters></Parameters>
+        <BillAddrCity>ATHENS</BillAddrCity>
+        <BillAddrCountry>GR</BillAddrCountry>
+        <CardholderName>KZ Syndicate</CardholderName>
+        <Email>info@kzsyndicate.com</Email>
+        <RecurringInd>R</RecurringInd>
+        <AddressMatch>Y</AddressMatch>
+        <DeliveryTimeframe>ElectronicDelivery</DeliveryTimeframe>
+        <ReorderItemsInd>FirstTimeOrdered</ReorderItemsInd>
+        <PreOrderPurchaseInd>MerchandiseAvailable</PreOrderPurchaseInd>
+        <AuthMethod>No3DSRequestorAuthenticationOccurred</AuthMethod>
+        <AccountAgeInd>MoreThan60Days</AccountAgeInd>
+        <AccountChangeInd>MoreThan60Days</AccountChangeInd>
+        <AccountPwdChangeInd>NoChange</AccountPwdChangeInd>
+        <ShipAddressUsageInd>MoreThan60Days</ShipAddressUsageInd>
+        <SuspiciousAccActivity>NoSuspiciousActivityHasBeenObserved</SuspiciousAccActivity>
+      </Request>
     </IssueNewTicket>
   </soap:Body>
 </soap:Envelope>`;
@@ -41,14 +59,15 @@ export async function GET() {
     method: "POST",
     headers: {
       "Content-Type": "text/xml; charset=utf-8",
-      "SOAPAction": "http://tempuri.org/IssueNewTicket", // 👶 νέα δοκιμή
+      "SOAPAction": "http://piraeusbank.gr/paycenter/redirection/IssueNewTicket",
     },
     body: xml,
   });
 
   const text = await res.text();
 
-  const match = text.match(/<TransTicket>(.*?)<\/TransTicket>/);
+  // ⚙️ Ο σωστός κόμβος είναι <TranTicket> όχι <TransTicket>
+  const match = text.match(/<TranTicket>(.*?)<\/TranTicket>/);
   const ticket = match ? match[1] : null;
 
   return NextResponse.json({
@@ -57,5 +76,3 @@ export async function GET() {
     raw: text,
   });
 }
-
-
